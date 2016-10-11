@@ -1,0 +1,10 @@
+
+@import 'vendor/materialize/materialize';
+
+html {
+  overflow-y: scroll;
+}
+
+.navbar-fixed {
+  z-index: 1000;    
+}

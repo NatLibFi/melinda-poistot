@@ -1,0 +1,46 @@
+
+<svg xmlns="http://www.w3.org/2000/svg">
+
+  <svg viewBox="0 0 100 90" preserveAspectRatio="none" >
+  <path 
+    d="M0 45 H 100" 
+    fill="none" 
+    stroke="#f4c1bd" 
+    stroke-linecap="round" 
+    stroke-width="3"
+  />
+ 
+  </svg>
+
+</svg>
+
+<!--
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   viewBox="0 0 130 70"
+   width="200" height="200"
+   id="svg2"
+   version="1.1">
+
+
+  <g
+     
+     id="layer1">
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 4.0649217,1019.6248 91.4285603,0"
+        />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 66.229442,990.40405 58.392848,58.39285"
+        />
+    <path
+       d="M 124.62229,990.40405 66.229442,1048.7969"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+</svg>
+-->

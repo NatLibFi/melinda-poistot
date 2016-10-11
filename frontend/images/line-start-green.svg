@@ -1,0 +1,15 @@
+
+<svg xmlns="http://www.w3.org/2000/svg">
+
+  <svg viewBox="0 0 100 90" preserveAspectRatio="none" >
+  <path 
+    d="M50 45 H 100" 
+    fill="none" 
+    stroke="#b6e3b9" 
+    stroke-linecap="round" 
+    stroke-width="3"
+  />
+ 
+  </svg>
+
+</svg>
