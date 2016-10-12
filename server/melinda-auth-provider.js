@@ -26,7 +26,10 @@ export const authProvider = {
 
           resolve({
             credentialsValid,
-            userinfo
+            userinfo: { 
+              ...userinfo, 
+              lowtags: createAllowedLowTagList(userinfo)
+            }
           });
 
         }).catch(reject);
@@ -42,3 +45,63 @@ function parseUserInfo(json) {
   const email = _.get(json, 'user-auth.z66[0].z66-email[0]');
   return {userLibrary, name, department, email};
 }
+
+function createAllowedLowTagList(userinfo) {
+
+  // TODO: how to determine the list?
+
+  const lowtagList = [
+    'ALLI',
+    'ALMA',
+    'ANDER',
+    'ARKEN',
+    'ARSCA',
+    'AURA',
+    'CEAMK',
+    'DIAK',
+    'ERKKI',
+    'FENNB',
+    'FENNI',
+    'HALTI',
+    'HAMK',
+    'HANNA',
+    'HELCA',
+    'HELKA',
+    'HILLA',
+    'HURMA',
+    'JAMK',
+    'JOSKU',
+    'JUOLU',
+    'JYKDO',
+    'KAMK',
+    'KARE',
+    'LAKKI',
+    'LAMK',
+    'LAURE',
+    'METRO',
+    'OAMK',
+    'OULA',
+    'PIKI',
+    'SAMK',
+    'SAVON',
+    'SEAMK',
+    'SELMA',
+    'TAIST',
+    'TAMCA',
+    'TAMK',
+    'TEEMU',
+    'TILDA',
+    'TRITO',
+    'TUTCA',
+    'VAARI',
+    'VALPU',
+    'VASKI',
+    'VEERA',
+    'VOLTE',
+    'WILMA',
+    'XAMK'
+  ];
+
+  return ['XAMK', 'BAB']; //lowtagList;
+}
+  
