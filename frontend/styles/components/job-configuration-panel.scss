@@ -1,0 +1,24 @@
+
+.job-configuration-container {
+  form {
+    margin-left: 1em;
+  }
+  
+  .input-field.low-tag {
+    width: 250px;
+  }
+
+  .job-configuration-container .row {
+    margin-bottom: 10px;
+  }
+
+  .checkbox-tip {
+    position: relative;
+    padding-left: 35px;
+    display: block;
+    height: 25px;
+    line-height: 25px;
+    font-size: 1rem;
+    color: #42a5f5;
+  }
+}

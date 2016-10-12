@@ -6,6 +6,7 @@ import { removeSession } from '../action-creators/session-actions';
 
 import { NavBar } from './navbar';
 import { SigninFormPanelContainer } from './signin-form-panel';
+import { JobConfigurationPanelContainer } from './job-configuration-panel';
 
 export class BaseComponent extends React.Component {
 
@@ -42,6 +43,7 @@ export class BaseComponent extends React.Component {
           username={firstName}
           appTitle='Tietokantatunnusten poisto Melindasta'
         />
+        <JobConfigurationPanelContainer />
       </div>
     );
   }
