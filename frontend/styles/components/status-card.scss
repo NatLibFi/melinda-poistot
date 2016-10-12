@@ -1,0 +1,35 @@
+.status-card-container {
+
+  .card-action-disabled a {
+    cursor: default !important;
+    color: #ccc !important;
+  }
+  .card-action-disabled a:hover {
+    cursor: default !important;
+    color: #ccc !important;
+  }
+
+  .status-card-container.pinned {
+    width: 41.6666666667%;
+    padding: 0 1.5rem 0 0;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .status-card .card-title {
+    font-weight: 400;
+    vertical-align: top;
+  }
+
+  .status-card .card-title i {
+    font-size: 3rem;
+    margin-right: 6px;
+  }
+
+  .status-card-error .card-title {
+    color: #ef5350;
+  }
+  .status-card-success .card-title {
+    color: #66bb6a;
+  }
+
+}
