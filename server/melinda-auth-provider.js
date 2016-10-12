@@ -46,6 +46,7 @@ function parseUserInfo(json) {
   return {userLibrary, name, department, email};
 }
 
+/* eslint-disable */
 function createAllowedLowTagList(userinfo) {
 
   // TODO: how to determine the list?
@@ -104,4 +105,4 @@ function createAllowedLowTagList(userinfo) {
 
   return ['XAMK', 'BAB']; //lowtagList;
 }
-  
+/* eslint-enable */
