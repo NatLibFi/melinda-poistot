@@ -1,5 +1,4 @@
 import * as Cookies from 'js-cookie';
-import _ from 'lodash';
 import { exceptCoreErrors } from '../utils';
 import { FetchNotOkError } from '../errors';
 import HttpStatus from 'http-status-codes';
@@ -39,16 +38,14 @@ export function validateSession(sessionToken) {
     };
 
     return fetch(`${sessionBasePath}/validate`, fetchOptions)
-      .then(response => {
-        if (response.status == HttpStatus.OK) {
+      .then(errorIfStatusNot(HttpStatus.OK))
+      .then(response => response.json())
+      .then(json => {
 
-          const username = _.head(sessionToken.split(':'));
+        dispatch(createSessionSuccess(json.userinfo));
 
-          dispatch(createSessionSuccess({username}));
-
-        } else {
-          Cookies.remove('sessionToken');
-        }
+      }).catch(() => {
+        Cookies.remove('sessionToken');
       });
   };
 }
@@ -89,7 +86,7 @@ export const startSession = (function() {
 
           const sessionToken = json.sessionToken;
           Cookies.set('sessionToken', sessionToken);
-          dispatch(createSessionSuccess({username}));
+          dispatch(createSessionSuccess(json.userinfo));
 
         }).catch(exceptCoreErrors((error) => {
 

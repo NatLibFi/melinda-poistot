@@ -22,9 +22,11 @@ export const authProvider = {
         .then((json) => {
 
           const credentialsValid = _.get(json, 'user-auth.reply[0]') === 'ok';
+          const userinfo = credentialsValid ? parseUserInfo(json) : undefined;
 
           resolve({
-            credentialsValid
+            credentialsValid,
+            userinfo
           });
 
         }).catch(reject);
@@ -32,3 +34,11 @@ export const authProvider = {
     });
   }
 };
+
+function parseUserInfo(json) {
+  const userLibrary = _.get(json, 'user-auth.z66[0].z66-user-library[0]');
+  const name = _.get(json, 'user-auth.z66[0].z66-name[0]');
+  const department = _.get(json, 'user-auth.z66[0].z66-department[0]');
+  const email = _.get(json, 'user-auth.z66[0].z66-email[0]');
+  return {userLibrary, name, department, email};
+}
