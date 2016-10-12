@@ -1,4 +1,3 @@
-/* globals $ */
 import React from 'react';
 import CodeMirror from 'codemirror';
 
@@ -29,10 +28,10 @@ export class RecordIdInputArea extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.disabled) {
       this._editor.setOption('readOnly', true);
-      $(this._editor.getWrapperElement()).addClass('CodeMirror-disabled');
+      window.$(this._editor.getWrapperElement()).addClass('CodeMirror-disabled');
     } else {
       this._editor.setOption('readOnly', false);
-      $(this._editor.getWrapperElement()).removeClass('CodeMirror-disabled');
+      window.$(this._editor.getWrapperElement()).removeClass('CodeMirror-disabled');
     }
   }
   
@@ -41,7 +40,7 @@ export class RecordIdInputArea extends React.Component {
   }
 
   makeMarker() {
-    var marker = $('<i class="material-icons gutter-tooltip" title="Tämä rivi ei ole sallitussa muodossa">error_outline</i>').get(0);
+    var marker = window.$('<i class="material-icons gutter-tooltip" title="Tämä rivi ei ole sallitussa muodossa">error_outline</i>').get(0);
     marker.style.color = '#822';
     return marker;
   }

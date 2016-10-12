@@ -32,12 +32,10 @@ describe('melinda auth provider', () => {
         expect(response.credentialsValid).to.equal(true);
       });
       it('returns userinfo', function() {
-        expect(response.userinfo).to.eql({
-          'department': 'testlab',
-          'email': 'user.name@testlab',
-          'name': 'user name',
-          'userLibrary': 'LIBRA'
-        });
+        expect(response.userinfo.department).to.eql('testlab');
+        expect(response.userinfo.email).to.eql('user.name@testlab');
+        expect(response.userinfo.name).to.eql('user name');
+        expect(response.userinfo.userLibrary).to.eql('LIBRA');
       });
 
     });

@@ -22,15 +22,20 @@ export const authProvider = {
         .then((json) => {
 
           const credentialsValid = _.get(json, 'user-auth.reply[0]') === 'ok';
-          const userinfo = credentialsValid ? parseUserInfo(json) : undefined;
+          if (credentialsValid) {
+            const userinfo = credentialsValid ? parseUserInfo(json) : undefined;
+            resolve({
+              credentialsValid,
+              userinfo: { 
+                ...userinfo, 
+                lowtags: createAllowedLowTagList(userinfo)
+              }
+            });
+          } else {
+            resolve({credentialsValid});
+          }
 
-          resolve({
-            credentialsValid,
-            userinfo: { 
-              ...userinfo, 
-              lowtags: createAllowedLowTagList(userinfo)
-            }
-          });
+          
 
         }).catch(reject);
 
