@@ -30,6 +30,7 @@
   "author": "Pasi Tuominen <pasi.tuominen@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "amqplib": "^0.4.2",
     "body-parser": "^1.15.2",
     "classnames": "^2.2.5",
     "cookie-parser": "^1.4.3",
