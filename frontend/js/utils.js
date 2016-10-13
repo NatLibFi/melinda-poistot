@@ -1,3 +1,4 @@
+import { FetchNotOkError } from './errors';
 
 export function exceptCoreErrors(fn) {
 
@@ -7,5 +8,14 @@ export function exceptCoreErrors(fn) {
     } else {
       return fn(error);
     }
+  };
+}
+
+export function errorIfStatusNot(statusCode) {
+  return function(response) {
+    if (response.status !== statusCode) {
+      throw new FetchNotOkError(response);
+    }
+    return response;
   };
 }

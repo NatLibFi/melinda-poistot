@@ -20,6 +20,7 @@ export class BaseComponent extends React.Component {
     submitJob: React.PropTypes.func.isRequired,
     userinfo: React.PropTypes.object,
     validRecordCount: React.PropTypes.number,
+    submitStatus: React.PropTypes.string.isRequired
   }
 
   handleLogout() {
@@ -61,6 +62,7 @@ export class BaseComponent extends React.Component {
               onSubmitList={() => this.props.submitJob()} 
               validRecordCount={this.props.validRecordCount}
               userinfo={this.props.userinfo}
+              submitStatus={this.props.submitStatus}
               />
           </div>
         </div>
@@ -89,7 +91,8 @@ function mapStateToProps(state) {
   return {
     sessionState: state.getIn(['session', 'state']),
     userinfo: state.getIn(['session', 'userinfo']),
-    validRecordCount: validRecordCount(state)
+    validRecordCount: validRecordCount(state),
+    submitStatus: state.getIn(['jobconfig', 'submitStatus'])
   };
 }
 

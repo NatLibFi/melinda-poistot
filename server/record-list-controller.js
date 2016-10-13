@@ -25,7 +25,7 @@ recordListController.post('/', cors(corsOptions), requireBodyParams('records'), 
     logger.log('error', 'Unable to start job', error);
     return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
   }
+  
   return res.sendStatus(HttpStatus.OK);
-
 });
 

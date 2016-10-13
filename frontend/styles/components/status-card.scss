@@ -1,4 +1,8 @@
 .status-card-container {
+  
+  .status-card {
+    min-height: 215px;
+  }
 
   .card-action-disabled a {
     cursor: default !important;
