@@ -22,11 +22,11 @@ export function startJob(records) {
   }
 
   channel.assertQueue(TASK_QUEUE, {durable: false});
-  // Node 6 has Buffer.from(msg) which should be used
   
   const tasks = records.map(createTask);
   tasks.forEach(task => {
-    console.log(task);
+
+    // Node 6 has Buffer.from(msg) which should be used
     channel.sendToQueue(TASK_QUEUE, new Buffer(JSON.stringify(task)));  
   });
   
