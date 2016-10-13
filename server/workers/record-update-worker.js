@@ -2,6 +2,7 @@ import amqp from 'amqplib';
 import { readEnvironmentVariable } from '../utils';
 import { logger } from '../logger';
 import MelindaClient from 'melinda-api-client';
+import { readSessionToken } from '../session-crypt';
 
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
@@ -34,41 +35,59 @@ export function connect() {
 
 function startTaskExecutor(channel) {
   channel.consume(INCOMING_TASK_QUEUE, function(msg) {
-    const task = readTask(msg);
-    logger.log('debug', 'record-update-worker: Received task', task);
+    logger.log('debug', 'record-update-worker: Received task', msg.content.toString());
 
-    const client = new MelindaClient(defaultConfig);
+    try {
+      const task = readTask(msg);
+      const {username, password} = readSessionToken(task.sessionToken);
 
-    client.loadRecord(task.recordId).then(response => {
-      console.log(response.toString());
-
-      const transformedRecord = transformRecord(response);
-
-      return client.updateRecord(transformedRecord).then(response => {
-        console.log(response);
-        task.processed = true;
-
-        channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(task)));  
-
+      const client = new MelindaClient({
+        ...defaultConfig,
+        user: username,
+        password: password
       });
 
+      processTask(task, client).then(taskResponse => {
+        channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskResponse)));  
+      }).catch(taskError => {
+        logger.log('debug', 'record-update-worker: error ', taskError);
+        channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskError)));  
+      }).finally(() => {
+        channel.ack(msg);
+      });
 
-
-    }).catch(error => {
-      console.log(error);
-      task.errored = true;
-      task.error = error.message;
-      channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(task)));  
-
-    }).finally(() => {
+    } catch(error) {
+      logger.log('error', 'Dropped invalid task', msg);
       channel.ack(msg);
+      return; 
+    }
+
+  });
+}
+
+export function processTask (task, client) {
+
+  logger.log('debug', 'record-update-worker: Loading record ', task.recordId);
+  return client.loadRecord(task.recordId).then(response => {
+
+    logger.log('debug', 'record-update-worker: Transforming record ', task.recordId);
+    const transformedRecord = transformRecord(response);
+    logger.log('debug', 'record-update-worker: Updating record ', task.recordId);
+    return client.updateRecord(transformedRecord).then(response => {
+      logger.log('debug', 'record-update-worker: Updated record ', response.recordId);
+      task.updateResponse = response;
+      return task;
     });
 
-  }, {noAck: false});
+  }).catch(error => {
+    logger.log('debug', 'record-update-worker: error ', error);
+    task.error = error.message;
+    return task;
+  });
 }
 
 function readTask(msg) {
-  return JSON.parse(msg.content.toString());
+  return JSON.parse(msg.content.toString());  
 }
 
 function transformRecord(record) {
