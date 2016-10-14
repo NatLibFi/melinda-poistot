@@ -69,7 +69,6 @@ sessionController.post('/validate', cors(corsOptions), requireBodyParams('sessio
 });
 
 export function readSessionMiddleware(req, res, next) {
-
   try {
     const {username, password} = readSessionToken(req.cookies.sessionToken);
   

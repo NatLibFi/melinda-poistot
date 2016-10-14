@@ -29,15 +29,17 @@ export function submitJob() {
   return function(dispatch, getState) {
 
     const records = validRecordList(getState());
+    const lowTag = getState().getIn(['jobconfig', 'lowtag']);
 
     dispatch(submitJobStarted());
 
     const fetchOptions = {
       method: 'POST',
-      body: JSON.stringify({ records }),
+      body: JSON.stringify({ records, lowTag }),
       headers: new Headers({
         'Content-Type': 'application/json'
       }),
+      credentials: 'include'
     };
 
     return fetch(`${recordListBasePath}/`, fetchOptions)

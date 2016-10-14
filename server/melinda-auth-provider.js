@@ -37,8 +37,6 @@ export const authProvider = {
             resolve({credentialsValid});
           }
 
-          
-
         }).catch(reject);
 
     });

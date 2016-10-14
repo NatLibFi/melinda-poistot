@@ -34,7 +34,7 @@ export function validateSession(sessionToken) {
       body: JSON.stringify({ sessionToken }),
       headers: new Headers({
         'Content-Type': 'application/json'
-      }),
+      })
     };
 
     return fetch(`${sessionBasePath}/validate`, fetchOptions)
