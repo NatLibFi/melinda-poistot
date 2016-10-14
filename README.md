@@ -1,5 +1,5 @@
 # Tietokantatunnusten poisto Melindasta
-
+[![Build Status](https://travis-ci.org/NatLibFi/melinda-local-ref-removal-ui.svg?branch=master)](https://travis-ci.org/NatLibFi/melinda-local-ref-removal-ui)
 
 ## Building the application
 
