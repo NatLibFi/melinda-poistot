@@ -25,7 +25,9 @@ export const corsOptions = {
       callback(null, true);
     } else {
       var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-      logger.log('info', `Request from origin ${origin} is not whitelisted.`);
+      if (!originIsWhitelisted) {
+        logger.log('info', `Request from origin ${origin} is not whitelisted.`);
+      } 
       callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
     }
   },
