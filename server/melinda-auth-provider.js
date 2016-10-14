@@ -8,6 +8,8 @@ const parseXMLStringToJSON = promisify(xml2js.parseString);
 
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const alephUserLibrary = readEnvironmentVariable('ALEPH_USER_LIBRARY');
+const superUserLowTags = readEnvironmentVariable('SUPERUSER_LOWTAGS', '').split(',').map(s => s.toUpperCase());
+
 
 export const authProvider = {
   validateCredentials: function(username, password) {
@@ -47,61 +49,13 @@ function parseUserInfo(json) {
 }
 
 function createAllowedLowTagList(userinfo) {
+  const department = _.get(userinfo, 'department', '').toUpperCase();
 
-  // TODO: how to determine the list?
+  if (department === 'KVP') {
+    return superUserLowTags;
+  } else {
+    return [department];
+  }
 
-  const lowtagList = [
-    'ALLI',
-    'ALMA',
-    'ANDER',
-    'ARKEN',
-    'ARSCA',
-    'AURA',
-    'CEAMK',
-    'DIAK',
-    'ERKKI',
-    'FENNB',
-    'FENNI',
-    'HALTI',
-    'HAMK',
-    'HANNA',
-    'HELCA',
-    'HELKA',
-    'HILLA',
-    'HURMA',
-    'JAMK',
-    'JOSKU',
-    'JUOLU',
-    'JYKDO',
-    'KAMK',
-    'KARE',
-    'LAKKI',
-    'LAMK',
-    'LAURE',
-    'METRO',
-    'OAMK',
-    'OULA',
-    'PIKI',
-    'SAMK',
-    'SAVON',
-    'SEAMK',
-    'SELMA',
-    'TAIST',
-    'TAMCA',
-    'TAMK',
-    'TEEMU',
-    'TILDA',
-    'TRITO',
-    'TUTCA',
-    'VAARI',
-    'VALPU',
-    'VASKI',
-    'VEERA',
-    'VOLTE',
-    'WILMA',
-    'XAMK'
-  ];
-
-  return ['XAMK', 'BAB']; //lowtagList;
 }
   
