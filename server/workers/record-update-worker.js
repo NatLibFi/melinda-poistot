@@ -71,14 +71,15 @@ export function processTask (task, client) {
   return client.loadRecord(task.recordId).then(response => {
 
     logger.log('debug', 'record-update-worker: Transforming record ', task.recordId);
-    const transformedRecord = transformRecord(response);
-    logger.log('debug', 'record-update-worker: Updating record ', task.recordId);
-    return client.updateRecord(transformedRecord).then(response => {
-      logger.log('debug', 'record-update-worker: Updated record ', response.recordId);
-      task.updateResponse = response;
-      return task;
-    });
+    return transformRecord(response);
 
+  }).then(transformedRecord => {
+    logger.log('debug', 'record-update-worker: Updating record ', task.recordId);
+    return client.updateRecord(transformedRecord);
+  }).then(response => {
+    logger.log('debug', 'record-update-worker: Updated record ', response.recordId);
+    task.updateResponse = response;
+    return task;
   }).catch(error => {
     logger.log('debug', 'record-update-worker: error ', error);
     task.error = error.message;
