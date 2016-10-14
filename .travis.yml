@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - "4.5.0"
+  - "node"
+after_script:
+  - if test "$TRAVIS_NODE_VERSION" != "4.5.0";then exit 0;fi
+  - if test $TRAVIS_BRANCH = "master";then JOB=$JOB_PROD;elif test $TRAVIS_BRANCH = "test";then JOB=$JOB_TEST;elif test $TRAVIS_BRANCH = "fix-ci";then JOB=$JOB_TEST;fi
+  - if test ! -z $JOB;then curl -X POST --data "authtoken=$AUTH_TOKEN&argString=-checkout-reference $TRAVIS_COMMIT" https://melinda-ci.lib.helsinki.fi/api/14/job/$JOB/executions;fi
+env:
+  global:
+    - JOB_PROD=a7dede7c-fb1b-4a8f-b17f-96907dead20c
+    - JOB_TEST=06c9b24f-92f8-494c-8fed-3f47b4a0ce8b
+    - secure: "o7Qr4HICSF21d1mJdEIw3QFtfewB74vhcFqX8wJ/jdDsL0HciIavG+5Knzw0AKgqKbJjkqLyn/ThTAJ3DWQwOniAhEOPiZfTpBRZEat0tMZS8AGxRPI4ODqOI/fIL5SxgQNdOsUxKhamW6sBAM9fcoSWsBE8w3WqjjD5JBtw75d+700QbuXYDwev7XLaA6fkxab0A2Sid/ig64a6mqCyRvWa8mW4DKeVCeFCp46y4VUkgyPDEWVIZuaPphcCHH4B3uANr2r2J6s7voeTsRY/BQiylSy7ZNJDqDiGhh6X/avFQtdu1gJDU/6Wp/NiIyei9350Xvqjl6d7WyaQcyZip3FQLv3J85wrVZ3f8smqN5kEGi/1j5qXt9TucbrpHAk8yZTxbyQg9gmObwbs9DUC2pFlKez536Q49AXH0xP30/3WIUtcqxw46sJS8/i5xlLDtyqmvxxzdFE206DIeQCzlP/WzivoiBXu8+QAVUgWSSkZjCvDAHBQSbTkcGm09CQPam4bAuF+fkwjb6K6kmb0Nqp8ywVFVQWqNZ9gun8iNbINlUK77Q8oZ4gvK7gMBj401GfPkxfbyO9HQVzkfcUIR/b3FpP5S82/qfXmZtWqBPEwpdYGos2pmYRjlqh66jF7owL4JEdLyWAwLLuSgSyibgruapzb/Qnv9BOUroYXWQY="
