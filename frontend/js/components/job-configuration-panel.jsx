@@ -43,7 +43,7 @@ export class JobConfigurationPanel extends React.Component {
 
         <div className="row">
           <div className="col l5 s8 offset-l1">
-            <form>
+            <form autoComplete="off">
               <LowTagSelectField availableLowTags={this.props.availableLowTags} onSelectLowTag={(lowtag) => this.props.setSelectedLowTag(lowtag)} />
             </form>
           </div>

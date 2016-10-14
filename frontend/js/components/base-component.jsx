@@ -3,17 +3,24 @@ import {connect} from 'react-redux';
 import _ from 'lodash';
 import '../../styles/main.scss';
 import { removeSession } from '../action-creators/session-actions';
-
+import { setRecordIdList, submitJob } from '../action-creators/job-configuration-actions';
 import { NavBar } from './navbar';
 import { SigninFormPanelContainer } from './signin-form-panel';
 import { JobConfigurationPanelContainer } from './job-configuration-panel';
+import { RecordIdInputArea } from './record-id-input-area';
+import { StatusCard } from './status-card';
+import { validRecordCount } from '../selectors/record-list-selectors';
 
 export class BaseComponent extends React.Component {
 
   static propTypes = {
     sessionState: React.PropTypes.string.isRequired,
     removeSession: React.PropTypes.func.isRequired,
+    setRecordIdList: React.PropTypes.func.isRequired,
+    submitJob: React.PropTypes.func.isRequired,
     userinfo: React.PropTypes.object,
+    validRecordCount: React.PropTypes.number,
+    submitStatus: React.PropTypes.string.isRequired
   }
 
   handleLogout() {
@@ -44,6 +51,24 @@ export class BaseComponent extends React.Component {
           appTitle='Tietokantatunnusten poisto Melindasta'
         />
         <JobConfigurationPanelContainer />
+
+        <div className="row">
+          <div className="col s6 l4 offset-l1">
+            <RecordIdInputArea onChange={(list) => this.props.setRecordIdList(list)} />
+          </div>
+
+          <div className="col s6 l5">
+            <StatusCard 
+              onSubmitList={() => this.props.submitJob()} 
+              validRecordCount={this.props.validRecordCount}
+              userinfo={this.props.userinfo}
+              submitStatus={this.props.submitStatus}
+              />
+          </div>
+        </div>
+
+
+        
       </div>
     );
   }
@@ -65,11 +90,13 @@ function mapStateToProps(state) {
 
   return {
     sessionState: state.getIn(['session', 'state']),
-    userinfo: state.getIn(['session', 'userinfo'])
+    userinfo: state.getIn(['session', 'userinfo']),
+    validRecordCount: validRecordCount(state),
+    submitStatus: state.getIn(['jobconfig', 'submitStatus'])
   };
 }
 
 export const BaseComponentContainer = connect(
   mapStateToProps,
-  { removeSession }
+  { removeSession, setRecordIdList, submitJob }
 )(BaseComponent);

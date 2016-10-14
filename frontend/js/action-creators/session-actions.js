@@ -1,5 +1,5 @@
 import * as Cookies from 'js-cookie';
-import { exceptCoreErrors } from '../utils';
+import { exceptCoreErrors, errorIfStatusNot } from '../utils';
 import { FetchNotOkError } from '../errors';
 import HttpStatus from 'http-status-codes';
 import {CREATE_SESSION_START, CREATE_SESSION_ERROR, CREATE_SESSION_SUCCESS, VALIDATE_SESSION_START} from '../constants/action-type-constants';
@@ -103,12 +103,3 @@ export const startSession = (function() {
     };
   };
 })();
-
-function errorIfStatusNot(statusCode) {
-  return function(response) {
-    if (response.status !== statusCode) {
-      throw new FetchNotOkError(response);
-    }
-    return response;
-  };
-}

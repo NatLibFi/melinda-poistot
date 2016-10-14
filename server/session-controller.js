@@ -80,6 +80,7 @@ export function readSessionMiddleware(req, res, next) {
 
   } catch(e) {
     // invalid token
+    logger.log('debug', 'Invalid session', e);
     req.session = _.extend({}, req.sessionToken);
   }
 

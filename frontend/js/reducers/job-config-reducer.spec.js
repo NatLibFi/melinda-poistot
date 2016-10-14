@@ -13,4 +13,15 @@ describe('job configuration reducer', () => {
       expect(state.getIn(['jobconfig', 'lowtag'])).to.eql('TEST');
     });
   });
+  
+  describe('on SET_RECORD_ID_LIST', () => {
+    let state;
+    beforeEach(() => {
+      state = reducer(undefined, actions.setRecordIdList([1,2]));
+    });
+    it('sets the rawRecordIdRows', () => {
+      expect(state.getIn(['jobconfig', 'rawRecordIdRows'])).to.eql([1,2]);
+    });
+  });
+  
 });

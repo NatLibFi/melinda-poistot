@@ -24,15 +24,20 @@ export const authProvider = {
         .then((json) => {
 
           const credentialsValid = _.get(json, 'user-auth.reply[0]') === 'ok';
-          const userinfo = credentialsValid ? parseUserInfo(json) : undefined;
+          if (credentialsValid) {
+            const userinfo = credentialsValid ? parseUserInfo(json) : undefined;
+            resolve({
+              credentialsValid,
+              userinfo: { 
+                ...userinfo, 
+                lowtags: createAllowedLowTagList(userinfo)
+              }
+            });
+          } else {
+            resolve({credentialsValid});
+          }
 
-          resolve({
-            credentialsValid,
-            userinfo: { 
-              ...userinfo, 
-              lowtags: createAllowedLowTagList(userinfo)
-            }
-          });
+          
 
         }).catch(reject);
 
@@ -48,6 +53,7 @@ function parseUserInfo(json) {
   return {userLibrary, name, department, email};
 }
 
+/* eslint-disable */
 function createAllowedLowTagList(userinfo) {
   const department = _.get(userinfo, 'department', '').toUpperCase();
 
@@ -58,4 +64,4 @@ function createAllowedLowTagList(userinfo) {
   }
 
 }
-  
+/* eslint-enable */
