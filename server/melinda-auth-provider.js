@@ -53,7 +53,6 @@ function parseUserInfo(json) {
   return {userLibrary, name, department, email};
 }
 
-/* eslint-disable */
 function createAllowedLowTagList(userinfo) {
   const department = _.get(userinfo, 'department', '').toUpperCase();
 
@@ -62,6 +61,4 @@ function createAllowedLowTagList(userinfo) {
   } else {
     return [department];
   }
-
 }
-/* eslint-enable */
