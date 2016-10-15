@@ -17,32 +17,51 @@ describe('melinda auth provider', () => {
       AuthProviderRewireAPI.__ResetDependency__('fetch');
     });
 
-    it('returns credentialsValid=true with valid credentials', function(done) {
-      
-      fetchStub.resolves({
-        text: sinon.stub().resolves(result_ok)
+    describe('with valid credentials', () => {
+      let response;
+      beforeEach(() => {
+        fetchStub.resolves({
+          text: sinon.stub().resolves(result_ok)
+        });
+        return authProvider.validateCredentials('master', 'master').then(res => {
+          response = res;
+        });
       });
 
-      authProvider.validateCredentials('master', 'master').then((res) => {
-        
-        expect(res.credentialsValid).to.equal(true);
+      it('returns credentialsValid=true', function() {
+        expect(response.credentialsValid).to.equal(true);
+      });
+      it('returns userinfo', function() {
+        expect(response.userinfo).to.eql({
+          'department': 'testlab',
+          'email': 'user.name@testlab',
+          'name': 'user name',
+          'userLibrary': 'LIBRA'
+        });
+      });
 
-        done();
-      }).catch(done);
     });
 
-    it('returns credentialsValid=false with invalid credentials',  function(done) {
-     
-      fetchStub.resolves({
-        text: sinon.stub().resolves(result_fail)
+    describe('with invalid credentials', () => {
+      let response;
+      beforeEach(() => {
+        fetchStub.resolves({
+          text: sinon.stub().resolves(result_fail)
+        });
+
+        return authProvider.validateCredentials('master', 'master').then(res => {
+          response = res;
+        });
       });
 
-      authProvider.validateCredentials('user', 'pass').then((res) => {
-        
-        expect(res.credentialsValid).to.equal(false);
+      it('returns credentialsValid=false', function() {
+        expect(response.credentialsValid).to.equal(false);
+      });
+      
+      it('does not return userinfo', function() {
+        expect(response.userinfo).to.be.undefined;
+      });
 
-        done();
-      }).catch(done);
     });
 
   });
@@ -54,9 +73,9 @@ const result_ok = `
 <reply>ok</reply>
 <z66>
 <z66-user-library>LIBRA</z66-user-library>
-<z66-name></z66-name>
-<z66-department></z66-department>
-<z66-email></z66-email>
+<z66-name>user name</z66-name>
+<z66-department>testlab</z66-department>
+<z66-email>user.name@testlab</z66-email>
 <z66-address></z66-address>
 <z66-telephone></z66-telephone>
 <z66-note-1></z66-note-1>

@@ -23,7 +23,7 @@ sessionController.post('/start', cors(corsOptions), requireBodyParams('username'
   authProvider.validateCredentials(username, password).then(authResponse => {
     if (authResponse.credentialsValid) {
       const sessionToken = createSessionToken(username, password);
-      res.send({sessionToken});
+      res.send({...authResponse, sessionToken});
       logger.log('info', `Succesful signin from ${username}`);
     } else {
       logger.log('info', `Credentials not valid for user ${username}`);
@@ -42,10 +42,25 @@ sessionController.post('/start', cors(corsOptions), requireBodyParams('username'
 sessionController.post('/validate', cors(corsOptions), requireBodyParams('sessionToken'), (req, res) => {
   const {sessionToken} = req.body;
   try {
-    const {username} = readSessionToken(sessionToken);
-    logger.log('info', `Succesful session validation for ${username}`);
-    res.sendStatus(200);
-    
+    const {username, password} = readSessionToken(sessionToken);
+ 
+    authProvider.validateCredentials(username, password).then(authResponse => {
+      if (authResponse.credentialsValid) {
+        logger.log('info', `Succesful session validation for ${username}`);
+        res.send(authResponse);
+      } else {
+        logger.log('info', `Credentials not valid for user ${username}`);
+        res.status(401).send('Authentication failed');
+      }
+      
+    }).catch(error => {
+
+      logger.log('error', 'Error validating credentials', error);
+
+      res.status(500).send('Internal server error');
+      
+    });
+
   } catch (error) {
     logger.log('error', 'Error validating credentials', error);
     res.status(401).send('Authentication failed');

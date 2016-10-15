@@ -1,5 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import _ from 'lodash';
 import '../../styles/main.scss';
 import { removeSession } from '../action-creators/session-actions';
 
@@ -11,6 +12,7 @@ export class BaseComponent extends React.Component {
   static propTypes = {
     sessionState: React.PropTypes.string.isRequired,
     removeSession: React.PropTypes.func.isRequired,
+    userinfo: React.PropTypes.object,
   }
 
   handleLogout() {
@@ -30,10 +32,16 @@ export class BaseComponent extends React.Component {
   }
 
   renderMainPanel() {
+
+    const firstName = _.head(_.get(this.props.userinfo, 'name', '').split(' '));
   
     return (
       <div>
-        <NavBar onLogout={() => this.handleLogout()}/>
+        <NavBar 
+          onLogout={() => this.handleLogout()}
+          username={firstName}
+          appTitle='Tietokantatunnusten poisto Melindasta'
+        />
       </div>
     );
   }
@@ -55,6 +63,7 @@ function mapStateToProps(state) {
 
   return {
     sessionState: state.getIn(['session', 'state']),
+    userinfo: state.getIn(['session', 'userinfo'])
   };
 }
 
