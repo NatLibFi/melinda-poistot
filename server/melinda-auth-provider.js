@@ -8,6 +8,8 @@ const parseXMLStringToJSON = promisify(xml2js.parseString);
 
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const alephUserLibrary = readEnvironmentVariable('ALEPH_USER_LIBRARY');
+const superUserLowTags = readEnvironmentVariable('SUPERUSER_LOWTAGS', '').split(',').map(s => s.toUpperCase());
+
 
 export const authProvider = {
   validateCredentials: function(username, password) {
@@ -22,12 +24,18 @@ export const authProvider = {
         .then((json) => {
 
           const credentialsValid = _.get(json, 'user-auth.reply[0]') === 'ok';
-          const userinfo = credentialsValid ? parseUserInfo(json) : undefined;
-
-          resolve({
-            credentialsValid,
-            userinfo
-          });
+          if (credentialsValid) {
+            const userinfo = credentialsValid ? parseUserInfo(json) : undefined;
+            resolve({
+              credentialsValid,
+              userinfo: { 
+                ...userinfo, 
+                lowtags: createAllowedLowTagList(userinfo)
+              }
+            });
+          } else {
+            resolve({credentialsValid});
+          }
 
         }).catch(reject);
 
@@ -41,4 +49,14 @@ function parseUserInfo(json) {
   const department = _.get(json, 'user-auth.z66[0].z66-department[0]');
   const email = _.get(json, 'user-auth.z66[0].z66-email[0]');
   return {userLibrary, name, department, email};
+}
+
+function createAllowedLowTagList(userinfo) {
+  const department = _.get(userinfo, 'department', '').toUpperCase();
+
+  if (department === 'KVP') {
+    return superUserLowTags;
+  } else {
+    return [department];
+  }
 }

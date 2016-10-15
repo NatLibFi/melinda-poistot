@@ -4,6 +4,7 @@ import { combineReducers } from 'redux-immutable';
 import { RESET_STATE } from './action-creators/ui-actions';
 
 import session from './reducers/session-reducer';
+import jobconfig from './reducers/job-config-reducer';
 
 export default function reducer(state = Map(), action) {
   if (action.type === RESET_STATE) {
@@ -14,4 +15,5 @@ export default function reducer(state = Map(), action) {
 
 export const combinedRootReducer = combineReducers({
   session,
+  jobconfig
 });

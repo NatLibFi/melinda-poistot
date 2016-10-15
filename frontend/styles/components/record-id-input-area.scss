@@ -1,0 +1,29 @@
+
+@import "~codemirror/lib/codemirror.css";
+
+.record-id-input-container {
+
+  .CodeMirror {
+    height: auto;
+  }
+  
+  .CodeMirror-scroll {
+    min-height: 600px;
+  }
+
+  .gutter-tooltip {
+    font-size: 18px;
+  }
+  
+  .CodeMirror-line-error span {
+    border-bottom: 1px dashed red;
+  }
+  .CodeMirror-gutter-error {
+    width: 15px;
+  }
+
+  .CodeMirror-disabled .CodeMirror-code {
+    color: #CCC;
+  }
+
+}
