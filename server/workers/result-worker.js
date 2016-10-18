@@ -101,9 +101,6 @@ export default class ResultWorker {
     this.completeJobs[jobId].push(taskResult);
     if (jobAggregate.inCompleteTasks.size === 0) {
 
-      // completeJobs[jobId] now as all results for jobid.
-      //the job is complete, log results, ack all messages and send the email and clear the job from completeJobs
-
       logger.log('debug', 'result-worker: Job complete ', jobId);
 
       channel.ack(jobAggregate.msg);
@@ -111,13 +108,18 @@ export default class ResultWorker {
         channel.ack(taskResult.msg);
       });
 
-      // send email to user
+      dispatchEmail(jobId, jobAggregate.email, this.completeJobs[jobId]);
+   
       delete(this.completeJobs[jobId]);
       this.currentJobs.delete(jobId);
     }
 
   }
+}
 
+function dispatchEmail(jobId, emailAddress, taskResults) {
+  logger.log('info', `Sending results of job ${jobId} to ${emailAddress}`);
+  logger.log('info', taskResults);
 }
 
 function readTask(msg) {
