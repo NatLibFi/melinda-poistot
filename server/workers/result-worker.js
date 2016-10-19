@@ -2,6 +2,7 @@ import amqp from 'amqplib';
 import { readEnvironmentVariable } from '../utils';
 import { logger } from '../logger';
 import _ from 'lodash';
+import { mail } from '../mailer';
 
 const AMQP_HOST = readEnvironmentVariable('AMQP_HOST');
 const INCOMING_TASK_RESULT_QUEUE = 'task_result_queue';
@@ -30,15 +31,15 @@ export default class ResultWorker {
 
 
   startTaskExecutor(channel) {
-    channel.consume(INCOMING_JOB_QUEUE, _.partial(this.handleIncomingJob, channel));
-    channel.consume(INCOMING_TASK_RESULT_QUEUE, _.partial(this.handleIncomingTaskResult, channel));
+    channel.consume(INCOMING_JOB_QUEUE, _.bind(this.handleIncomingJob, this, channel));
+    channel.consume(INCOMING_TASK_RESULT_QUEUE, _.bind(this.handleIncomingTaskResult, this, channel));
   }
 
   handleIncomingTaskResult(channel, msg) {
     logger.log('debug', 'result-worker: Received task', msg.content.toString());
 
     try {
-      const taskResult = readTask(msg);
+      const taskResult = readTaskResult(msg);
 
       const {jobId} = taskResult;
       let jobAggregate = this.currentJobs.get(jobId);
@@ -49,9 +50,7 @@ export default class ResultWorker {
       }
 
     } catch(error) {
-      logger.log('error', 'Dropped invalid task result', msg, error);
-      channel.ack(msg);
-      return; 
+      logger.log('error', 'Error handling task', msg, error);
     }
   }
 
@@ -67,7 +66,8 @@ export default class ResultWorker {
         jobAggregate = {
           job: job,
           msg: msg,
-          inCompleteTasks: new Map()
+          inCompleteTasks: new Map(),
+          email: job.userinfo.email
         };
         this.currentJobs.set(jobId, jobAggregate);
       }
@@ -84,9 +84,7 @@ export default class ResultWorker {
 
 
     } catch(error) {
-      logger.log('error', 'Dropped invalid task', msg, error);
-      channel.ack(msg);
-      return; 
+      logger.log('error', 'Error handling job', msg, error);
     }
 
   }
@@ -101,13 +99,13 @@ export default class ResultWorker {
     this.completeJobs[jobId].push(taskResult);
     if (jobAggregate.inCompleteTasks.size === 0) {
 
-      logger.log('debug', 'result-worker: Job complete ', jobId);
 
       channel.ack(jobAggregate.msg);
       this.completeJobs[jobId].forEach(taskResult => {
         channel.ack(taskResult.msg);
       });
 
+      logJobResult(jobId, this.completeJobs[jobId]);
       dispatchEmail(jobId, jobAggregate.email, this.completeJobs[jobId]);
    
       delete(this.completeJobs[jobId]);
@@ -117,13 +115,44 @@ export default class ResultWorker {
   }
 }
 
-function dispatchEmail(jobId, emailAddress, taskResults) {
-  logger.log('info', `Sending results of job ${jobId} to ${emailAddress}`);
-  logger.log('info', taskResults);
+function logJobResult(jobId, taskResults) {
+  logger.log('info', 'result-worker: Job complete ', jobId);
+  taskResults.forEach(taskResult => {
+    const formattedResult = formatTaskResult(taskResult);
+    logger.log('info', `${jobId} ${formattedResult}`);
+  });
 }
 
-function readTask(msg) {
-  return JSON.parse(msg.content.toString());  
+function dispatchEmail(jobId, emailAddress, taskResults) {
+  logger.log('info', `Sending results of job ${jobId} to ${emailAddress}`);
+
+  mail({
+    to: emailAddress,
+    subject: `Melinda job ${jobId} completed`,
+    text: taskResults.map(formatTaskResult).join('\n')
+  }).then(info => {
+    logger.log('info', 'message sent', info);
+  }).catch(error => {
+    logger.log('error', 'Failed to send email', error);
+  });
+}
+
+function formatTaskResult(taskResult) {
+  const {recordId, lowTag} = taskResult;
+  if (taskResult.error) {
+    return `${recordId} ${lowTag} Error: ${taskResult.error}`;
+  } else {
+    const {code, message} = _.head(taskResult.updateResponse.messages);
+    return `${recordId} ${lowTag} ${code} ${message}`;
+  }
+}
+
+function readTaskResult(msg) {
+  const taskResult = JSON.parse(msg.content.toString());  
+  return {
+    msg,
+    ...taskResult
+  };
 }
 
 function readJob(msg) {

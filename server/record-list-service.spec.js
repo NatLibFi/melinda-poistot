@@ -31,12 +31,12 @@ describe('Record list service', () => {
       });
     });
 
-    it('asserts the queue', () => {
-      expect(channelStub.assertQueue.callCount).to.equal(1);
+    it('asserts both queues', () => {
+      expect(channelStub.assertQueue.callCount).to.equal(2);
     });
 
-    it('sends the tasks to the queue', () => {
-      expect(channelStub.sendToQueue.callCount).to.equal(3);
+    it('sends the job and tasks to the queues', () => {
+      expect(channelStub.sendToQueue.callCount).to.equal(4);
     });
 
   });

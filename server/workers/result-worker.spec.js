@@ -2,33 +2,32 @@ import sinon from 'sinon';
 import { expect } from 'chai';
 import ResultWorker from './result-worker';
 import { __RewireAPI__ as ComponentRewriteApi } from './result-worker';
+import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 
-describe.only('result worker', function() {
+describe('result worker', function() {
   let resultWorker;
+  let logSpy;
   beforeEach(() => {
+    logSpy = sinon.spy();
+    ComponentRewriteApi.__Rewire__('mail', sinon.stub().resolves({}));
+    ComponentRewriteApi.__Rewire__('logger', {log: logSpy });
+
     resultWorker = new ResultWorker();
+
   });
 
   let job1 = createMessage({
     jobId: 'job-1-id',
-    taskIdList: [11,12]
+    taskIdList: [11,12],
+    userinfo: {
+      email: 'test-email'
+    }
   });
 
-  let job2 = createMessage({
-    jobId: 'job-2-id',
-    taskIdList: [21,22]
-  });
 
-  let task11 = createMessage({jobId:'job-1-id',taskId:11});
-  let task12 = createMessage({jobId:'job-1-id',taskId:12});
-  let task21 = createMessage({jobId:'job-2-id',taskId:21});
-  let task22 = createMessage({jobId:'job-2-id',taskId:22});
-
-
-  describe('handleIncomingTaskResult', function() {
-
-  });
-
+  let task11 = createMessage({jobId:'job-1-id',taskId:11, updateResponse:{messages:[{code: 18}]}});
+  let task12 = createMessage({jobId:'job-1-id',taskId:12, updateResponse:{messages:[{code: 18}]}});
+  let task22 = createMessage({jobId:'job-2-id',taskId:22, updateResponse:{messages:[{code: 18}]}});
 
   describe('when job is not finished', function() {
     let channel;

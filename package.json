@@ -46,6 +46,7 @@
     "marc-record-js": "^0.1.1",
     "melinda-api-client": "^1.1.0",
     "moment": "^2.15.1",
+    "nodemailer": "^2.6.4",
     "winston": "^2.2.0",
     "xml2js": "^0.4.17"
   },
