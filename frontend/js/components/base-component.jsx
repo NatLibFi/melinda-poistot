@@ -9,6 +9,9 @@ import { SigninFormPanelContainer } from './signin-form-panel';
 import { JobConfigurationPanelContainer } from './job-configuration-panel';
 import { RecordIdInputArea } from './record-id-input-area';
 import { StatusCard } from './status-card';
+import { ExampleCardLocalId } from './example-card-local-id';
+import { ExampleCardMelindaId } from './example-card-melinda-id';
+
 import { validRecordCount } from '../selectors/record-list-selectors';
 
 export class BaseComponent extends React.Component {
@@ -58,6 +61,9 @@ export class BaseComponent extends React.Component {
           </div>
 
           <div className="col s6 l5">
+            <ExampleCardLocalId />
+            <ExampleCardMelindaId />
+
             <StatusCard 
               onSubmitList={() => this.props.submitJob()} 
               validRecordCount={this.props.validRecordCount}
