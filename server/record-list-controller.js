@@ -7,6 +7,7 @@ import HttpStatus from 'http-status-codes';
 import { connect, startJob } from './record-list-service';
 import { requireSession, readSessionMiddleware } from './session-controller';
 import cookieParser from 'cookie-parser';
+import { validate } from './common/input-parser';
 
 // Connect to AMQP host
 connect();
@@ -23,6 +24,9 @@ recordListController.post('/', cors(corsOptions), requireSession, requireBodyPar
   const { sessionToken } = req.cookies;
 
   try {
+    if (!records.every(validate)) {
+      return res.sendStatus(HttpStatus.BAD_REQUEST);
+    }
     startJob(records, lowTag, sessionToken);
   } catch(error) {
     logger.log('error', 'Unable to start job', error);
