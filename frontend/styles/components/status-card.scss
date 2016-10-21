@@ -18,13 +18,18 @@
     }
   }
 
-  .card-action-disabled a {
-    cursor: default !important;
-    color: #ccc !important;
-  }
-  .card-action-disabled a:hover {
-    cursor: default !important;
-    color: #ccc !important;
+  .card-action-disabled {
+    .card-action {
+      a {
+        cursor: default !important;
+        color: #ccc !important;
+
+        &:hover {
+          cursor: default !important;
+          color: #ccc !important;      
+        }
+      }
+    }
   }
 
   .status-card-container.pinned {

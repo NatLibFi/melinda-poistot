@@ -4,12 +4,13 @@ import _ from 'lodash';
 import '../../styles/main.scss';
 import { removeSession } from '../action-creators/session-actions';
 import { setRecordIdList, submitJob } from '../action-creators/job-configuration-actions';
+import { resetWorkspace } from '../action-creators/ui-actions';
 import { NavBar } from './navbar';
 import { SigninFormPanelContainer } from './signin-form-panel';
 import { JobConfigurationPanelContainer } from './job-configuration-panel';
 import { RecordIdInputArea } from './record-id-input-area';
 import { StatusCard } from './status-card';
-import { validRecordCount, recordParseErrors } from '../selectors/record-list-selectors';
+import { validRecordCount, recordParseErrors, editorIsReadOnly } from '../selectors/record-list-selectors';
 
 export class BaseComponent extends React.Component {
 
@@ -17,11 +18,13 @@ export class BaseComponent extends React.Component {
     sessionState: React.PropTypes.string.isRequired,
     removeSession: React.PropTypes.func.isRequired,
     setRecordIdList: React.PropTypes.func.isRequired,
+    resetWorkspace: React.PropTypes.func.isRequired,
     submitJob: React.PropTypes.func.isRequired,
     userinfo: React.PropTypes.object,
     validRecordCount: React.PropTypes.number,
     submitStatus: React.PropTypes.string.isRequired,
-    recordParseErrors: React.PropTypes.array
+    recordParseErrors: React.PropTypes.array,
+    editorIsReadOnly: React.PropTypes.bool
   }
 
   handleLogout() {
@@ -57,7 +60,8 @@ export class BaseComponent extends React.Component {
           <div className="col s6 l4 offset-l1">
             <RecordIdInputArea 
               recordParseErrors={this.props.recordParseErrors}
-              onChange={(list) => this.props.setRecordIdList(list)} />
+              onChange={(list) => this.props.setRecordIdList(list)}
+              readOnly={this.props.editorIsReadOnly} />
           </div>
 
           <div className="col s6 l5">
@@ -67,12 +71,10 @@ export class BaseComponent extends React.Component {
               userinfo={this.props.userinfo}
               submitStatus={this.props.submitStatus}
               recordParseErrors={this.props.recordParseErrors}
+              onStartNewList={() => this.props.resetWorkspace()}
               />
           </div>
         </div>
-
-
-        
       </div>
     );
   }
@@ -97,11 +99,12 @@ function mapStateToProps(state) {
     userinfo: state.getIn(['session', 'userinfo']),
     validRecordCount: validRecordCount(state),
     recordParseErrors: recordParseErrors(state),
-    submitStatus: state.getIn(['jobconfig', 'submitStatus'])
+    submitStatus: state.getIn(['jobconfig', 'submitStatus']),
+    editorIsReadOnly: editorIsReadOnly(state)
   };
 }
 
 export const BaseComponentContainer = connect(
   mapStateToProps,
-  { removeSession, setRecordIdList, submitJob }
+  { removeSession, setRecordIdList, submitJob, resetWorkspace }
 )(BaseComponent);

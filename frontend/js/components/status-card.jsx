@@ -9,6 +9,7 @@ import '../../styles/components/status-card';
 export class StatusCard extends React.Component {
   static propTypes = {
     onSubmitList: React.PropTypes.func.isRequired,
+    onStartNewList: React.PropTypes.func.isRequired,
     validRecordCount: React.PropTypes.number,
     userinfo: React.PropTypes.object,
     submitStatus: React.PropTypes.string.isRequired,
@@ -22,6 +23,11 @@ export class StatusCard extends React.Component {
     }
   }
 
+  onStartNewList(event) {
+    event.preventDefault();
+    this.props.onStartNewList();
+  }
+
   renderSuccessCardContent() {
     const userEmail = this.props.userinfo.email || '(sähköposti puuttuu)';
 
@@ -30,6 +36,7 @@ export class StatusCard extends React.Component {
         <span className="card-title"><i className='material-icons medium'>done_all</i>Tietuelistaus on lähetetty käsiteltäväksi</span>
         <p>Listan {this.props.validRecordCount} tietuetta on lähetetty käsiteltäväksi.</p>
         <p>Saat vielä sähköpostin osoitteeseen <span className="email">{userEmail}</span> kun tietueet on käsitelty.</p>
+        <p>Lähettämäsi lista on lukittu. Älä lähetä samaa listaa uudelleen. Mikäli haluat lähettää uuden listan, tyhjennä näkymä tästä: <a onClick={(e) => this.onStartNewList(e)}href="#">Aloita uusi lista</a></p>
       </div>
     );
   }

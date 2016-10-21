@@ -10,7 +10,8 @@ export class RecordIdInputArea extends React.Component {
 
   static propTypes = {  
     onChange: React.PropTypes.func.isRequired,
-    recordParseErrors: React.PropTypes.array
+    recordParseErrors: React.PropTypes.array,
+    readOnly: React.PropTypes.bool
   }
   
   constructor(props) {
@@ -27,23 +28,19 @@ export class RecordIdInputArea extends React.Component {
     });
 
     const updater = _.debounce(this.handleUpdate.bind(this), 150);
-
     this._editor.on('change', updater);
-
   }
 
-
   componentWillReceiveProps(nextProps) {
+    const readOnly = _.get(nextProps, 'readOnly', false);
+    const { recordParseErrors } = nextProps;
 
-    this.updateErrorMarkers(nextProps.recordParseErrors || []);
+    this.updateErrorMarkers(recordParseErrors || []);
 
-    if (nextProps.disabled) {
-      this._editor.setOption('readOnly', true);
-      window.$(this._editor.getWrapperElement()).addClass('CodeMirror-disabled');
-    } else {
-      this._editor.setOption('readOnly', false);
-      window.$(this._editor.getWrapperElement()).removeClass('CodeMirror-disabled');
+    if (this.state.readOnly !== readOnly) {
+      this.setReadOnly(readOnly || false);  
     }
+    this.setState({ readOnly });
   }
 
   shouldComponentUpdate() {
@@ -79,6 +76,21 @@ export class RecordIdInputArea extends React.Component {
     this.setState({
       recordParseErrors: visibleErrorMarkers
     });
+  }
+
+  setReadOnly(readOnlyFlag) {
+
+    this._editor.setOption('readOnly', readOnlyFlag);
+    if (readOnlyFlag) {
+      window.$(this._editor.getWrapperElement()).addClass('CodeMirror-disabled');
+    } else {
+      window.$(this._editor.getWrapperElement()).removeClass('CodeMirror-disabled');
+      this.clearEditor();
+    }
+  }
+
+  clearEditor() {
+    this._editor.setValue('');
   }
   
   makeMarker() {

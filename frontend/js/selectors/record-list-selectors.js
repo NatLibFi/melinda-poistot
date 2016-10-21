@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { createSelector } from 'reselect';
 
 const recordList = state => state.getIn(['jobconfig', 'rawRecordIdRows']);
@@ -20,4 +21,10 @@ export const recordParseErrors = createSelector([recordList], (recordList) => {
     }
     return acc;
   }, []);
+});
+
+const submitStatus = state => state.getIn(['jobconfig', 'submitStatus']);
+
+export const editorIsReadOnly = createSelector([submitStatus], submitStatus => {
+  return _.includes(['ONGOING', 'SUCCESS'], submitStatus);
 });
