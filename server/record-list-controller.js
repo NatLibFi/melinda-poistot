@@ -2,12 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import { logger } from './logger';
-import { corsOptions, requireBodyParams } from './utils';
+import { corsOptions, requireBodyParams, userinfoMiddleware } from './utils';
 import HttpStatus from 'http-status-codes';
 import { connect, startJob } from './record-list-service';
 import { requireSession, readSessionMiddleware } from './session-controller';
 import cookieParser from 'cookie-parser';
-import { authProvider } from './melinda-auth-provider';
 
 // Connect to AMQP host
 connect();
@@ -32,19 +31,3 @@ recordListController.post('/', cors(corsOptions), requireSession, requireBodyPar
   
   return res.sendStatus(HttpStatus.OK);
 });
-
-import { readSessionToken } from './session-crypt';
-
-function userinfoMiddleware(req, res, next) {
-  const { sessionToken } = req.cookies;
-  const {username, password} = readSessionToken(sessionToken);
-  authProvider.validateCredentials(username, password).then(creds => {
-    req.userinfo = creds.userinfo;
-    next();
-  }).catch(error => {
-    logger.log('info', 'Error loading userinfo', error);
-    res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-  });
-
-
-}
