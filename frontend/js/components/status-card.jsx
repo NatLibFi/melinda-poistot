@@ -2,6 +2,7 @@ import React from 'react';
 import { Preloader } from './preloader';
 import _ from 'lodash';
 import classNames from 'classnames';
+import { MAX_VISIBLE_ERROR_AMOUNT } from '../constants/general-constants';
 
 import '../../styles/components/status-card';
 
@@ -68,7 +69,7 @@ export class StatusCard extends React.Component {
         
         <p>Seuraavat rivit pitää korjata ennenkuin listauksen voi lähettää:</p>
         { 
-          _.take(this.props.recordParseErrors, 20).map(parseError => {
+          _.take(this.props.recordParseErrors, MAX_VISIBLE_ERROR_AMOUNT).map(parseError => {
             const row = parseError.row + 1;
             const message = parseError.error.message;
             return (<li key={row}>Rivi {row}: {message}</li>);
@@ -98,8 +99,8 @@ export class StatusCard extends React.Component {
 
   renderErrorsSummary() {
     const errorCount = this.props.recordParseErrors.length;
-    if (errorCount > 20) {
-      return <p>Listauksessa on yhteensä {errorCount} virhettä. Vain 20 ensimmäistä virhettä näytetään.</p>;
+    if (errorCount > MAX_VISIBLE_ERROR_AMOUNT) {
+      return <p>Listauksessa on yhteensä {errorCount} virhettä. Vain {MAX_VISIBLE_ERROR_AMOUNT} ensimmäistä virhettä näytetään.</p>;
     } else {
       return <p>Listauksessa on yhteensä {errorCount} virhettä.</p>;
     }

@@ -2,10 +2,9 @@ import React from 'react';
 import CodeMirror from 'codemirror';
 import { parse } from '../../../common/input-parser';
 import _ from 'lodash';
+import { MAX_VISIBLE_ERROR_AMOUNT } from '../constants/general-constants';
 
 import '../../styles/components/record-id-input-area';
-
-const MAX_VISIBLE_ERROR_AMOUNT = 20;
 
 export class RecordIdInputArea extends React.Component {
 
