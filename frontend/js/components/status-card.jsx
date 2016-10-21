@@ -36,7 +36,7 @@ export class StatusCard extends React.Component {
         <span className="card-title"><i className='material-icons medium'>done_all</i>Tietuelistaus on lähetetty käsiteltäväksi</span>
         <p>Listan {this.props.validRecordCount} tietuetta on lähetetty käsiteltäväksi.</p>
         <p>Saat vielä sähköpostin osoitteeseen <span className="email">{userEmail}</span> kun tietueet on käsitelty.</p>
-        <p>Lähettämäsi lista on lukittu. Älä lähetä samaa listaa uudelleen. Mikäli haluat lähettää uuden listan, tyhjennä näkymä tästä: <a onClick={(e) => this.onStartNewList(e)}href="#">Aloita uusi lista</a></p>
+        <p>Lähettämäsi lista on lukittu. Älä lähetä samaa listaa uudelleen. Mikäli haluat lähettää uuden listan, tyhjennä näkymä tästä: <a onClick={(e) => this.onStartNewList(e)} href="#">Aloita uusi lista</a></p>
       </div>
     );
   }
@@ -47,19 +47,22 @@ export class StatusCard extends React.Component {
     return (
 
       <div className="card-content">
-        <span className="card-title"><i className='material-icons medium'>playlist_add_check</i>Tietuelistaus on valmiina lähettäväksi</span>
+        <span className="card-title"><i className='material-icons medium'>playlist_add_check</i>{titleText(this.props.validRecordCount)}</span>
         <p>Saat raportin osoitteeseen <span className="email">{userEmail}</span> kun poistot on tehty.</p>
 
         <p>{recordCountText(this.props.validRecordCount)}</p>
       </div>
      
     );
+    function titleText(recordCount) {
+      return recordCount > 0 ? 'Tietuelistaus on valmiina lähettäväksi' : 'Lisää lista poistettvista tietueista';
+    }
 
     function recordCountText(recordCount) {
       switch(recordCount) {
-      case 0: return <p>Listauksessa ei ole yhtään tietuetta.</p>;
-      case 1: return <p>Olet lähettämässä {recordCount} tietueen käsiteltäväksi.</p>;
-      default: return <p>Olet lähettämässä {recordCount} tietuetta käsiteltäväksi.</p>;
+      case 0: return 'Listauksessa ei ole yhtään tietuetta.';
+      case 1: return `Olet lähettämässä ${recordCount} tietueen käsiteltäväksi.`;
+      default: return `Olet lähettämässä ${recordCount} tietuetta käsiteltäväksi.`;
       }
     }
   }

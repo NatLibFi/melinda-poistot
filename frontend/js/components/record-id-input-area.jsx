@@ -16,8 +16,12 @@ export class RecordIdInputArea extends React.Component {
   
   constructor(props) {
     super(props);
-    this.state ={
-      recordParseErrors: []
+
+    const readOnly = _.get(props, 'readOnly', false);
+
+    this.state = {
+      recordParseErrors: [],
+      readOnly
     };
   }
 
@@ -57,19 +61,21 @@ export class RecordIdInputArea extends React.Component {
     const visibleErrorMarkers = _.take(nextParseErrors, MAX_VISIBLE_ERROR_AMOUNT);
 
     const nextErrorRows = nextParseErrors.map(err => err.row).reduce((acc, row) => _.set(acc, row, true), {});
-    const currentErrorRows = this.state.recordParseErrors.map(err => err.row).reduce((acc, row) => _.set(acc, row, true), {});
 
-    
     this.state.recordParseErrors.forEach(err => {
       if (!nextErrorRows[err.row]) {
-        this._editor.setGutterMarker(err.row, 'CodeMirror-gutter-error', null);
+        const lineHandle = this._editor.getLineHandle(err.row);
+        if (lineHandle) this._editor.setGutterMarker(lineHandle, 'CodeMirror-gutter-error', null);
       }
     });
 
-    visibleErrorMarkers.forEach(err => {
-      if (!currentErrorRows[err.row]) {
-        const marker = this.makeMarker();
-        this._editor.setGutterMarker(err.row, 'CodeMirror-gutter-error', marker);        
+    visibleErrorMarkers.forEach(visibleParseError => {
+      const lineHandle = this._editor.getLineHandle(visibleParseError.row);
+      const hasErrorMarker = Object.keys(_.get(lineHandle, 'gutterMarkers', {})).some(marker => marker == 'CodeMirror-gutter-error');
+
+      if (!hasErrorMarker) {
+        const marker = this.makeMarker(visibleParseError.error.message);
+        if (lineHandle) this._editor.setGutterMarker(lineHandle, 'CodeMirror-gutter-error', marker);
       }
     });
 
@@ -93,8 +99,8 @@ export class RecordIdInputArea extends React.Component {
     this._editor.setValue('');
   }
   
-  makeMarker() {
-    var marker = window.$('<i class="material-icons gutter-tooltip" title="Tämä rivi ei ole sallitussa muodossa">error_outline</i>').get(0);
+  makeMarker(msg) {
+    var marker = window.$(`<i class="material-icons gutter-tooltip" title="${msg}">error_outline</i>`).get(0);
     marker.style.color = '#822';
     return marker;
   }

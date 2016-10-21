@@ -28,7 +28,7 @@ function matcher(inputLine) {
     };
   }
 
-  return new Error('Could not parse the line'); 
+  return new Error('Rivi ei ole sallitussa muodossa'); 
 }
 
 export function validate(item) {
