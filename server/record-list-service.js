@@ -41,11 +41,11 @@ export function startJob(records, lowTag, sessionToken, userinfo) {
   
 }
 
-function createTask(jobId, sessionToken, lowTag, recordId) {
+function createTask(jobId, sessionToken, lowTag, recordIdHints) {
   return {
     jobId,
     taskId: uuid.v4(),
-    recordId,
+    recordIdHints,
     lowTag,
     sessionToken 
   };

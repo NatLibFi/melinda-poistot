@@ -29,7 +29,6 @@ export default class ResultWorker {
       });
   }
 
-
   startTaskExecutor(channel) {
     channel.consume(INCOMING_JOB_QUEUE, _.bind(this.handleIncomingJob, this, channel));
     channel.consume(INCOMING_TASK_RESULT_QUEUE, _.bind(this.handleIncomingTaskResult, this, channel));
@@ -111,7 +110,6 @@ export default class ResultWorker {
       delete(this.completeJobs[jobId]);
       this.currentJobs.delete(jobId);
     }
-
   }
 }
 
@@ -138,12 +136,15 @@ function dispatchEmail(jobId, emailAddress, taskResults) {
 }
 
 function formatTaskResult(taskResult) {
-  const {recordId, lowTag} = taskResult;
+  const {lowTag} = taskResult;
+  const recordId = _.get(taskResult, 'recordId', 'ID-NOT-FOUND');
+  const localId = _.get(taskResult.recordIdHints, 'localId' ,'');
+
   if (taskResult.error) {
-    return `${recordId} ${lowTag} Error: ${taskResult.error}`;
+    return `${recordId} ${localId} ${lowTag} Error: ${taskResult.error}`;
   } else {
     const {code, message} = _.head(taskResult.updateResponse.messages);
-    return `${recordId} ${lowTag} ${code} ${message}`;
+    return `${recordId} ${localId} ${lowTag} ${code} ${message}`;
   }
 }
 

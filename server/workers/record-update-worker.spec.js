@@ -6,11 +6,16 @@ import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 describe('Record update worker', () => {
 
   const TEST_UPDATE_RESPONSE = 'res';
+  const fakeTask = {
+    recordIdHints: { melindaId: 3}
+  };
 
   describe('processTask', () => {
 
     let clientStub;
     let result;
+
+
 
     describe('when everything works', () => {
 
@@ -20,7 +25,7 @@ describe('Record update worker', () => {
         clientStub.loadRecord.resolves({});
         clientStub.updateRecord.resolves(TEST_UPDATE_RESPONSE);
 
-        return processTask({recordId: 3}, clientStub).then(res => result = res);
+        return processTask(fakeTask, clientStub).then(res => result = res);
       });
 
       it('sets the update response to result', () => {
@@ -42,7 +47,7 @@ describe('Record update worker', () => {
         clientStub.loadRecord.rejects(TEST_LOAD_ERROR);
         clientStub.updateRecord.resolves(TEST_UPDATE_RESPONSE);
 
-        return processTask({recordId: 3}, clientStub).then(res => result = res);
+        return processTask(fakeTask, clientStub).then(res => result = res);
       });
 
       it('keeps the recordId in the response', () => {
@@ -64,7 +69,7 @@ describe('Record update worker', () => {
         clientStub.loadRecord.resolves({});
         clientStub.updateRecord.rejects(TEST_UPDATE_ERROR);
 
-        return processTask({recordId: 3}, clientStub).then(res => result = res);
+        return processTask(fakeTask, clientStub).then(res => result = res);
       });
 
       it('keeps the recordId in the response', () => {
