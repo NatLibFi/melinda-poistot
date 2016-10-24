@@ -14,7 +14,8 @@ export class StatusCard extends React.Component {
     userinfo: React.PropTypes.object,
     submitStatus: React.PropTypes.string.isRequired,
     submitJobError: React.PropTypes.string,
-    recordParseErrors: React.PropTypes.array
+    recordParseErrors: React.PropTypes.array,
+    submitEnabled: React.PropTypes.object
   }
 
   onSubmit(event) {
@@ -44,14 +45,16 @@ export class StatusCard extends React.Component {
 
   renderDefaultCardContent() {
     const userEmail = this.props.userinfo.email || '(sähköposti puuttuu)';
+    const submitEnabled = this.props.submitEnabled.value;
+    const reasonDisabledReason = this.props.submitEnabled.reason;
 
     return (
 
       <div className="card-content">
         <span className="card-title"><i className='material-icons medium'>playlist_add_check</i>{titleText(this.props.validRecordCount)}</span>
+        
         <p>Saat raportin osoitteeseen <span className="email">{userEmail}</span> kun poistot on tehty.</p>
-
-        <p>{recordCountText(this.props.validRecordCount)}</p>
+        { submitEnabled ? <p>{recordCountText(this.props.validRecordCount)}</p> : <p>{reasonDisabledReason}</p> }
       </div>
      
     );
@@ -137,10 +140,7 @@ export class StatusCard extends React.Component {
   }
 
   isSubmitEnabled() {
-    if (this.props.recordParseErrors.length === 0 && this.props.validRecordCount > 0) {
-      return (this.props.submitStatus === 'NOT_SUBMITTED' || this.props.submitStatus === 'FAILED');
-    } 
-    return false;
+    return _.get(this.props.submitEnabled, 'value', false);
   }
 
   isSubmitVisible() {

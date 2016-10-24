@@ -10,7 +10,7 @@ import { SigninFormPanelContainer } from './signin-form-panel';
 import { JobConfigurationPanelContainer } from './job-configuration-panel';
 import { RecordIdInputArea } from './record-id-input-area';
 import { StatusCard } from './status-card';
-import { validRecordCount, recordParseErrors, editorIsReadOnly } from '../selectors/record-list-selectors';
+import { validRecordCount, recordParseErrors, editorIsReadOnly, submitEnabled } from '../selectors/record-list-selectors';
 
 export class BaseComponent extends React.Component {
 
@@ -25,7 +25,8 @@ export class BaseComponent extends React.Component {
     submitStatus: React.PropTypes.string.isRequired,
     submitJobError: React.PropTypes.string,
     recordParseErrors: React.PropTypes.array,
-    editorIsReadOnly: React.PropTypes.bool
+    editorIsReadOnly: React.PropTypes.bool,
+    submitEnabled: React.PropTypes.object
   }
 
   handleLogout() {
@@ -73,6 +74,7 @@ export class BaseComponent extends React.Component {
               userinfo={this.props.userinfo}
               submitStatus={this.props.submitStatus}
               submitJobError={this.props.submitJobError}
+              submitEnabled={this.props.submitEnabled}
               recordParseErrors={this.props.recordParseErrors}
               onStartNewList={() => this.props.resetWorkspace()}
               />
@@ -83,7 +85,7 @@ export class BaseComponent extends React.Component {
   }
 
   render() {
-
+    
     if (this.props.sessionState == 'SIGNIN_OK') {
       return this.renderMainPanel();
     } else if (this.props.sessionState == 'VALIDATION_ONGOING') {
@@ -104,7 +106,8 @@ function mapStateToProps(state) {
     recordParseErrors: recordParseErrors(state),
     submitStatus: state.getIn(['jobconfig', 'submitStatus']),
     submitJobError: state.getIn(['jobconfig', 'submitJobError']),
-    editorIsReadOnly: editorIsReadOnly(state)
+    editorIsReadOnly: editorIsReadOnly(state),
+    submitEnabled: submitEnabled(state)
   };
 }
 

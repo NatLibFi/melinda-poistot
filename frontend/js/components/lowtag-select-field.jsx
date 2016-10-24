@@ -34,6 +34,9 @@ export class LowTagSelectField extends React.Component {
   }
 
   onSelectLowTag(selectedLowTag) {
+    if (selectedLowTag == '') {
+      this.props.onSelectLowTag(undefined);
+    }
     if (this.props.availableLowTags.some((lowTag) => lowTag === selectedLowTag)) {
       this.props.onSelectLowTag(selectedLowTag);
     }
