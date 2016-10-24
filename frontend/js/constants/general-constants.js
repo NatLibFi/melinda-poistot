@@ -1,0 +1,1 @@
+export const MAX_VISIBLE_ERROR_AMOUNT = 20;

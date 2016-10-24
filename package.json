@@ -7,7 +7,8 @@
     "clean:build": "node ./bin/clean.js createdir",
     "build:html": "node ./bin/buildHtml.js",
     "start": "node build/index.js",
-    "prebuild": "npm run clean:build && npm run build:html",
+    "ln": "ln -snf ../common server/common",
+    "prebuild": "npm run clean:build && npm run build:html && npm run ln",
     "build": "npm run build:server && npm run build:frontend",
     "build:frontend": "export NODE_ENV=production & NODE_ENV=production & webpack -p --config ./config/webpack.config.prod.js --progress --bail",
     "build:server": "babel server --ignore spec.js --out-dir build --source-maps",
@@ -20,6 +21,7 @@
     "dev": "node ./bin/clean.js && npm run watch",
     "watch": "npm run watch:ui & npm run watch:server",
     "watch:ui": "DEBUG=1 webpack-dev-server --config ./config/webpack.config.dev.js --hot --inline --progres",
+    "prewatch:server": "npm run ln",
     "watch:server": "NODE_ENV=debug nodemon --watch server --exec babel-node --presets=es2015 server/index.js",
     "cli": "babel-node ./bin/cli.js"
   },
