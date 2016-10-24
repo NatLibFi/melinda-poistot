@@ -11,7 +11,8 @@ export class RecordIdInputArea extends React.Component {
   static propTypes = {  
     onChange: React.PropTypes.func.isRequired,
     recordParseErrors: React.PropTypes.array,
-    readOnly: React.PropTypes.bool
+    readOnly: React.PropTypes.bool,
+    submitStatus: React.PropTypes.string.isRequired,
   }
   
   constructor(props) {
@@ -37,14 +38,17 @@ export class RecordIdInputArea extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const readOnly = _.get(nextProps, 'readOnly', false);
-    const { recordParseErrors } = nextProps;
+    const { recordParseErrors, submitStatus } = nextProps;
 
     this.updateErrorMarkers(recordParseErrors || []);
 
     if (this.state.readOnly !== readOnly) {
       this.setReadOnly(readOnly || false);  
     }
-    this.setState({ readOnly });
+    if (this.state.submitStatus === 'SUCCESS' && submitStatus === 'NOT_SUBMITTED') {
+      this.clearEditor();
+    }
+    this.setState({ readOnly, submitStatus });
   }
 
   shouldComponentUpdate() {
@@ -91,7 +95,6 @@ export class RecordIdInputArea extends React.Component {
       window.$(this._editor.getWrapperElement()).addClass('CodeMirror-disabled');
     } else {
       window.$(this._editor.getWrapperElement()).removeClass('CodeMirror-disabled');
-      this.clearEditor();
     }
   }
 

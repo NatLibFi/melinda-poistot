@@ -60,6 +60,7 @@ export class BaseComponent extends React.Component {
         <div className="row">
           <div className="col s6 l4 offset-l1">
             <RecordIdInputArea 
+              submitStatus={this.props.submitStatus}
               recordParseErrors={this.props.recordParseErrors}
               onChange={(list) => this.props.setRecordIdList(list)}
               readOnly={this.props.editorIsReadOnly} />
