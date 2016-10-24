@@ -3,6 +3,7 @@ import { readEnvironmentVariable } from '../utils';
 import { logger } from '../logger';
 import MelindaClient from 'melinda-api-client';
 import { readSessionToken } from '../session-crypt';
+import { resolveMelindaId } from '../record-id-resolution-service';
 import _ from 'lodash';
 
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
@@ -100,16 +101,17 @@ export function processTask(task, client) {
 }
 
 function findMelindaId(task) {
- 
-  return new Promise((resolve, reject) => {
 
-    const { recordIdHints } = task;
-    if (recordIdHints.melindaId) {
-      return resolve(_.assign({}, task, {recordId: recordIdHints.melindaId }));
-    }
+  const { recordIdHints } = task;
 
-    reject(new InvalidRecordError('Could not determine melinda id for record', task));
-  });
+  const melindaIdLinks = _.get(recordIdHints, 'links', [])
+    .map(link => link.toUpperCase())
+    .map(link => link.startsWith('FCC') ? link.substr(3) : link);
+
+  return resolveMelindaId(recordIdHints.melindaId, recordIdHints.localId, task.lowTag, melindaIdLinks)
+    .then(recordId => {
+      return _.assign({}, task, {recordId});
+    });
 }
 
 function readTask(msg) {
