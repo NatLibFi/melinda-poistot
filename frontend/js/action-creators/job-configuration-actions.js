@@ -19,8 +19,8 @@ export function submitJobStarted() {
 export function submitJobSuccess() {
   return { 'type': SUBMIT_JOB_SUCCESS };
 }
-export function submitJobFailure() {
-  return { 'type': SUBMIT_JOB_FAIL };
+export function submitJobFailure(error) {
+  return { 'type': SUBMIT_JOB_FAIL, error };
 }
 
 export function submitJob() {
@@ -52,11 +52,12 @@ export function submitJob() {
 
         if (error instanceof FetchNotOkError) {
           switch (error.response.status) {
-          case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(submitJobFailure('Tietuelistauksen lähettämisessä tapahtui virhe. Yritä hetken päästä uudestaan.'));
+          case HttpStatus.BAD_REQUEST: return dispatch(submitJobFailure(new Error('Lähettäminen epäonnistui koska tietuelistauksen tiedoissa oli virheitä.')));
+          case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(submitJobFailure(new Error('Tietuelistauksen lähettämisessä tapahtui virhe. Yritä hetken päästä uudestaan.')));
           }
         }
 
-        dispatch(submitJobFailure('There has been a problem with operation: ' + error.message));
+        dispatch(submitJobFailure(new Error('There has been a problem with operation: ' + error.message)));
       }));
 
   };

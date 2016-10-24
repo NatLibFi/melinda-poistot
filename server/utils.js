@@ -1,6 +1,7 @@
 'use strict';
 import { logger } from './logger';
 import _ from 'lodash';
+import HttpStatus from 'http-status-codes';
 
 export function readEnvironmentVariable(name, defaultValue, opts) {
 
@@ -40,7 +41,10 @@ export function requireBodyParams(...requiredParams) {
     if (_.every(values)) {
       return next();  
     }
-    logger.log('info', 'Request did not have required body parameters', requiredParams);
-    res.sendStatus(400);
+    const missingBodyParameters = _.difference(requiredParams, Object.keys(req.body));
+    const error = `The request is missing the following body parameters: ${missingBodyParameters}`;
+
+    logger.log('error', error);
+    res.status(HttpStatus.BAD_REQUEST).send(error);
   };
 }

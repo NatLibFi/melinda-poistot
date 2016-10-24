@@ -5,7 +5,8 @@ import { RESET_WORKSPACE } from '../constants/action-type-constants';
 const INITIAL_STATE = Map({
   rawRecordIdRows: [],
   lowtag: undefined,
-  submitStatus: 'NOT_SUBMITTED'
+  submitStatus: 'NOT_SUBMITTED',
+  submitJobError: undefined
 });
 
 export default function session(state = INITIAL_STATE, action) {
@@ -19,7 +20,7 @@ export default function session(state = INITIAL_STATE, action) {
   case SUBMIT_JOB_SUCCESS:
     return setSubmitJobStatus(state, 'SUCCESS');
   case SUBMIT_JOB_FAIL:
-    return setSubmitJobStatus(state, 'FAILED');
+    return setSubmitJobStatusFailed(state, action.error);
   case RESET_WORKSPACE:
     return setLowTag(INITIAL_STATE, state.get('lowtag'));
   }
@@ -36,4 +37,7 @@ function setRecordIdList(state, list) {
 
 function setSubmitJobStatus(state, status) {
   return state.set('submitStatus', status);
+}
+function setSubmitJobStatusFailed(state, error) {
+  return state.set('submitStatus', 'FAILED').set('submitJobError', error.message);
 }

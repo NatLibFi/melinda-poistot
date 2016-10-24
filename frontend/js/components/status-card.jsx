@@ -13,6 +13,7 @@ export class StatusCard extends React.Component {
     validRecordCount: React.PropTypes.number,
     userinfo: React.PropTypes.object,
     submitStatus: React.PropTypes.string.isRequired,
+    submitJobError: React.PropTypes.string,
     recordParseErrors: React.PropTypes.array
   }
 
@@ -102,7 +103,7 @@ export class StatusCard extends React.Component {
           Tietuelistauksen lähetys epäonnistui
         </span>
         
-        <p>Tietuelistauksen lähetys epäonnistui. Yritä hetken päästä uudelleen tai ota yhteyttä Melinda ylläpitoon.</p>
+        <p>{this.props.submitJobError}</p>
       </div>
     );
   }

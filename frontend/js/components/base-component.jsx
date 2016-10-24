@@ -23,6 +23,7 @@ export class BaseComponent extends React.Component {
     userinfo: React.PropTypes.object,
     validRecordCount: React.PropTypes.number,
     submitStatus: React.PropTypes.string.isRequired,
+    submitJobError: React.PropTypes.string,
     recordParseErrors: React.PropTypes.array,
     editorIsReadOnly: React.PropTypes.bool
   }
@@ -70,6 +71,7 @@ export class BaseComponent extends React.Component {
               validRecordCount={this.props.validRecordCount}
               userinfo={this.props.userinfo}
               submitStatus={this.props.submitStatus}
+              submitJobError={this.props.submitJobError}
               recordParseErrors={this.props.recordParseErrors}
               onStartNewList={() => this.props.resetWorkspace()}
               />
@@ -100,6 +102,7 @@ function mapStateToProps(state) {
     validRecordCount: validRecordCount(state),
     recordParseErrors: recordParseErrors(state),
     submitStatus: state.getIn(['jobconfig', 'submitStatus']),
+    submitJobError: state.getIn(['jobconfig', 'submitJobError']),
     editorIsReadOnly: editorIsReadOnly(state)
   };
 }
