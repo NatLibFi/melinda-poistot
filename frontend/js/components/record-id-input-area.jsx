@@ -72,10 +72,11 @@ export class RecordIdInputArea extends React.Component {
         if (lineHandle) this._editor.setGutterMarker(lineHandle, 'CodeMirror-gutter-error', null);
       }
     });
-
+    
     visibleErrorMarkers.forEach(visibleParseError => {
       const lineHandle = this._editor.getLineHandle(visibleParseError.row);
-      const hasErrorMarker = Object.keys(_.get(lineHandle, 'gutterMarkers', {})).some(marker => marker == 'CodeMirror-gutter-error');
+      const markers = _.get(lineHandle, 'gutterMarkers', {}) || {};
+      const hasErrorMarker = Object.keys(markers).some(marker => marker == 'CodeMirror-gutter-error');
 
       if (!hasErrorMarker) {
         const marker = this.makeMarker(visibleParseError.error.message);

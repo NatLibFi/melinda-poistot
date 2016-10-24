@@ -16,7 +16,7 @@ describe('RecordIdInputArea', () => {
     editorEl = editor.getWrapperElement();
   });
 
-  it('has a CodeMirror editor', () => {
+  it('contains a CodeMirror editor', () => {
     expect(editor).to.be.an.object;
   });
   
