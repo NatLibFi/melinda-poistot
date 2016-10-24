@@ -59,7 +59,7 @@ function queryMIDDRindex(melindaId, links) {
   return fetch(requestUrl)
     .then(response => response.text())
     .then(parseXMLStringToJSON)
-    .then(_.partial(loadRecordIdList, _, melindaIdOption))
+    .then(_.partial(loadRecordIdList, _, melindaIdOption));
 }
 
 function loadRecordIdList(setResponse, defaultValue = []) {
@@ -89,7 +89,7 @@ function validateResult(resolvedRecordIdList) {
     throw new Error(`Resolved into multiple records: ${resolvedRecordIdList.join(', ')}`);
   }
   if (numberOfRecords === 0) {
-    throw new Error(`Resolved into 0 records.`);
+    throw new Error('Resolved into 0 records.');
   }
   return resolvedRecordIdList;
 }
