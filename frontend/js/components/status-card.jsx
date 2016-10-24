@@ -106,7 +106,7 @@ export class StatusCard extends React.Component {
           Tietuelistauksen lähetys epäonnistui
         </span>
         
-        <p>{this.props.submitJobError}</p>
+        <p>{this.props.submitJobError.message}</p>
       </div>
     );
   }

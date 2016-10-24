@@ -39,5 +39,5 @@ function setSubmitJobStatus(state, status) {
   return state.set('submitStatus', status);
 }
 function setSubmitJobStatusFailed(state, error) {
-  return state.set('submitStatus', 'FAILED').set('submitJobError', error.message);
+  return state.set('submitStatus', 'FAILED').set('submitJobError', error);
 }
