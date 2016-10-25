@@ -54,6 +54,9 @@ function startTaskExecutor(channel) {
         channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskResponse)));  
       }).catch(taskError => {
         logger.log('info', 'record-update-worker: error ', taskError);
+
+        // To prevent sending error objects into the queue.
+        taskError.error = taskError.error.message;
         channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskError)));  
       }).finally(() => {
         channel.ack(msg);
