@@ -5,6 +5,7 @@ import MelindaClient from 'melinda-api-client';
 import { readSessionToken } from '../session-crypt';
 import { resolveMelindaId } from '../record-id-resolution-service';
 import _ from 'lodash';
+import { transformRecord } from '../record-transform-service';
 
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
@@ -69,12 +70,13 @@ function startTaskExecutor(channel) {
 
 export function processTask(task, client) {
   const MELINDA_API_NO_REROUTE_OPTS = {handle_deleted: 1};
+  const transformOptions = {};
 
   return findMelindaId(task).then(taskWithResolvedId => {
     logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);
     return client.loadRecord(taskWithResolvedId.recordId, MELINDA_API_NO_REROUTE_OPTS).then(response => {
       logger.log('info', 'record-update-worker: Transforming record', taskWithResolvedId.recordId);
-      return transformRecord(response);
+      return transformRecord(response, task.lowTag, task.recordIdHints.localId, transformOptions);
     }).then(transformedRecord => {
       logger.log('info', 'record-update-worker: Updating record', taskWithResolvedId.recordId);
       return client.updateRecord(transformedRecord);
@@ -84,17 +86,17 @@ export function processTask(task, client) {
       return taskWithResolvedId;
     }).catch(error => {
       logger.log('error', 'record-update-worker: error', error);
-      taskWithResolvedId.error = error.message;
+      taskWithResolvedId.error = error;
       return taskWithResolvedId;
     });
   }).catch(error => {
     if (error instanceof InvalidRecordError) {
       logger.log('info', 'record-update-worker: invalid record error', error.message, error.task);
-      task.error = error.message;
+      task.error = error;
       return task;  
     } else {
       logger.log('error', 'record-update-worker: error', error);
-      task.error = error.message;
+      task.error = error;
       return task;
     }
   });
@@ -118,9 +120,7 @@ function readTask(msg) {
   return JSON.parse(msg.content.toString());  
 }
 
-function transformRecord(record) {
-  return record;
-}
+
 
 export function InvalidRecordError(message, task) {
   const temp = Error.call(this, message);

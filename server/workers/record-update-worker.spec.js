@@ -3,6 +3,8 @@ import { processTask } from './record-update-worker';
 import sinon from 'sinon';
 import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 import { __RewireAPI__ as RewireAPI } from './record-update-worker';
+import { FAKE_RECORD } from '../test_helpers/fake-data';
+
 
 describe('Record update worker', () => {
 
@@ -40,7 +42,7 @@ describe('Record update worker', () => {
 
         result = undefined;
         clientStub = createClientStub();
-        clientStub.loadRecord.resolves({});
+        clientStub.loadRecord.resolves(FAKE_RECORD);
         clientStub.updateRecord.resolves(TEST_UPDATE_RESPONSE);
 
         return processTask(fakeTask, clientStub).then(res => result = res);
@@ -53,6 +55,27 @@ describe('Record update worker', () => {
       it('keeps the recordId in the response', () => {
         expect(result.recordId).to.equal(3);
       });
+
+    });
+
+    describe('when record is invalid', () => {
+      const INVALID_RECORD = {};
+
+      beforeEach(() => {
+        resolveMelindaIdStub.resolves(3);
+
+        result = undefined;
+        clientStub = createClientStub();
+        clientStub.loadRecord.resolves(INVALID_RECORD);
+        clientStub.updateRecord.resolves(TEST_UPDATE_RESPONSE);
+
+        return processTask(fakeTask, clientStub).then(res => result = res);
+      });
+
+      it('results in error', () => {
+        expect(result.error.message).to.equal('Invalid record');
+      });
+
     });
 
     describe('when loading a record fails', () => {
@@ -73,7 +96,7 @@ describe('Record update worker', () => {
         expect(result.recordId).to.equal(3);
       });
       it('sets the error to error message', () => {
-        expect(result.error).to.equal(TEST_LOAD_ERROR.message);
+        expect(result.error.message).to.equal(TEST_LOAD_ERROR.message);
       });
 
     });
@@ -86,7 +109,7 @@ describe('Record update worker', () => {
         resolveMelindaIdStub.resolves(3);
         result = undefined;
         clientStub = createClientStub();
-        clientStub.loadRecord.resolves({});
+        clientStub.loadRecord.resolves(FAKE_RECORD);
         clientStub.updateRecord.rejects(TEST_UPDATE_ERROR);
 
         return processTask(fakeTask, clientStub).then(res => result = res);
@@ -96,7 +119,7 @@ describe('Record update worker', () => {
         expect(result.recordId).to.equal(3);
       });
       it('sets the error to error message', () => {
-        expect(result.error).to.equal(TEST_UPDATE_ERROR.message);
+        expect(result.error.message).to.equal(TEST_UPDATE_ERROR.message);
       });
 
     });
@@ -142,12 +165,14 @@ describe('Record update worker', () => {
       });
 
       it('sets the error message', () => {
-        expect(result.error).to.equal(fakeErrorMessage);
+        expect(result.error.message).to.equal(fakeErrorMessage);
       });
     });
 
   });
+
 });
+
 
 function createClientStub() {
   return {
