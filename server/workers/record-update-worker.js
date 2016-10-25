@@ -1,5 +1,5 @@
 import amqp from 'amqplib';
-import { readEnvironmentVariable } from '../utils';
+import { readEnvironmentVariable, createTimer } from '../utils';
 import { logger } from '../logger';
 import MelindaClient from 'melinda-api-client';
 import { readSessionToken } from '../session-crypt';
@@ -9,6 +9,9 @@ import { transformRecord } from '../record-transform-service';
 
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
+const minTaskIntervalSeconds = readEnvironmentVariable('MIN_TASK_INTERVAL_SECONDS', 10);
+const SLOW_PROCESSING_WAIT_TIME_MS = 10000;
+
 const apiPath = apiVersion !== null ? `/${apiVersion}` : '';
 
 const defaultConfig = {
@@ -37,36 +40,59 @@ export function connect() {
 }
 
 function startTaskExecutor(channel) {
+
+  let waitTimeMs = 0;
   channel.consume(INCOMING_TASK_QUEUE, function(msg) {
+    const taskProcessingTimer = createTimer();
     logger.log('info', 'record-update-worker: Received task', msg.content.toString());
 
-    try {
-      const task = readTask(msg);
-      const {username, password} = readSessionToken(task.sessionToken);
+    setTimeout(() => {
 
-      const client = new MelindaClient({
-        ...defaultConfig,
-        user: username,
-        password: password
-      });
+      try {
+        const task = readTask(msg);
+        const {username, password} = readSessionToken(task.sessionToken);
 
-      processTask(task, client).then(taskResponse => {
-        channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskResponse)));  
-      }).catch(taskError => {
-        logger.log('info', 'record-update-worker: error ', taskError);
+        const client = new MelindaClient({
+          ...defaultConfig,
+          user: username,
+          password: password
+        });
 
-        // To prevent sending error objects into the queue.
-        taskError.error = taskError.error.message;
-        channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskError)));  
-      }).finally(() => {
+        processTask(task, client).then(taskResponse => {
+          channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskResponse)));  
+        }).catch(taskError => {
+          logger.log('info', 'record-update-worker: error ', taskError);
+
+          // To prevent sending error objects into the queue.
+          taskError.error = taskError.error.message;
+          channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskError)));  
+        }).finally(() => {
+          const taskProcessingTimeMs = taskProcessingTimer.elapsed();
+
+          logger.log('info', `record-update-worker: Task processed in ${taskProcessingTimeMs}ms.`);
+
+          waitTimeMs = Math.max(0, minTaskIntervalSeconds * 1000 - taskProcessingTimeMs);
+
+          if (waitTimeMs === 0) {
+            logger.log('info', `record-update-worker: Processing was slower than MIN_TASK_INTERVAL_SECONDS, waiting ${SLOW_PROCESSING_WAIT_TIME_MS}ms before starting next task.`);
+            waitTimeMs = SLOW_PROCESSING_WAIT_TIME_MS;
+          } else {
+            logger.log('info', `record-update-worker: Waiting ${waitTimeMs}ms before starting next task.`);  
+          }
+          
+          
+          channel.ack(msg);
+
+          
+        });
+
+      } catch(error) {
+        logger.log('error', 'Dropped invalid task', msg);
         channel.ack(msg);
-      });
+        return; 
+      }
 
-    } catch(error) {
-      logger.log('error', 'Dropped invalid task', msg);
-      channel.ack(msg);
-      return; 
-    }
+    }, waitTimeMs);
 
   });
 }
@@ -122,8 +148,6 @@ function findMelindaId(task) {
 function readTask(msg) {
   return JSON.parse(msg.content.toString());  
 }
-
-
 
 export function InvalidRecordError(message, task) {
   const temp = Error.call(this, message);

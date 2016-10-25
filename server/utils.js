@@ -75,3 +75,14 @@ export function exceptCoreErrors(fn) {
     }
   };
 }
+
+export function createTimer() {
+  const start = process.hrtime();
+
+  return { elapsed };
+
+  function elapsed() {
+    const elapsedTime = process.hrtime(start);
+    return Math.round((elapsedTime[0]*1000) + (elapsedTime[1]/1000000));  
+  }
+}
