@@ -143,8 +143,9 @@ function formatTaskResult(taskResult) {
   if (taskResult.error) {
     return `${recordId} ${localId} ${lowTag} Error: ${taskResult.error}`;
   } else {
+    const actions = _.get(taskResult, 'actions', []).join(', ');
     const {code, message} = _.head(taskResult.updateResponse.messages);
-    return `${recordId} ${localId} ${lowTag} ${code} ${message}`;
+    return `${recordId} ${localId} ${lowTag} ${code} ${message} ${actions}`;
   }
 }
 

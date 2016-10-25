@@ -106,9 +106,11 @@ export function processTask(task, client) {
     return client.loadRecord(taskWithResolvedId.recordId, MELINDA_API_NO_REROUTE_OPTS).then(response => {
       logger.log('info', 'record-update-worker: Transforming record', taskWithResolvedId.recordId);
       return transformRecord(response, task.lowTag, task.recordIdHints.localId, transformOptions);
-    }).then(transformedRecord => {
+    }).then(result => {
+      const {record, actions} = result;
+      taskWithResolvedId.actions = actions;
       logger.log('info', 'record-update-worker: Updating record', taskWithResolvedId.recordId);
-      return client.updateRecord(transformedRecord);
+      return client.updateRecord(record);
     }).then(response => {
       logger.log('info', 'record-update-worker: Updated record', response.recordId);
       taskWithResolvedId.updateResponse = response;
