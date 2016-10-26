@@ -69,6 +69,7 @@ sessionController.post('/validate', cors(corsOptions), requireBodyParams('sessio
 });
 
 export function readSessionMiddleware(req, res, next) {
+  
   try {
     const {username, password} = readSessionToken(req.cookies.sessionToken);
   
@@ -76,7 +77,7 @@ export function readSessionMiddleware(req, res, next) {
 
   } catch(e) {
     // invalid token
-    logger.log('debug', 'Invalid session from token', req.cookies.sessionToken);
+    logger.log('debug', 'Invalid session from token', req.cookies.sessionToken, e.message);
     req.session = {};
   }
 

@@ -15,21 +15,21 @@ connect();
 export const recordListController = express();
 recordListController.use(bodyParser.json({limit: '5mb'}));
 recordListController.use(cookieParser());
-recordListController.use(readSessionMiddleware);
 
 recordListController.options('/', cors(corsOptions)); // enable pre-flight
 
-recordListController.post('/', cors(corsOptions), requireSession, requireBodyParams('records', 'lowTag'), userinfoMiddleware, (req, res) => {
+recordListController.post('/', cors(corsOptions), readSessionMiddleware, requireSession, requireBodyParams('records', 'lowTag'), userinfoMiddleware, (req, res) => {
   const { records, lowTag } = req.body;
   const { sessionToken } = req.cookies;
 
   const deleteUnusedRecords = req.body.deleteUnusedRecords || false;
+  const replicateRecords = req.body.replicateRecords || false;
 
   try {
     if (!records.every(validate)) {
       return res.sendStatus(HttpStatus.BAD_REQUEST);
     }
-    startJob(records, lowTag, deleteUnusedRecords, sessionToken, req.userinfo);
+    startJob(records, lowTag, deleteUnusedRecords, replicateRecords, sessionToken, req.userinfo);
 
   } catch(error) {
     logger.log('error', 'Unable to start job', error);
