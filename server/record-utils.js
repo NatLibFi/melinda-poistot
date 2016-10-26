@@ -1,7 +1,7 @@
 
 export function recordIsUnused(record) {
   // record is considered unused if it does not have any of the following fields: 
-  return record.fields.filter(field => ['850','852','866','LOW'].includes(field.tag)).length === 0;
+  return record.fields.filter(field => ['850','852','866','LOW'].some(tag => tag === field.tag)).length === 0;
 }
 
 export function markRecordAsDeleted(record) {
