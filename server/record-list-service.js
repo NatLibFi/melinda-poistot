@@ -24,19 +24,21 @@ export function startJob(records, lowTag, sessionToken, userinfo) {
     throw new Error('Queue for sending tasks is not available.');
   }
 
-  channel.assertQueue(TASK_QUEUE, {durable: false});
-  channel.assertQueue(JOB_QUEUE, {durable: false});
+  channel.assertQueue(TASK_QUEUE, {durable: true});
+  channel.assertQueue(JOB_QUEUE, {durable: true});
   
   const jobId = uuid.v4();
   const tasks = records.map(_.partial(createTask, jobId, sessionToken, lowTag));
 
+  
+  const jobPayload = new Buffer(JSON.stringify(createJob(jobId, tasks, userinfo)));
   // Node 6 has Buffer.from(msg) which should be used
-  channel.sendToQueue(JOB_QUEUE, new Buffer(JSON.stringify(createJob(jobId, tasks, userinfo))));  
+  channel.sendToQueue(JOB_QUEUE, jobPayload, {persistent: true});
 
   tasks.forEach(task => {
 
     // Node 6 has Buffer.from(msg) which should be used
-    channel.sendToQueue(TASK_QUEUE, new Buffer(JSON.stringify(task)));  
+    channel.sendToQueue(TASK_QUEUE, new Buffer(JSON.stringify(task)), {persistent: true});
   });
   
 }

@@ -28,8 +28,8 @@ export function connect() {
   return amqp.connect(`amqp://${AMQP_HOST}`)
     .then(conn => conn.createChannel())
     .then(ch => {
-      ch.assertQueue(INCOMING_TASK_QUEUE, {durable: false});
-      ch.assertQueue(OUTGOING_TASK_QUEUE, {durable: false});
+      ch.assertQueue(INCOMING_TASK_QUEUE, {durable: true});
+      ch.assertQueue(OUTGOING_TASK_QUEUE, {durable: true});
       ch.prefetch(1);
       startTaskExecutor(ch);
     })
@@ -61,17 +61,17 @@ function startTaskExecutor(channel) {
         });
 
         processTask(task, client).then(taskResponse => {
-          channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskResponse)));  
+          channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskResponse)), {persistent: true});  
         }).catch(error => {
           
           if (error instanceof RecordProcessingError) {
             logger.log('info', 'record-update-worker: Processing failed:', error.message);
             const failedTask = markTaskAsFailed(error.task, error.message);
-            channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)));   
+            channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)), {persistent: true});   
           } else {
             logger.log('error', 'record-update-worker: Processing failed:', error);
             const failedTask = markTaskAsFailed(task, error.message);
-            channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)));   
+            channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)), {persistent: true});   
           }
          
         }).then(() => {
