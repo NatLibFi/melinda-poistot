@@ -122,7 +122,7 @@ export class StatusCard extends React.Component {
 
   renderCardContent() {
 
-    if (this.props.submitStatus == 'ONGOING') return <Preloader />;  
+    if (this.props.submitStatus == 'ONGOING') return <div className="card-content"><Preloader /></div>;  
     if (this.props.submitStatus == 'SUCCESS') return this.renderSuccessCardContent();
     if (this.props.submitStatus == 'FAILED') return this.renderSubmitFailureCardContent();
 
@@ -144,7 +144,7 @@ export class StatusCard extends React.Component {
   }
 
   isSubmitVisible() {
-    return (this.props.submitStatus === 'NOT_SUBMITTED' || this.props.submitStatus === 'ONGOING'); 
+    return (this.props.submitStatus === 'NOT_SUBMITTED' || this.props.submitStatus === 'ONGOING' || this.props.submitStatus === 'FAILED'); 
   }
 
   render() {
