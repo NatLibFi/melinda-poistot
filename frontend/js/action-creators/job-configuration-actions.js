@@ -33,12 +33,13 @@ export function submitJob() {
 
     const records = validRecordList(getState());
     const lowTag = getState().getIn(['jobconfig', 'lowtag']);
+    const deleteUnusedRecords = getState().getIn(['jobconfig', 'deleteUnusedRecords']);
 
     dispatch(submitJobStarted());
 
     const fetchOptions = {
       method: 'POST',
-      body: JSON.stringify({ records, lowTag }),
+      body: JSON.stringify({ records, lowTag, deleteUnusedRecords }),
       headers: new Headers({
         'Content-Type': 'application/json'
       }),
