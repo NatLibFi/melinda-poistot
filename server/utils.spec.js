@@ -41,7 +41,7 @@ describe('utils', () => {
 
   });
 
-  describe.only('createLoadUserIndexFn', () => {
+  describe('createLoadUserIndexFn', () => {
     let readFileStub;
     beforeEach(() => {
       readFileStub = sinon.stub();
