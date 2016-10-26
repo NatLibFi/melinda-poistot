@@ -30,13 +30,15 @@ export function startJob(records, lowTag, sessionToken, userinfo) {
   const jobId = uuid.v4();
   const tasks = records.map(_.partial(createTask, jobId, sessionToken, lowTag));
 
+  
+  const jobPayload = new Buffer(JSON.stringify(createJob(jobId, tasks, userinfo)));
   // Node 6 has Buffer.from(msg) which should be used
-  channel.sendToQueue(JOB_QUEUE, new Buffer(JSON.stringify(createJob(jobId, tasks, userinfo))));  
+  channel.sendToQueue(JOB_QUEUE, jobPayload, {persistent: true});
 
   tasks.forEach(task => {
 
     // Node 6 has Buffer.from(msg) which should be used
-    channel.sendToQueue(TASK_QUEUE, new Buffer(JSON.stringify(task)));  
+    channel.sendToQueue(TASK_QUEUE, new Buffer(JSON.stringify(task)), {persistent: true});
   });
   
 }
