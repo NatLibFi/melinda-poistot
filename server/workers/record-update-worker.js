@@ -28,8 +28,8 @@ export function connect() {
   return amqp.connect(`amqp://${AMQP_HOST}`)
     .then(conn => conn.createChannel())
     .then(ch => {
-      ch.assertQueue(INCOMING_TASK_QUEUE, {durable: false});
-      ch.assertQueue(OUTGOING_TASK_QUEUE, {durable: false});
+      ch.assertQueue(INCOMING_TASK_QUEUE, {durable: true});
+      ch.assertQueue(OUTGOING_TASK_QUEUE, {durable: true});
       ch.prefetch(1);
       startTaskExecutor(ch);
     })

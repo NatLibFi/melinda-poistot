@@ -19,8 +19,8 @@ export default class ResultWorker {
     return amqp.connect(`amqp://${AMQP_HOST}`)
       .then(conn => conn.createChannel())
       .then(ch => {
-        ch.assertQueue(INCOMING_TASK_RESULT_QUEUE, {durable: false});
-        ch.assertQueue(INCOMING_JOB_QUEUE, {durable: false});
+        ch.assertQueue(INCOMING_TASK_RESULT_QUEUE, {durable: true});
+        ch.assertQueue(INCOMING_JOB_QUEUE, {durable: true});
         this.startTaskExecutor(ch);
       })
       .catch(error => {

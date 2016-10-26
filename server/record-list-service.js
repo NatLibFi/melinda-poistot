@@ -24,8 +24,8 @@ export function startJob(records, lowTag, sessionToken, userinfo) {
     throw new Error('Queue for sending tasks is not available.');
   }
 
-  channel.assertQueue(TASK_QUEUE, {durable: false});
-  channel.assertQueue(JOB_QUEUE, {durable: false});
+  channel.assertQueue(TASK_QUEUE, {durable: true});
+  channel.assertQueue(JOB_QUEUE, {durable: true});
   
   const jobId = uuid.v4();
   const tasks = records.map(_.partial(createTask, jobId, sessionToken, lowTag));
