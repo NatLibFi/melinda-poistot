@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import _ from 'lodash';
 import '../../styles/main.scss';
 import { removeSession } from '../action-creators/session-actions';
-import { setRecordIdList, submitJob } from '../action-creators/job-configuration-actions';
+import { setRecordIdList, submitJob } from '../action-creators/record-list-form-actions';
 import { resetWorkspace } from '../action-creators/ui-actions';
 import { NavBar } from './navbar';
 import { SigninFormPanelContainer } from './signin-form-panel';

@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import { setSelectedLowTag, setDeleteOption, setReplicateOption } from '../action-creators/job-configuration-actions';
+import { setSelectedLowTag, setDeleteOption, setReplicateOption } from '../action-creators/record-list-form-actions';
 import '../../styles/components/job-configuration-panel';
 import { LowTagSelectField } from './lowtag-select-field';
 import _ from 'lodash';

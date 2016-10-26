@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import * as actions from '../action-creators/job-configuration-actions';
+import * as actions from '../action-creators/record-list-form-actions';
 import reducer from '../root-reducer';
 
 describe('job configuration reducer', () => {
