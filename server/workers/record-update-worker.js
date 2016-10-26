@@ -122,8 +122,8 @@ export function processTask(task, client) {
       logger.log('info', 'record-update-worker: Transforming record', taskWithResolvedId.recordId);
       return transformRecord(response, task.lowTag, task.recordIdHints.localId, transformOptions);
     }).then(result => {
-      const {record, actions} = result;
-      taskWithResolvedId.actions = actions;
+      const {record, report} = result;
+      taskWithResolvedId.report = report;
       logger.log('info', 'record-update-worker: Updating record', taskWithResolvedId.recordId);
       return client.updateRecord(record).catch(convertMelindaApiClientErrorToError);
     }).then(response => {

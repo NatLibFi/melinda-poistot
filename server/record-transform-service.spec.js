@@ -47,8 +47,8 @@ describe('Record transform service', () => {
         expect(result.record.getFields('LOW', 'a', LIBRARY_TAG).map(fieldAsString)).not.to.include('LOW $aTEST');
       });
 
-      it('returned actions should contain the information of the LOW removal', () => {
-        expect(result.actions).to.include('Removed LOW: TEST');
+      it('returned report should contain the information of the LOW removal', () => {
+        expect(result.report).to.include('Removed LOW: TEST');
       });
     });
 
@@ -93,8 +93,8 @@ describe('Record transform service', () => {
         expect(result.record.getFields('SID', 'b', LIBRARY_TAG).map(fieldAsString)).not.to.include('SID $btest$c111');
       });
 
-      it('returned actions should contain the information of the SID removal', () => {
-        expect(result.actions).to.include('Removed SID: test');
+      it('returned report should contain the information of the SID removal', () => {
+        expect(result.report).to.include('Removed SID: test');
       });
     });
 
@@ -110,8 +110,8 @@ describe('Record transform service', () => {
         expect(result.record.getFields('LOW', 'a', LIBRARY_TAG).map(fieldAsString)).not.to.include('LOW $aTEST');
       });
 
-      it('returned actions should contain the information of the LOW removal', () => {
-        expect(result.actions).to.include('Removed LOW: TEST');
+      it('returned report should contain the information of the LOW removal', () => {
+        expect(result.report).to.include('Removed LOW: TEST');
       });
     });
 
@@ -123,7 +123,7 @@ describe('Record transform service', () => {
       });
 
       it('should report that the record did not contain low tag', () => {
-        expect(result.actions).to.include('Record did not have LOW tag.');
+        expect(result.report).to.include('Record did not have LOW tag.');
       });
     });
 
@@ -143,7 +143,7 @@ describe('Record transform service', () => {
         });
 
         it('should report the taken action', () => {
-          expect(result.actions).to.include('Record was deleted.');
+          expect(result.report).to.include('Record was deleted.');
         });
       });
 
@@ -182,19 +182,19 @@ describe('Record transform service', () => {
       });
       
       it('reports the field removals', () => { 
-        expect(result.actions).to.include('Removed field 300');
+        expect(result.report).to.include('Removed field 300');
       });
       
       it('reports the subfield $5 removals', () => { 
-        expect(result.actions).to.include('Removed subfield 5 with value TEST from field 301');
+        expect(result.report).to.include('Removed subfield 5 with value TEST from field 301');
       });
       
       it('reports the subfield $9 <KEEP> removals', () => { 
-        expect(result.actions).to.include('Removed subfield 9 with value TEST <KEEP> from field 100');
+        expect(result.report).to.include('Removed subfield 9 with value TEST <KEEP> from field 100');
       });
       
       it('reports the subfield $9 <DROP> removals', () => { 
-        expect(result.actions).to.include('Removed subfield 9 with value TEST <DROP> from field 245');
+        expect(result.report).to.include('Removed subfield 9 with value TEST <DROP> from field 245');
       });
       
     });

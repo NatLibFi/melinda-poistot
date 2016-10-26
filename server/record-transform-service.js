@@ -12,7 +12,7 @@ export function transformRecord(recordParam, libraryTag, expectedLocalId, opts) 
   const record = new MarcRecord(recordParam);
 
   return new Promise((resolve, reject) => {
-    const actions = [];
+    const report = [];
 
     if (record.isDeleted()) {
       return reject(new Error('The record is deleted.'));
@@ -22,17 +22,17 @@ export function transformRecord(recordParam, libraryTag, expectedLocalId, opts) 
       return reject(new Error('The record has unexpected SIDc value.'));
     }
 
-    removeSIDFields(record, actions, libraryTag, expectedLocalId);
-    removeLOWFields(record, actions, libraryTag);
+    removeSIDFields(record, report, libraryTag, expectedLocalId);
+    removeLOWFields(record, report, libraryTag);
 
     if (opts && opts.deleteUnusedRecords && recordIsUnused(record)) {
       markRecordAsDeleted(record);
-      actions.push('Record was deleted.');
+      report.push('Record was deleted.');
     } else {
-      cleanupRecord(record, actions, libraryTag);
+      cleanupRecord(record, report, libraryTag);
     }
 
-    return resolve({record, actions});
+    return resolve({record, report});
   });
 }
 
@@ -54,7 +54,7 @@ function validateLocalSid(record, lowercaseLibraryTag, expectedLocalId) {
     });
 }
 
-function removeSIDFields(record, actions, libraryTag, expectedLocalId) {
+function removeSIDFields(record, report, libraryTag, expectedLocalId) {
   if (expectedLocalId === undefined) {
     return;
   }
@@ -64,31 +64,31 @@ function removeSIDFields(record, actions, libraryTag, expectedLocalId) {
   
   fieldsToRemove.forEach(field => {
     const removedLibraryTag = getSubfieldValues(field, 'b').join(',');
-    actions.push(`Removed SID: ${removedLibraryTag}`);
+    report.push(`Removed SID: ${removedLibraryTag}`);
   });
 
   record.fields = _.difference(record.fields, fieldsToRemove);
 
 }
 
-function removeLOWFields(record, actions, libraryTag) {
+function removeLOWFields(record, report, libraryTag) {
   const uppercaseLibraryTag = libraryTag.toUpperCase();
   const fieldsToRemove = record.getFields('LOW', 'a', uppercaseLibraryTag);
   
   fieldsToRemove.forEach(field => {
     const removedLibraryTag = getSubfieldValues(field, 'a').join(',');
-    actions.push(`Removed LOW: ${removedLibraryTag}`);
+    report.push(`Removed LOW: ${removedLibraryTag}`);
   });
 
   if (fieldsToRemove.length === 0) {
-    actions.push('Record did not have LOW tag.');
+    report.push('Record did not have LOW tag.');
   }
 
   record.fields = _.difference(record.fields, fieldsToRemove);
 
 }
 
-function cleanupRecord(record, actions, libraryTag) {
+function cleanupRecord(record, report, libraryTag) {
  
   record.getDatafields()
     .filter(withSubfield('5'))
@@ -97,13 +97,13 @@ function cleanupRecord(record, actions, libraryTag) {
 
       if (subfield5List.length === 1) {
         removeField(record, field);
-        actions.push(`Removed field ${field.tag}`);  
+        report.push(`Removed field ${field.tag}`);  
       }
       
       if (subfield5List.length > 1) {
         subfield5List.filter(sub => sub.value === libraryTag.toUpperCase()).forEach(subfield => {
           removeSubfield(record, field, subfield);
-          actions.push(`Removed subfield 5 with value ${subfield.value} from field ${field.tag}`);
+          report.push(`Removed subfield 5 with value ${subfield.value} from field ${field.tag}`);
         });
       }      
     });
@@ -115,7 +115,7 @@ function cleanupRecord(record, actions, libraryTag) {
 
       subfield9List.filter(replicationCommandMatcher(libraryTag)).forEach(subfield => {
         removeSubfield(record, field, subfield);
-        actions.push(`Removed subfield 9 with value ${subfield.value} from field ${field.tag}`);
+        report.push(`Removed subfield 9 with value ${subfield.value} from field ${field.tag}`);
       });
   
     });
