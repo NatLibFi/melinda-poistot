@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import { setSelectedLowTag, setDeleteOption } from '../action-creators/job-configuration-actions';
+import { setSelectedLowTag, setDeleteOption, setReplicateOption } from '../action-creators/job-configuration-actions';
 import '../../styles/components/job-configuration-panel';
 import { LowTagSelectField } from './lowtag-select-field';
 import _ from 'lodash';
@@ -11,20 +11,29 @@ export class JobConfigurationPanel extends React.Component {
     availableLowTags: React.PropTypes.array.isRequired,
     setSelectedLowTag: React.PropTypes.func.isRequired,
     setDeleteOption:  React.PropTypes.func.isRequired,
-    deleteUnusedRecords: React.PropTypes.bool.isRequired
+    setReplicateOption:  React.PropTypes.func.isRequired,
+    deleteUnusedRecords: React.PropTypes.bool.isRequired,
+    replicateRecords: React.PropTypes.bool.isRequired
   }
 
   handleDeleteOptionChange(event) {
     this.props.setDeleteOption(event.target.checked);
+  }  
+
+  handleReplicateOptionChange(event) {
+    this.props.setReplicateOption(event.target.checked);
   }
 
   renderReplicationCheckbox() {
-  
+    const replicateRecordsTipClasses = classNames('checkbox-tip', {
+      visible: this.props.replicateRecords
+    });
+
     return (
       <p>
-        <input type="checkbox" className="filled-in" id="filled-in-box" />
-        <label htmlFor="filled-in-box">Haluan poistojen replikoituvan paikalliskantaan</label>
-        <span className="checkbox-tip">Tämä näkyy vain jos checkbox on raksittu</span>
+        <input type="checkbox" className="filled-in" id="replicate-records-option" onChange={(e) => this.handleReplicateOptionChange(e)} checked={this.props.replicateRecords} />
+        <label htmlFor="replicate-records-option">Haluan poistojen replikoituvan paikalliskantaan</label>
+        <span className={replicateRecordsTipClasses}>Tietuejoukon replikointi paikalliskantaan hidastaa muiden tietueiden siirtymistä melindasta paikalliskantaan.</span>
       </p>
     );
   }
@@ -49,16 +58,16 @@ export class JobConfigurationPanel extends React.Component {
       <div className="job-configuration-container">
 
         <div className="row">
-          <div className="col l5 s8 offset-l1">
+          <div className="col l7 s10 offset-l1">
             <h5>Tietokantatunnusten poiston asetukset</h5>
           </div>
         </div>
 
         <div className="row">
-          <div className="col l5 s8 offset-l1">
+          <div className="col l7 s10 offset-l1">
             <form autoComplete="off">
               <LowTagSelectField availableLowTags={this.props.availableLowTags} onSelectLowTag={(lowtag) => this.props.setSelectedLowTag(lowtag)} />
-
+              { this.renderReplicationCheckbox() }
               { this.renderRemoveRecordCheckbox() }
             </form>
           </div>
@@ -76,11 +85,12 @@ function mapStateToProps(state) {
 
   return {
     availableLowTags,
-    deleteUnusedRecords: state.getIn(['jobconfig', 'deleteUnusedRecords'])
+    deleteUnusedRecords: state.getIn(['jobconfig', 'deleteUnusedRecords']),
+    replicateRecords: state.getIn(['jobconfig', 'replicateRecords'])
   };
 }
 
 export const JobConfigurationPanelContainer = connect(
   mapStateToProps,
-  { setSelectedLowTag, setDeleteOption }
+  { setSelectedLowTag, setDeleteOption, setReplicateOption }
 )(JobConfigurationPanel);

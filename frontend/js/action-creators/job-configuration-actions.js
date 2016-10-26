@@ -3,7 +3,7 @@ import { FetchNotOkError } from '../errors';
 import HttpStatus from 'http-status-codes';
 import { validRecordList } from '../selectors/record-list-selectors';
 
-import {SET_SELECTED_LOW_TAG, SET_RECORD_ID_LIST, SUBMIT_JOB_START, SUBMIT_JOB_SUCCESS, SUBMIT_JOB_FAIL, SET_DELETE_OPTION} from '../constants/action-type-constants';
+import {SET_SELECTED_LOW_TAG, SET_RECORD_ID_LIST, SUBMIT_JOB_START, SUBMIT_JOB_SUCCESS, SUBMIT_JOB_FAIL, SET_DELETE_OPTION, SET_REPLICATE_OPTION} from '../constants/action-type-constants';
 
 export function setSelectedLowTag(lowtag) {
   return { 'type': SET_SELECTED_LOW_TAG, lowtag };
@@ -11,7 +11,9 @@ export function setSelectedLowTag(lowtag) {
 export function setDeleteOption(checked) {
   return { 'type': SET_DELETE_OPTION, checked };
 }
-
+export function setReplicateOption(checked) {
+  return { 'type': SET_REPLICATE_OPTION, checked };
+}
 export function setRecordIdList(list) {
   return { 'type': SET_RECORD_ID_LIST, list };
 }
@@ -34,12 +36,13 @@ export function submitJob() {
     const records = validRecordList(getState());
     const lowTag = getState().getIn(['jobconfig', 'lowtag']);
     const deleteUnusedRecords = getState().getIn(['jobconfig', 'deleteUnusedRecords']);
+    const replicateRecords = getState().getIn(['jobconfig', 'replicateRecords']);
 
     dispatch(submitJobStarted());
 
     const fetchOptions = {
       method: 'POST',
-      body: JSON.stringify({ records, lowTag, deleteUnusedRecords }),
+      body: JSON.stringify({ records, lowTag, deleteUnusedRecords, replicateRecords }),
       headers: new Headers({
         'Content-Type': 'application/json'
       }),

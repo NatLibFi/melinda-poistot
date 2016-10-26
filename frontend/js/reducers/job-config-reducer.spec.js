@@ -23,6 +23,16 @@ describe('job configuration reducer', () => {
       expect(state.getIn(['jobconfig', 'deleteUnusedRecords'])).to.eql(true);
     });
   });
+
+  describe('on SET_REPLICATE_OPTION', () => {
+    let state;
+    beforeEach(() => {
+      state = reducer(undefined, actions.setReplicateOption(true));
+    });
+    it('sets the replicate records option', () => {
+      expect(state.getIn(['jobconfig', 'replicateRecords'])).to.eql(true);
+    });
+  });
   
   describe('on SET_RECORD_ID_LIST', () => {
     let state;
