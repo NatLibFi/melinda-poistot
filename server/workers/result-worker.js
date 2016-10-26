@@ -49,7 +49,8 @@ export default class ResultWorker {
       }
 
     } catch(error) {
-      logger.log('error', 'Error handling task', msg, error);
+      const {consumerTag, deliveryTag} = msg;
+      logger.log('error', 'Error handling task', {consumerTag, deliveryTag}, error);
     }
   }
 
@@ -140,11 +141,12 @@ function formatTaskResult(taskResult) {
   const recordId = _.get(taskResult, 'recordId', 'ID-NOT-FOUND');
   const localId = _.get(taskResult.recordIdHints, 'localId' ,'');
 
-  if (taskResult.error) {
-    return `${recordId} ${localId} ${lowTag} Error: ${taskResult.error}`;
+  if (taskResult.taskFailed) {
+    return `${recordId} ${localId} ${lowTag} Error: ${taskResult.failureReason}`;
   } else {
+    const actions = _.get(taskResult, 'actions', []).join(', ');
     const {code, message} = _.head(taskResult.updateResponse.messages);
-    return `${recordId} ${localId} ${lowTag} ${code} ${message}`;
+    return `${recordId} ${localId} ${lowTag} ${code} ${message} ${actions}`;
   }
 }
 

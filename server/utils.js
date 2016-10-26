@@ -71,10 +71,25 @@ export function userinfoMiddleware(req, res, next) {
 export function exceptCoreErrors(fn) {
 
   return (error) => {
-    if ([TypeError, SyntaxError, ReferenceError].find(errorType => error instanceof errorType)) {
+    if (isCoreError(error)) {
       throw error;
     } else {
       return fn(error);
     }
   };
+}
+
+export function isCoreError(error) {
+  return ([EvalError, RangeError, URIError, TypeError, SyntaxError, ReferenceError].some(errorType => error instanceof errorType));
+}
+
+export function createTimer() {
+  const start = process.hrtime();
+
+  return { elapsed };
+
+  function elapsed() {
+    const elapsedTime = process.hrtime(start);
+    return Math.round((elapsedTime[0]*1000) + (elapsedTime[1]/1000000));  
+  }
 }

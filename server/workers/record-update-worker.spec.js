@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import { processTask } from './record-update-worker';
+import { processTask, RecordProcessingError } from './record-update-worker';
 import sinon from 'sinon';
 import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 import { __RewireAPI__ as RewireAPI } from './record-update-worker';
@@ -34,6 +34,12 @@ describe('Record update worker', () => {
 
     let clientStub;
     let result;
+    let error;
+    beforeEach(() => {
+      result = undefined;
+      error = undefined;
+    });
+
 
     describe('when everything works', () => {
 
@@ -69,11 +75,17 @@ describe('Record update worker', () => {
         clientStub.loadRecord.resolves(INVALID_RECORD);
         clientStub.updateRecord.resolves(TEST_UPDATE_RESPONSE);
 
-        return processTask(fakeTask, clientStub).then(res => result = res);
+        return processTask(fakeTask, clientStub)
+          .then(res => result = res)
+          .catch(err => error = err);
       });
 
       it('results in error', () => {
-        expect(result.error.message).to.equal('Invalid record');
+        expect(error.message).to.equal('Invalid record');
+      });
+      
+      it('rejects with processing error', () => {
+        expect(error).to.be.instanceof(RecordProcessingError);
       });
 
     });
@@ -84,19 +96,25 @@ describe('Record update worker', () => {
 
       beforeEach(() => {
         resolveMelindaIdStub.resolves(3);
-        result = undefined;
         clientStub = createClientStub();
         clientStub.loadRecord.rejects(TEST_LOAD_ERROR);
         clientStub.updateRecord.resolves(TEST_UPDATE_RESPONSE);
 
-        return processTask(fakeTask, clientStub).then(res => result = res);
+        return processTask(fakeTask, clientStub)
+          .then(res => result = res)
+          .catch(err => error = err);
+      });
+
+      it('rejects with processing error', () => {
+        expect(error).to.be.instanceof(RecordProcessingError);
       });
 
       it('keeps the recordId in the response', () => {
-        expect(result.recordId).to.equal(3);
+        expect(error.task.recordId).to.equal(3);
       });
+
       it('sets the error to error message', () => {
-        expect(result.error.message).to.equal(TEST_LOAD_ERROR.message);
+        expect(error.message).to.equal(TEST_LOAD_ERROR.message);
       });
 
     });
@@ -107,19 +125,25 @@ describe('Record update worker', () => {
 
       beforeEach(() => {
         resolveMelindaIdStub.resolves(3);
-        result = undefined;
         clientStub = createClientStub();
         clientStub.loadRecord.resolves(FAKE_RECORD);
         clientStub.updateRecord.rejects(TEST_UPDATE_ERROR);
 
-        return processTask(fakeTask, clientStub).then(res => result = res);
+        return processTask(fakeTask, clientStub)
+          .then(res => result = res)
+          .catch(err => error = err);
       });
 
       it('keeps the recordId in the response', () => {
-        expect(result.recordId).to.equal(3);
+        expect(error.task.recordId).to.equal(3);
       });
-      it('sets the error to error message', () => {
-        expect(result.error.message).to.equal(TEST_UPDATE_ERROR.message);
+
+      it('rejects with error message from updateRecord', () => {
+        expect(error.message).to.equal(TEST_UPDATE_ERROR.message);
+      });
+
+      it('rejects with processing error', () => {
+        expect(error).to.be.instanceof(RecordProcessingError);
       });
 
     });
@@ -127,17 +151,19 @@ describe('Record update worker', () => {
     describe('when Melinda record id resolution works', () => {
 
       const fakeTaskWithLocalID = {
-        recordIdHints: { localId: 3 }
+        recordIdHints: { localId: 3 },
+        lowTag: 'test'
       };
 
       beforeEach(() => {
         resolveMelindaIdStub.resolves(33);
-        result = undefined;
         clientStub = createClientStub();
-        clientStub.loadRecord.resolves({});
+        clientStub.loadRecord.resolves(FAKE_RECORD);
         clientStub.updateRecord.resolves(TEST_UPDATE_RESPONSE);
 
-        return processTask(fakeTaskWithLocalID, clientStub).then(res => result = res);
+        return processTask(fakeTaskWithLocalID, clientStub)
+          .then(res => result = res);
+          
       });
 
       it('sets the recordId to resolved value', () => {
@@ -156,23 +182,26 @@ describe('Record update worker', () => {
 
       beforeEach(() => {
         resolveMelindaIdStub.rejects(new Error(fakeErrorMessage));
-        result = undefined;
         clientStub = createClientStub();
         clientStub.loadRecord.resolves({});
         clientStub.updateRecord.resolves(TEST_UPDATE_RESPONSE);
 
-        return processTask(fakeTaskWithLocalID, clientStub).then(res => result = res);
+        return processTask(fakeTaskWithLocalID, clientStub)
+          .then(res => result = res)
+          .catch(err => error = err);
+      });
+
+      it('rejects with processing error', () => {
+        expect(error).to.be.instanceof(RecordProcessingError);
       });
 
       it('sets the error message', () => {
-        expect(result.error.message).to.equal(fakeErrorMessage);
+        expect(error.message).to.equal(fakeErrorMessage);
       });
     });
 
   });
-
 });
-
 
 function createClientStub() {
   return {

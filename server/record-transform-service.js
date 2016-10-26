@@ -17,7 +17,7 @@ export function transformRecord(recordParam, libraryTag, expectedLocalId, opts) 
       return reject(new Error('The record is deleted.'));
     }
 
-    if(expectedLocalId &&   !validateLocalSid(record, lowercaseLibraryTag, expectedLocalId.toString())) {
+    if(expectedLocalId && !validateLocalSid(record, lowercaseLibraryTag, expectedLocalId.toString())) {
       return reject(new Error('The record has unexpected SIDc value.'));
     }
 

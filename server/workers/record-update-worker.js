@@ -1,5 +1,5 @@
 import amqp from 'amqplib';
-import { readEnvironmentVariable } from '../utils';
+import { readEnvironmentVariable, createTimer, exceptCoreErrors } from '../utils';
 import { logger } from '../logger';
 import MelindaClient from 'melinda-api-client';
 import { readSessionToken } from '../session-crypt';
@@ -9,6 +9,9 @@ import { transformRecord } from '../record-transform-service';
 
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
+const minTaskIntervalSeconds = readEnvironmentVariable('MIN_TASK_INTERVAL_SECONDS', 10);
+const SLOW_PROCESSING_WAIT_TIME_MS = 10000;
+
 const apiPath = apiVersion !== null ? `/${apiVersion}` : '';
 
 const defaultConfig = {
@@ -37,72 +40,113 @@ export function connect() {
 }
 
 function startTaskExecutor(channel) {
+
+  let waitTimeMs = 0;
   channel.consume(INCOMING_TASK_QUEUE, function(msg) {
+    
     logger.log('info', 'record-update-worker: Received task', msg.content.toString());
 
-    try {
-      const task = readTask(msg);
-      const {username, password} = readSessionToken(task.sessionToken);
+    logger.log('info', `record-update-worker: Waiting ${waitTimeMs}ms before starting the task.`);
+    setTimeout(() => {
+      const taskProcessingTimer = createTimer();
 
-      const client = new MelindaClient({
-        ...defaultConfig,
-        user: username,
-        password: password
-      });
+      try {
+        const task = readTask(msg);
+        const {username, password} = readSessionToken(task.sessionToken);
 
-      processTask(task, client).then(taskResponse => {
-        channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskResponse)));  
-      }).catch(taskError => {
-        logger.log('info', 'record-update-worker: error ', taskError);
+        const client = new MelindaClient({
+          ...defaultConfig,
+          user: username,
+          password: password
+        });
 
-        // To prevent sending error objects into the queue.
-        taskError.error = taskError.error.message;
-        channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskError)));  
-      }).finally(() => {
+        processTask(task, client).then(taskResponse => {
+          channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskResponse)));  
+        }).catch(error => {
+          
+          if (error instanceof RecordProcessingError) {
+            logger.log('info', 'record-update-worker: Processing failed:', error.message);
+            const failedTask = markTaskAsFailed(error.task, error.message);
+            channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)));   
+          } else {
+            logger.log('error', 'record-update-worker: Processing failed:', error);
+            const failedTask = markTaskAsFailed(task, error.message);
+            channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)));   
+          }
+         
+        }).then(() => {
+          const taskProcessingTimeMs = taskProcessingTimer.elapsed();
+
+          logger.log('info', `record-update-worker: Task processed in ${taskProcessingTimeMs}ms.`);
+
+          waitTimeMs = Math.max(0, minTaskIntervalSeconds * 1000 - taskProcessingTimeMs);
+
+          if (waitTimeMs === 0) {
+            logger.log('info', `record-update-worker: Processing was slower than MIN_TASK_INTERVAL_SECONDS, forcing wait time to ${SLOW_PROCESSING_WAIT_TIME_MS}ms.`);
+            waitTimeMs = SLOW_PROCESSING_WAIT_TIME_MS;
+          } 
+          
+          channel.ack(msg);
+
+        }).catch(error => {
+          logger.log('error', error);
+        });
+
+      } catch(error) {
+        //logger.log('error', 'Dropped invalid task', error);
+        const {consumerTag, deliveryTag} = msg;
+        logger.log('error', 'record-update-worker: Dropped invalid task', {consumerTag, deliveryTag});
         channel.ack(msg);
-      });
+        return; 
+      }
 
-    } catch(error) {
-      logger.log('error', 'Dropped invalid task', msg);
-      channel.ack(msg);
-      return; 
-    }
+    }, waitTimeMs);
 
   });
+}
+
+function markTaskAsFailed(task, failedMessage) {
+  return _.assign({}, task, {taskFailed: true, failureReason: failedMessage});
 }
 
 export function processTask(task, client) {
   const MELINDA_API_NO_REROUTE_OPTS = {handle_deleted: 1};
   const transformOptions = {};
 
+  logger.log('info', 'record-update-worker: Querying for melinda id');
   return findMelindaId(task).then(taskWithResolvedId => {
     logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);
     return client.loadRecord(taskWithResolvedId.recordId, MELINDA_API_NO_REROUTE_OPTS).then(response => {
       logger.log('info', 'record-update-worker: Transforming record', taskWithResolvedId.recordId);
       return transformRecord(response, task.lowTag, task.recordIdHints.localId, transformOptions);
-    }).then(transformedRecord => {
+    }).then(result => {
+      const {record, actions} = result;
+      taskWithResolvedId.actions = actions;
       logger.log('info', 'record-update-worker: Updating record', taskWithResolvedId.recordId);
-      return client.updateRecord(transformedRecord);
+      return client.updateRecord(record).catch(convertMelindaApiClientErrorToError);
     }).then(response => {
       logger.log('info', 'record-update-worker: Updated record', response.recordId);
       taskWithResolvedId.updateResponse = response;
       return taskWithResolvedId;
-    }).catch(error => {
-      logger.log('error', 'record-update-worker: error', error);
-      taskWithResolvedId.error = error;
-      return taskWithResolvedId;
-    });
-  }).catch(error => {
-    if (error instanceof InvalidRecordError) {
-      logger.log('info', 'record-update-worker: invalid record error', error.message, error.task);
-      task.error = error;
-      return task;  
+    }).catch(exceptCoreErrors(error => {
+      throw new RecordProcessingError(error.message, taskWithResolvedId);
+    }));
+  }).catch(exceptCoreErrors(error => {
+    if (error instanceof RecordProcessingError) {
+      throw error;
     } else {
-      logger.log('error', 'record-update-worker: error', error);
-      task.error = error;
-      return task;
+      throw new RecordProcessingError(error.message, task);
     }
-  });
+  }));
+}
+
+function convertMelindaApiClientErrorToError(melindaApiClientError) {
+  if (melindaApiClientError instanceof Error) {
+    throw melindaApiClientError;
+  } else {
+    const message = _.get(melindaApiClientError, 'errors[0].message', 'Unknown melinda-api-client error');
+    throw new Error(message);
+  }
 }
 
 function findMelindaId(task) {
@@ -123,18 +167,16 @@ function readTask(msg) {
   return JSON.parse(msg.content.toString());  
 }
 
-
-
-export function InvalidRecordError(message, task) {
+export function RecordProcessingError(message, task) {
   const temp = Error.call(this, message);
-  temp.name = this.name = 'InvalidRecordError';
+  temp.name = this.name = 'RecordProcessingError';
   this.task = task;
   this.message = temp.message;
 }
 
-InvalidRecordError.prototype = Object.create(Error.prototype, {
+RecordProcessingError.prototype = Object.create(Error.prototype, {
   constructor: {
-    value: InvalidRecordError,
+    value: RecordProcessingError,
     writable: true,
     configurable: true
   }
