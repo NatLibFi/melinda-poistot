@@ -5,11 +5,23 @@ import { sessionController } from './session-controller';
 import { authProvider } from './melinda-auth-provider';
 import request from 'supertest';
 import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
+import { __RewireAPI__ as RewireAPI } from './session-controller';
 
 chai.use(sinonChai);
 const expect = chai.expect;
 
 describe('Session controller', () => {
+  let loggerStub;
+  
+  beforeEach(() => {
+    loggerStub = { log: sinon.stub() };
+
+    RewireAPI.__Rewire__('logger', loggerStub);
+  });
+  afterEach(() => {
+    RewireAPI.__ResetDependency__('logger');
+  });
+
 
   describe('start', () => {
 
