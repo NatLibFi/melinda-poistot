@@ -26,6 +26,14 @@ export class LowTagSelectField extends React.Component {
           this.onSelectLowTag(this._input.value);
         });
 
+      $(this._input).on('keypress', (event) => {
+        const code = event.keyCode || event.which;
+        if (code == 13) {
+          event.preventDefault();
+          return false;
+        }
+      });
+      
     } else {
       Materialize.updateTextFields();
       this.onSelectLowTag(_.head(this.props.availableLowTags));
@@ -34,6 +42,9 @@ export class LowTagSelectField extends React.Component {
   }
 
   onSelectLowTag(selectedLowTag) {
+    if (selectedLowTag == '') {
+      this.props.onSelectLowTag(undefined);
+    }
     if (this.props.availableLowTags.some((lowTag) => lowTag === selectedLowTag)) {
       this.props.onSelectLowTag(selectedLowTag);
     }

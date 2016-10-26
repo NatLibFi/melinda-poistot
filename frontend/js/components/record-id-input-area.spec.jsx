@@ -16,14 +16,14 @@ describe('RecordIdInputArea', () => {
     editorEl = editor.getWrapperElement();
   });
 
-  it('has a CodeMirror editor', () => {
+  it('contains a CodeMirror editor', () => {
     expect(editor).to.be.an.object;
   });
   
-  describe('when editor is set to disabled', () => {
+  describe('when editor is set to readOnly', () => {
     
     beforeEach(() => {
-      component.componentWillReceiveProps({disabled: true});
+      component.componentWillReceiveProps({readOnly: true});
     });
     
     it('sets the editor into readOnly mode', () => {
@@ -35,13 +35,16 @@ describe('RecordIdInputArea', () => {
    
     describe('when editor is enabled afterwards', () => {
       beforeEach(() => {
-        component.componentWillReceiveProps({disabled: false});
+        component.componentWillReceiveProps({readOnly: false});
       });
       it('sets the editor into editable mode', () => {
         expect(editor.getOption('readOnly')).to.equal(false);
       });
       it('removes the CodeMirror-disabled class', () => {
         expect(editorEl.className.split(' ')).not.to.contain('CodeMirror-disabled');
+      });
+      it('clears the editor value', () => {
+        expect(editor.getValue()).to.equal('');
       });
 
     });

@@ -4,14 +4,15 @@ import _ from 'lodash';
 import '../../styles/main.scss';
 import { removeSession } from '../action-creators/session-actions';
 import { setRecordIdList, submitJob } from '../action-creators/job-configuration-actions';
+import { resetWorkspace } from '../action-creators/ui-actions';
 import { NavBar } from './navbar';
 import { SigninFormPanelContainer } from './signin-form-panel';
 import { JobConfigurationPanelContainer } from './job-configuration-panel';
 import { RecordIdInputArea } from './record-id-input-area';
 import { StatusCard } from './status-card';
+import { validRecordCount, recordParseErrors, editorIsReadOnly, submitEnabled } from '../selectors/record-list-selectors';
 import { ExampleCardLocalId } from './example-card-local-id';
 import { ExampleCardMelindaId } from './example-card-melinda-id';
-import { validRecordCount, recordParseErrors } from '../selectors/record-list-selectors';
 
 export class BaseComponent extends React.Component {
 
@@ -19,11 +20,15 @@ export class BaseComponent extends React.Component {
     sessionState: React.PropTypes.string.isRequired,
     removeSession: React.PropTypes.func.isRequired,
     setRecordIdList: React.PropTypes.func.isRequired,
+    resetWorkspace: React.PropTypes.func.isRequired,
     submitJob: React.PropTypes.func.isRequired,
     userinfo: React.PropTypes.object,
     validRecordCount: React.PropTypes.number,
     submitStatus: React.PropTypes.string.isRequired,
-    recordParseErrors: React.PropTypes.array
+    submitJobError: React.PropTypes.string,
+    recordParseErrors: React.PropTypes.array,
+    editorIsReadOnly: React.PropTypes.bool,
+    submitEnabled: React.PropTypes.object
   }
 
   handleLogout() {
@@ -58,8 +63,10 @@ export class BaseComponent extends React.Component {
         <div className="row">
           <div className="col s6 l4 offset-l1">
             <RecordIdInputArea 
+              submitStatus={this.props.submitStatus}
               recordParseErrors={this.props.recordParseErrors}
-              onChange={(list) => this.props.setRecordIdList(list)} />
+              onChange={(list) => this.props.setRecordIdList(list)}
+              readOnly={this.props.editorIsReadOnly} />
           </div>
 
           <div className="col s6 l5">
@@ -71,19 +78,19 @@ export class BaseComponent extends React.Component {
               validRecordCount={this.props.validRecordCount}
               userinfo={this.props.userinfo}
               submitStatus={this.props.submitStatus}
+              submitJobError={this.props.submitJobError}
+              submitEnabled={this.props.submitEnabled}
               recordParseErrors={this.props.recordParseErrors}
+              onStartNewList={() => this.props.resetWorkspace()}
               />
           </div>
         </div>
-
-
-        
       </div>
     );
   }
 
   render() {
-
+    
     if (this.props.sessionState == 'SIGNIN_OK') {
       return this.renderMainPanel();
     } else if (this.props.sessionState == 'VALIDATION_ONGOING') {
@@ -102,11 +109,14 @@ function mapStateToProps(state) {
     userinfo: state.getIn(['session', 'userinfo']),
     validRecordCount: validRecordCount(state),
     recordParseErrors: recordParseErrors(state),
-    submitStatus: state.getIn(['jobconfig', 'submitStatus'])
+    submitStatus: state.getIn(['jobconfig', 'submitStatus']),
+    submitJobError: state.getIn(['jobconfig', 'submitJobError']),
+    editorIsReadOnly: editorIsReadOnly(state),
+    submitEnabled: submitEnabled(state)
   };
 }
 
 export const BaseComponentContainer = connect(
   mapStateToProps,
-  { removeSession, setRecordIdList, submitJob }
+  { removeSession, setRecordIdList, submitJob, resetWorkspace }
 )(BaseComponent);

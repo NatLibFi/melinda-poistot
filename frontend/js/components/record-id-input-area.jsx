@@ -10,13 +10,19 @@ export class RecordIdInputArea extends React.Component {
 
   static propTypes = {  
     onChange: React.PropTypes.func.isRequired,
-    recordParseErrors: React.PropTypes.array
+    recordParseErrors: React.PropTypes.array,
+    readOnly: React.PropTypes.bool,
+    submitStatus: React.PropTypes.string.isRequired,
   }
   
   constructor(props) {
     super(props);
-    this.state ={
-      recordParseErrors: []
+
+    const readOnly = _.get(props, 'readOnly', false);
+
+    this.state = {
+      recordParseErrors: [],
+      readOnly
     };
   }
 
@@ -27,23 +33,22 @@ export class RecordIdInputArea extends React.Component {
     });
 
     const updater = _.debounce(this.handleUpdate.bind(this), 150);
-
     this._editor.on('change', updater);
-
   }
 
-
   componentWillReceiveProps(nextProps) {
+    const readOnly = _.get(nextProps, 'readOnly', false);
+    const { recordParseErrors, submitStatus } = nextProps;
 
-    this.updateErrorMarkers(nextProps.recordParseErrors || []);
+    this.updateErrorMarkers(recordParseErrors || []);
 
-    if (nextProps.disabled) {
-      this._editor.setOption('readOnly', true);
-      window.$(this._editor.getWrapperElement()).addClass('CodeMirror-disabled');
-    } else {
-      this._editor.setOption('readOnly', false);
-      window.$(this._editor.getWrapperElement()).removeClass('CodeMirror-disabled');
+    if (this.state.readOnly !== readOnly) {
+      this.setReadOnly(readOnly || false);  
     }
+    if (this.state.submitStatus === 'SUCCESS' && submitStatus === 'NOT_SUBMITTED') {
+      this.clearEditor();
+    }
+    this.setState({ readOnly, submitStatus });
   }
 
   shouldComponentUpdate() {
@@ -60,19 +65,22 @@ export class RecordIdInputArea extends React.Component {
     const visibleErrorMarkers = _.take(nextParseErrors, MAX_VISIBLE_ERROR_AMOUNT);
 
     const nextErrorRows = nextParseErrors.map(err => err.row).reduce((acc, row) => _.set(acc, row, true), {});
-    const currentErrorRows = this.state.recordParseErrors.map(err => err.row).reduce((acc, row) => _.set(acc, row, true), {});
 
-    
     this.state.recordParseErrors.forEach(err => {
       if (!nextErrorRows[err.row]) {
-        this._editor.setGutterMarker(err.row, 'CodeMirror-gutter-error', null);
+        const lineHandle = this._editor.getLineHandle(err.row);
+        if (lineHandle) this._editor.setGutterMarker(lineHandle, 'CodeMirror-gutter-error', null);
       }
     });
+    
+    visibleErrorMarkers.forEach(visibleParseError => {
+      const lineHandle = this._editor.getLineHandle(visibleParseError.row);
+      const markers = _.get(lineHandle, 'gutterMarkers', {}) || {};
+      const hasErrorMarker = Object.keys(markers).some(marker => marker == 'CodeMirror-gutter-error');
 
-    visibleErrorMarkers.forEach(err => {
-      if (!currentErrorRows[err.row]) {
-        const marker = this.makeMarker();
-        this._editor.setGutterMarker(err.row, 'CodeMirror-gutter-error', marker);        
+      if (!hasErrorMarker) {
+        const marker = this.makeMarker(visibleParseError.error.message);
+        if (lineHandle) this._editor.setGutterMarker(lineHandle, 'CodeMirror-gutter-error', marker);
       }
     });
 
@@ -80,9 +88,23 @@ export class RecordIdInputArea extends React.Component {
       recordParseErrors: visibleErrorMarkers
     });
   }
+
+  setReadOnly(readOnlyFlag) {
+
+    this._editor.setOption('readOnly', readOnlyFlag);
+    if (readOnlyFlag) {
+      window.$(this._editor.getWrapperElement()).addClass('CodeMirror-disabled');
+    } else {
+      window.$(this._editor.getWrapperElement()).removeClass('CodeMirror-disabled');
+    }
+  }
+
+  clearEditor() {
+    this._editor.setValue('');
+  }
   
-  makeMarker() {
-    var marker = window.$('<i class="material-icons gutter-tooltip" title="Tämä rivi ei ole sallitussa muodossa">error_outline</i>').get(0);
+  makeMarker(msg) {
+    var marker = window.$(`<i class="material-icons gutter-tooltip" title="${msg}">error_outline</i>`).get(0);
     marker.style.color = '#822';
     return marker;
   }

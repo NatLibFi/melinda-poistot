@@ -24,4 +24,17 @@ describe('job configuration reducer', () => {
     });
   });
   
+  describe('on SUBMIT_JOB_FAIL', () => {
+    let state;
+    beforeEach(() => {
+      state = reducer(undefined, actions.submitJobFailure(new Error('failed to submit job')));
+    });
+    it('sets the submitStatus', () => {
+      expect(state.getIn(['jobconfig', 'submitStatus'])).to.eql('FAILED');
+    });
+    it('sets the submitJobError', () => {
+      expect(state.getIn(['jobconfig', 'submitJobError']).message).to.eql('failed to submit job');
+    });
+  });
+
 });

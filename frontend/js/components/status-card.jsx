@@ -9,10 +9,13 @@ import '../../styles/components/status-card';
 export class StatusCard extends React.Component {
   static propTypes = {
     onSubmitList: React.PropTypes.func.isRequired,
+    onStartNewList: React.PropTypes.func.isRequired,
     validRecordCount: React.PropTypes.number,
     userinfo: React.PropTypes.object,
     submitStatus: React.PropTypes.string.isRequired,
-    recordParseErrors: React.PropTypes.array
+    submitJobError: React.PropTypes.string,
+    recordParseErrors: React.PropTypes.array,
+    submitEnabled: React.PropTypes.object
   }
 
   onSubmit(event) {
@@ -20,6 +23,11 @@ export class StatusCard extends React.Component {
     if (this.isSubmitEnabled()) {
       this.props.onSubmitList();  
     }
+  }
+
+  onStartNewList(event) {
+    event.preventDefault();
+    this.props.onStartNewList();
   }
 
   renderSuccessCardContent() {
@@ -30,29 +38,35 @@ export class StatusCard extends React.Component {
         <span className="card-title"><i className='material-icons medium'>done_all</i>Tietuelistaus on lähetetty käsiteltäväksi</span>
         <p>Listan {this.props.validRecordCount} tietuetta on lähetetty käsiteltäväksi.</p>
         <p>Saat vielä sähköpostin osoitteeseen <span className="email">{userEmail}</span> kun tietueet on käsitelty.</p>
+        <p>Lähettämäsi lista on lukittu. Älä lähetä samaa listaa uudelleen. Mikäli haluat lähettää uuden listan, tyhjennä näkymä tästä: <a onClick={(e) => this.onStartNewList(e)} href="#">Aloita uusi lista</a></p>
       </div>
     );
   }
 
   renderDefaultCardContent() {
     const userEmail = this.props.userinfo.email || '(sähköposti puuttuu)';
+    const submitEnabled = this.props.submitEnabled.value;
+    const reasonDisabledReason = this.props.submitEnabled.reason;
 
     return (
 
       <div className="card-content">
-        <span className="card-title"><i className='material-icons medium'>playlist_add_check</i>Tietuelistaus on valmiina lähettäväksi</span>
+        <span className="card-title"><i className='material-icons medium'>playlist_add_check</i>{titleText(this.props.validRecordCount)}</span>
+        
         <p>Saat raportin osoitteeseen <span className="email">{userEmail}</span> kun poistot on tehty.</p>
-
-        <p>{recordCountText(this.props.validRecordCount)}</p>
+        { submitEnabled ? <p>{recordCountText(this.props.validRecordCount)}</p> : <p>{reasonDisabledReason}</p> }
       </div>
      
     );
+    function titleText(recordCount) {
+      return recordCount > 0 ? 'Tietuelistaus on valmiina lähettäväksi' : 'Lisää lista poistettvista tietueista';
+    }
 
     function recordCountText(recordCount) {
       switch(recordCount) {
-      case 0: return <p>Listauksessa ei ole yhtään tietuetta.</p>;
-      case 1: return <p>Olet lähettämässä {recordCount} tietueen käsiteltäväksi.</p>;
-      default: return <p>Olet lähettämässä {recordCount} tietuetta käsiteltäväksi.</p>;
+      case 0: return 'Listauksessa ei ole yhtään tietuetta.';
+      case 1: return `Olet lähettämässä ${recordCount} tietueen käsiteltäväksi.`;
+      default: return `Olet lähettämässä ${recordCount} tietuetta käsiteltäväksi.`;
       }
     }
   }
@@ -92,7 +106,7 @@ export class StatusCard extends React.Component {
           Tietuelistauksen lähetys epäonnistui
         </span>
         
-        <p>Tietuelistauksen lähetys epäonnistui. Yritä hetken päästä uudelleen tai ota yhteyttä Melinda ylläpitoon.</p>
+        <p>{this.props.submitJobError.message}</p>
       </div>
     );
   }
@@ -126,10 +140,7 @@ export class StatusCard extends React.Component {
   }
 
   isSubmitEnabled() {
-    if (this.props.recordParseErrors.length === 0 && this.props.validRecordCount > 0) {
-      return (this.props.submitStatus === 'NOT_SUBMITTED' || this.props.submitStatus === 'FAILED');
-    } 
-    return false;
+    return _.get(this.props.submitEnabled, 'value', false);
   }
 
   isSubmitVisible() {
