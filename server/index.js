@@ -7,6 +7,7 @@ import { sessionController } from './session-controller';
 import { recordListController } from './record-list-controller';
 
 import * as recordUpdateWorker from './workers/record-update-worker';
+import ResultWorker from './workers/result-worker';
 
 //const NODE_ENV = readEnvironmentVariable('NODE_ENV', 'dev');
 const PORT = readEnvironmentVariable('HTTP_PORT', 3001);
@@ -24,3 +25,6 @@ app.use(express.static('public'));
 app.listen(PORT, () => logger.log('info', `Application started on port ${PORT}`));
 
 recordUpdateWorker.connect().then(() => logger.log('info', 'Record update worker ready.'));
+
+const resultWorker = new ResultWorker();
+resultWorker.connect().then(() => logger.log('info', 'Result worker ready.'));

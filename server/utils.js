@@ -1,6 +1,9 @@
 'use strict';
 import { logger } from './logger';
 import _ from 'lodash';
+import { authProvider } from './melinda-auth-provider';
+import { readSessionToken } from './session-crypt';
+import HttpStatus from 'http-status-codes';
 
 export function readEnvironmentVariable(name, defaultValue, opts) {
 
@@ -43,4 +46,21 @@ export function requireBodyParams(...requiredParams) {
     logger.log('info', 'Request did not have required body parameters', requiredParams);
     res.sendStatus(400);
   };
+}
+
+export function userinfoMiddleware(req, res, next) {
+  const { sessionToken } = req.cookies;
+  try {
+    const {username, password} = readSessionToken(sessionToken);
+    
+    authProvider.validateCredentials(username, password).then(creds => {
+      req.userinfo = creds.userinfo;
+      next();
+    }).catch(error => {
+      logger.log('info', 'Error loading userinfo', error);
+      res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+    });
+  } catch(error) {
+    res.sendStatus(HttpStatus.UNAUTHORIZED);
+  }
 }

@@ -3,7 +3,8 @@ import {SET_SELECTED_LOW_TAG, SET_RECORD_ID_LIST, SUBMIT_JOB_START, SUBMIT_JOB_S
 
 const INITIAL_STATE = Map({
   rawRecordIdRows: [],
-  lowtag: undefined
+  lowtag: undefined,
+  submitStatus: 'NOT_SUBMITTED'
 });
 
 export default function session(state = INITIAL_STATE, action) {
