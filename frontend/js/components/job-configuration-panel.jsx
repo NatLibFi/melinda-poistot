@@ -4,6 +4,7 @@ import { setSelectedLowTag, setDeleteOption } from '../action-creators/job-confi
 import '../../styles/components/job-configuration-panel';
 import { LowTagSelectField } from './lowtag-select-field';
 import _ from 'lodash';
+import classNames from 'classnames';
 
 export class JobConfigurationPanel extends React.Component {
   static propTypes = {
@@ -38,6 +39,11 @@ export class JobConfigurationPanel extends React.Component {
   }
 
   render() {
+
+    const deleteRecordTipClasses = classNames('checkbox-tip', {
+      visible: this.props.deleteUnusedRecords
+    });
+
     return (
       <div className="job-configuration-container">
 
@@ -55,7 +61,7 @@ export class JobConfigurationPanel extends React.Component {
               <p>
                 <input type="checkbox" className="filled-in" id="delete-record-option" onChange={(e) => this.handleDeleteOptionChange(e)} checked={this.props.deleteUnusedRecords} />
                 <label htmlFor="delete-record-option">Poista tietue Melindasta jos siihen ei jää yhtään tietokantatunnusta</label>
-                <span className="checkbox-tip">Poista Melindasta vain turhat tietueet, älä sellasia joista on iloa muille.</span>
+                <span className={deleteRecordTipClasses}>Poista Melindasta vain turhat tietueet, älä sellasia joista on iloa muille.</span>
               </p>
             </form>
           </div>
