@@ -10,7 +10,7 @@ describe('job configuration reducer', () => {
       state = reducer(undefined, actions.setSelectedLowTag('TEST'));
     });
     it('sets the lowtag', () => {
-      expect(state.getIn(['jobconfig', 'lowtag'])).to.eql('TEST');
+      expect(state.getIn(['recordListForm', 'lowtag'])).to.eql('TEST');
     });
   });
   
@@ -20,7 +20,7 @@ describe('job configuration reducer', () => {
       state = reducer(undefined, actions.setDeleteOption(true));
     });
     it('sets the delete unused records option', () => {
-      expect(state.getIn(['jobconfig', 'deleteUnusedRecords'])).to.eql(true);
+      expect(state.getIn(['recordListForm', 'deleteUnusedRecords'])).to.eql(true);
     });
   });
 
@@ -30,7 +30,7 @@ describe('job configuration reducer', () => {
       state = reducer(undefined, actions.setReplicateOption(true));
     });
     it('sets the replicate records option', () => {
-      expect(state.getIn(['jobconfig', 'replicateRecords'])).to.eql(true);
+      expect(state.getIn(['recordListForm', 'replicateRecords'])).to.eql(true);
     });
   });
   
@@ -40,7 +40,7 @@ describe('job configuration reducer', () => {
       state = reducer(undefined, actions.setRecordIdList([1,2]));
     });
     it('sets the rawRecordIdRows', () => {
-      expect(state.getIn(['jobconfig', 'rawRecordIdRows'])).to.eql([1,2]);
+      expect(state.getIn(['recordListForm', 'rawRecordIdRows'])).to.eql([1,2]);
     });
   });
   
@@ -50,10 +50,10 @@ describe('job configuration reducer', () => {
       state = reducer(undefined, actions.submitJobFailure(new Error('failed to submit job')));
     });
     it('sets the submitStatus', () => {
-      expect(state.getIn(['jobconfig', 'submitStatus'])).to.eql('FAILED');
+      expect(state.getIn(['recordListForm', 'submitStatus'])).to.eql('FAILED');
     });
     it('sets the submitJobError', () => {
-      expect(state.getIn(['jobconfig', 'submitJobError']).message).to.eql('failed to submit job');
+      expect(state.getIn(['recordListForm', 'submitJobError']).message).to.eql('failed to submit job');
     });
   });
 

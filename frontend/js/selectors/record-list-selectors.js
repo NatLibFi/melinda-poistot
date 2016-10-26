@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { createSelector } from 'reselect';
 
-const recordList = state => state.getIn(['jobconfig', 'rawRecordIdRows']);
+const recordList = state => state.getIn(['recordListForm', 'rawRecordIdRows']);
 
 export const validRecordList = createSelector([recordList], (recordList) => {
   return recordList.filter(row => row !== undefined);
@@ -23,8 +23,8 @@ export const recordParseErrors = createSelector([recordList], (recordList) => {
   }, []);
 });
 
-const submitStatus = state => state.getIn(['jobconfig', 'submitStatus']);
-const lowtag = state => state.getIn(['jobconfig', 'lowtag']);
+const submitStatus = state => state.getIn(['recordListForm', 'submitStatus']);
+const lowtag = state => state.getIn(['recordListForm', 'lowtag']);
 
 export const editorIsReadOnly = createSelector([submitStatus], submitStatus => {
   return _.includes(['ONGOING', 'SUCCESS'], submitStatus);

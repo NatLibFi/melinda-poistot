@@ -85,8 +85,8 @@ function mapStateToProps(state) {
 
   return {
     availableLowTags,
-    deleteUnusedRecords: state.getIn(['jobconfig', 'deleteUnusedRecords']),
-    replicateRecords: state.getIn(['jobconfig', 'replicateRecords'])
+    deleteUnusedRecords: state.getIn(['recordListForm', 'deleteUnusedRecords']),
+    replicateRecords: state.getIn(['recordListForm', 'replicateRecords'])
   };
 }
 

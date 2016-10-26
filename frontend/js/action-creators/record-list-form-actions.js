@@ -34,9 +34,9 @@ export function submitJob() {
   return function(dispatch, getState) {
 
     const records = validRecordList(getState());
-    const lowTag = getState().getIn(['jobconfig', 'lowtag']);
-    const deleteUnusedRecords = getState().getIn(['jobconfig', 'deleteUnusedRecords']);
-    const replicateRecords = getState().getIn(['jobconfig', 'replicateRecords']);
+    const lowTag = getState().getIn(['recordListForm', 'lowtag']);
+    const deleteUnusedRecords = getState().getIn(['recordListForm', 'deleteUnusedRecords']);
+    const replicateRecords = getState().getIn(['recordListForm', 'replicateRecords']);
 
     dispatch(submitJobStarted());
 

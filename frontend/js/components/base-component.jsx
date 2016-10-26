@@ -109,8 +109,8 @@ function mapStateToProps(state) {
     userinfo: state.getIn(['session', 'userinfo']),
     validRecordCount: validRecordCount(state),
     recordParseErrors: recordParseErrors(state),
-    submitStatus: state.getIn(['jobconfig', 'submitStatus']),
-    submitJobError: state.getIn(['jobconfig', 'submitJobError']),
+    submitStatus: state.getIn(['recordListForm', 'submitStatus']),
+    submitJobError: state.getIn(['recordListForm', 'submitJobError']),
     editorIsReadOnly: editorIsReadOnly(state),
     submitEnabled: submitEnabled(state)
   };
