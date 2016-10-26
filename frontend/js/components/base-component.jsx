@@ -9,7 +9,7 @@ import { SigninFormPanelContainer } from './signin-form-panel';
 import { JobConfigurationPanelContainer } from './job-configuration-panel';
 import { RecordIdInputArea } from './record-id-input-area';
 import { StatusCard } from './status-card';
-import { validRecordCount } from '../selectors/record-list-selectors';
+import { validRecordCount, recordParseErrors } from '../selectors/record-list-selectors';
 
 export class BaseComponent extends React.Component {
 
@@ -20,7 +20,8 @@ export class BaseComponent extends React.Component {
     submitJob: React.PropTypes.func.isRequired,
     userinfo: React.PropTypes.object,
     validRecordCount: React.PropTypes.number,
-    submitStatus: React.PropTypes.string.isRequired
+    submitStatus: React.PropTypes.string.isRequired,
+    recordParseErrors: React.PropTypes.array
   }
 
   handleLogout() {
@@ -54,7 +55,9 @@ export class BaseComponent extends React.Component {
 
         <div className="row">
           <div className="col s6 l4 offset-l1">
-            <RecordIdInputArea onChange={(list) => this.props.setRecordIdList(list)} />
+            <RecordIdInputArea 
+              recordParseErrors={this.props.recordParseErrors}
+              onChange={(list) => this.props.setRecordIdList(list)} />
           </div>
 
           <div className="col s6 l5">
@@ -63,6 +66,7 @@ export class BaseComponent extends React.Component {
               validRecordCount={this.props.validRecordCount}
               userinfo={this.props.userinfo}
               submitStatus={this.props.submitStatus}
+              recordParseErrors={this.props.recordParseErrors}
               />
           </div>
         </div>
@@ -92,6 +96,7 @@ function mapStateToProps(state) {
     sessionState: state.getIn(['session', 'state']),
     userinfo: state.getIn(['session', 'userinfo']),
     validRecordCount: validRecordCount(state),
+    recordParseErrors: recordParseErrors(state),
     submitStatus: state.getIn(['jobconfig', 'submitStatus'])
   };
 }

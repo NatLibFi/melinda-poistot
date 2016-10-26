@@ -1,7 +1,21 @@
 .status-card-container {
   
+  .email {
+    font-weight: bold;
+  }
+
   .status-card {
     min-height: 215px;
+  }
+
+  .card-action {
+    display: none;
+  }
+
+  .card-action-visible {
+    .card-action {
+      display: block;
+    }
   }
 
   .card-action-disabled a {

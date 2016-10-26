@@ -8,6 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 // App files location
 const PATHS = {
   app: path.resolve(__dirname, '../frontend/js'),
+  common: path.resolve(__dirname, '../common'),
   styles: path.resolve(__dirname, '../frontend/styles'),
   images: path.resolve(__dirname, '../frontend/images'),
   build: path.resolve(__dirname, '../build/public')
@@ -68,7 +69,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loaders: ['react-hot', 'babel'],
-        include: PATHS.app
+        include: [PATHS.app, PATHS.common]
       },
       {
         test: /\.scss$/,

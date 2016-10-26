@@ -72,15 +72,12 @@ export function readSessionMiddleware(req, res, next) {
   try {
     const {username, password} = readSessionToken(req.cookies.sessionToken);
   
-    req.session = { 
-      ...req.session,
-      username, password
-    };
+    req.session = _.assign({}, req.session, { username, password });
 
   } catch(e) {
     // invalid token
-    logger.log('debug', 'Invalid session', e);
-    req.session = _.extend({}, req.sessionToken);
+    logger.log('debug', 'Invalid session from token', req.cookies.sessionToken);
+    req.session = {};
   }
 
   next();
