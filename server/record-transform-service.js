@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import MarcRecord from 'marc-record-js';
+import { recordIsUnused, markRecordAsDeleted } from './record-utils';
 
 export function transformRecord(recordParam, libraryTag, expectedLocalId, opts) {
   const lowercaseLibraryTag = libraryTag.toLowerCase();
@@ -24,7 +25,7 @@ export function transformRecord(recordParam, libraryTag, expectedLocalId, opts) 
     removeSIDFields(record, actions, libraryTag, expectedLocalId);
     removeLOWFields(record, actions, libraryTag);
 
-    if (opts && opts.deleteRecordHoldinglessRecord) {
+    if (opts && opts.deleteUnusedRecords && recordIsUnused(record)) {
       markRecordAsDeleted(record);
       actions.push('Record was deleted.');
     } else {
@@ -135,12 +136,6 @@ function removeField(record, field) {
 function removeSubfield(record, field, subfield) {
   field.subfields = _.without(field.subfields, subfield);
 }
-
-function markRecordAsDeleted(record) {
-  record.leader = Array.from(record.leader).map((c, i) => i == 5 ? 'd' : c).join('');
-  record.insertField(['STA','','','a','DELETED']);
-}
-
 
 function withSubfield(code) {
   return function(field) {

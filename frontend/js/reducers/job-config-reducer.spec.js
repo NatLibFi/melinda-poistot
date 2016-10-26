@@ -14,6 +14,16 @@ describe('job configuration reducer', () => {
     });
   });
   
+  describe('on SET_DELETE_OPTION', () => {
+    let state;
+    beforeEach(() => {
+      state = reducer(undefined, actions.setDeleteOption(true));
+    });
+    it('sets the delete unused records option', () => {
+      expect(state.getIn(['jobconfig', 'deleteUnusedRecords'])).to.eql(true);
+    });
+  });
+  
   describe('on SET_RECORD_ID_LIST', () => {
     let state;
     beforeEach(() => {
