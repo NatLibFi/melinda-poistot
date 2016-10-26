@@ -1,17 +1,25 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import { setSelectedLowTag } from '../action-creators/job-configuration-actions';
+import { setSelectedLowTag, setDeleteOption } from '../action-creators/job-configuration-actions';
 import '../../styles/components/job-configuration-panel';
 import { LowTagSelectField } from './lowtag-select-field';
 import _ from 'lodash';
+import classNames from 'classnames';
 
 export class JobConfigurationPanel extends React.Component {
   static propTypes = {
     availableLowTags: React.PropTypes.array.isRequired,
-    setSelectedLowTag: React.PropTypes.func.isRequired
+    setSelectedLowTag: React.PropTypes.func.isRequired,
+    setDeleteOption:  React.PropTypes.func.isRequired,
+    deleteUnusedRecords: React.PropTypes.bool.isRequired
+  }
+
+  handleDeleteOptionChange(event) {
+    this.props.setDeleteOption(event.target.checked);
   }
 
   renderReplicationCheckbox() {
+  
     return (
       <p>
         <input type="checkbox" className="filled-in" id="filled-in-box" />
@@ -22,16 +30,21 @@ export class JobConfigurationPanel extends React.Component {
   }
 
   renderRemoveRecordCheckbox() {
+    const deleteRecordTipClasses = classNames('checkbox-tip', {
+      visible: this.props.deleteUnusedRecords
+    });
+
     return ( 
       <p>
-        <input type="checkbox" className="filled-in" id="filled-in-box-2" />
-        <label htmlFor="filled-in-box-2">Poista tietue Melindasta jos siihen ei jää yhtään tietokantatunnusta</label>
-        <span className="checkbox-tip">Poista vain turhat tietueet kuten älä sellasia mistä on iloa muille.</span>
+        <input type="checkbox" className="filled-in" id="delete-record-option" onChange={(e) => this.handleDeleteOptionChange(e)} checked={this.props.deleteUnusedRecords} />
+        <label htmlFor="delete-record-option">Poista tietue Melindasta jos siihen ei jää yhtään tietokantatunnusta.</label>
+        <span className={deleteRecordTipClasses}>Poista Melindasta vain turhat tietueet, älä sellasia joista on iloa muille.</span>
       </p>
     );
   }
 
   render() {
+
     return (
       <div className="job-configuration-container">
 
@@ -45,6 +58,8 @@ export class JobConfigurationPanel extends React.Component {
           <div className="col l5 s8 offset-l1">
             <form autoComplete="off">
               <LowTagSelectField availableLowTags={this.props.availableLowTags} onSelectLowTag={(lowtag) => this.props.setSelectedLowTag(lowtag)} />
+
+              { this.renderRemoveRecordCheckbox() }
             </form>
           </div>
         </div>
@@ -60,11 +75,12 @@ function mapStateToProps(state) {
   const availableLowTags = _.get(userinfo, 'lowtags', []);
 
   return {
-    availableLowTags
+    availableLowTags,
+    deleteUnusedRecords: state.getIn(['jobconfig', 'deleteUnusedRecords'])
   };
 }
 
 export const JobConfigurationPanelContainer = connect(
   mapStateToProps,
-  { setSelectedLowTag }
+  { setSelectedLowTag, setDeleteOption }
 )(JobConfigurationPanel);

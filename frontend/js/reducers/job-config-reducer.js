@@ -1,18 +1,21 @@
 import { Map } from 'immutable';
-import {SET_SELECTED_LOW_TAG, SET_RECORD_ID_LIST, SUBMIT_JOB_START, SUBMIT_JOB_SUCCESS, SUBMIT_JOB_FAIL} from '../constants/action-type-constants';
+import {SET_SELECTED_LOW_TAG, SET_RECORD_ID_LIST, SUBMIT_JOB_START, SUBMIT_JOB_SUCCESS, SUBMIT_JOB_FAIL, SET_DELETE_OPTION} from '../constants/action-type-constants';
 import { RESET_WORKSPACE } from '../constants/action-type-constants';
 
 const INITIAL_STATE = Map({
   rawRecordIdRows: [],
   lowtag: undefined,
   submitStatus: 'NOT_SUBMITTED',
-  submitJobError: undefined
+  submitJobError: undefined,
+  deleteUnusedRecords: false
 });
 
 export default function session(state = INITIAL_STATE, action) {
   switch (action.type) {
   case SET_SELECTED_LOW_TAG:
     return setLowTag(state, action.lowtag);
+  case SET_DELETE_OPTION:
+    return setDeleteOption(state, action.checked);
   case SET_RECORD_ID_LIST:
     return setRecordIdList(state, action.list);
   case SUBMIT_JOB_START:
@@ -29,6 +32,9 @@ export default function session(state = INITIAL_STATE, action) {
 
 function setLowTag(state, lowtag) {
   return state.set('lowtag', lowtag);
+}
+function setDeleteOption(state, enabled) {
+  return state.set('deleteUnusedRecords', enabled); 
 }
 
 function setRecordIdList(state, list) {

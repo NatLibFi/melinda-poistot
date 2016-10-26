@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import { transformRecord } from './record-transform-service';
-import { FAKE_RECORD_FCC_SID, FAKE_RECORD, FAKE_DELETED_RECORD, FAKE_RECORD_SID_LOW, FAKE_RECORD_FOR_CLEANUP } from './test_helpers/fake-data';
+import { FAKE_RECORD_FCC_SID, FAKE_RECORD, FAKE_DELETED_RECORD, FAKE_RECORD_SID_LOW, FAKE_RECORD_FOR_CLEANUP, FAKE_RECORD_ONLY_LOW_TEST, FAKE_RECORD_2_LOW } from './test_helpers/fake-data';
 import { exceptCoreErrors } from './utils';
 
 describe('Record transform service', () => {
@@ -127,14 +127,13 @@ describe('Record transform service', () => {
       });
     });
 
-    describe('when delete records without holdings flag is given', () => {
-      describe('when record has no LOW tags or 850/852/866 fields left', () => {
+    describe('when delete unsued records option is true', () => {
+      const opts = { deleteUnusedRecords: true };
+      
+      describe('when a record has none of the following fields left: LOW/850/852/866', () => {
+        
         beforeEach(() => {
-          const opts = {
-            deleteRecordHoldinglessRecord: true
-          };
-
-          return transformRecord(FAKE_RECORD_SID_LOW, LIBRARY_TAG, EXPECTED_LOCAL_ID, opts)
+          return transformRecord(FAKE_RECORD_ONLY_LOW_TEST, LIBRARY_TAG, EXPECTED_LOCAL_ID, opts)
             .then(res => result = res)
             .catch(err => error = err);
         });
@@ -147,6 +146,19 @@ describe('Record transform service', () => {
           expect(result.actions).to.include('Record was deleted.');
         });
       });
+
+      describe('when record still has some LOW fields left', () => {
+        beforeEach(() => {
+          return transformRecord(FAKE_RECORD_2_LOW, LIBRARY_TAG, EXPECTED_LOCAL_ID, opts)
+            .then(res => result = res)
+            .catch(err => error = err);
+        });
+        it('should not be deleted', () => {
+          expect(result.record.isDeleted()).not.to.equal(true);
+        });
+      });
+
+
     });
 
     describe('cleanup record after operation', () => {

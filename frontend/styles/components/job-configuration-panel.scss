@@ -20,6 +20,15 @@
     line-height: 25px;
     font-size: 1rem;
     color: #42a5f5;
+    
+    opacity: 0;
+    cursor: default;
+    user-select: none;
+    transition: opacity .15s ease-in-out;
+
+    &.visible {
+      opacity: 1;
+    }
   }
   
   .autocomplete-content {
