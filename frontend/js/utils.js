@@ -19,3 +19,7 @@ export function errorIfStatusNot(statusCode) {
     return response;
   };
 }
+
+export function isFileApiSupported() {
+  return (window.File && window.FileReader && window.FileList && window.Blob);
+}
