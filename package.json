@@ -10,7 +10,7 @@
     "ln": "ln -snf ../common server/common",
     "prebuild": "npm run clean:build && npm run build:html && npm run ln",
     "build": "npm run build:server && npm run build:frontend",
-    "build:frontend": "export NODE_ENV=production & NODE_ENV=production & webpack -p --config ./config/webpack.config.prod.js --progress",
+    "build:frontend": "export NODE_ENV=production & NODE_ENV=production & webpack -p --config ./config/webpack.config.prod.js --progress --bail",
     "build:server": "babel server --ignore spec.js --out-dir build --source-maps",
     "test": "npm run lint && npm run test:frontend && npm run test:server",
     "test:frontend": "BABEL_ENV=test mocha --compilers js:babel-core/register --require ignore-styles --require ./frontend/test_helpers/test_bootstrap.js \"frontend/**/*@(.spec.js|.spec.jsx)\"",
@@ -48,6 +48,8 @@
     "marc-record-js": "^0.1.1",
     "melinda-api-client": "^1.1.0",
     "moment": "^2.15.1",
+    "node-uuid": "^1.4.7",
+    "nodemailer": "^2.6.4",
     "winston": "^2.2.0",
     "xml2js": "^0.4.17"
   },
