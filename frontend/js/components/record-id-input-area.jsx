@@ -3,6 +3,7 @@ import CodeMirror from 'codemirror';
 import { parse } from '../../../common/input-parser';
 import _ from 'lodash';
 import { MAX_VISIBLE_ERROR_AMOUNT } from '../constants/general-constants';
+import { isFileApiSupported } from '../utils';
 
 import '../../styles/components/record-id-input-area';
 
@@ -34,6 +35,7 @@ export class RecordIdInputArea extends React.Component {
 
     const updater = _.debounce(this.handleUpdate.bind(this), 150);
     this._editor.on('change', updater);
+
   }
 
   componentWillReceiveProps(nextProps) {
@@ -109,10 +111,50 @@ export class RecordIdInputArea extends React.Component {
     return marker;
   }
 
+  handleFileSelect(event) {
+    const fileList = event.target.files;
+
+    if (fileList.length > 0) {
+      const file = fileList[0];
+      const reader = new FileReader();
+
+      this.clearEditor();
+      reader.addEventListener('load', (e) => {
+        const fileContents = e.target.result;
+        this._editor.setValue(fileContents);
+      });
+
+      reader.readAsText(file);
+    }
+  }
+
+  renderFileUploadInput() {
+
+    if (!isFileApiSupported()) {
+      return null;
+    }
+
+    return (    
+      <div className="file-field input-field">
+        <div className="btn">
+          <span>TIEDOSTO</span>
+          <input type="file" ref={(c) => this._fileInput = c} onChange={(e) => this.handleFileSelect(e)}/>
+        </div>
+        <div className="file-path-wrapper">
+          <input className="file-path validate" type="text" />
+        </div>
+      </div>
+    );
+  }
+
   render() {
     return (
-      <div className="record-id-input-container">
-        <textarea className="record-id-input" ref={(c) => this._textarea = c} />
+      <div className="record-id-input-controls">
+        { this.renderFileUploadInput() }
+
+        <div className="record-id-input-container">
+          <textarea className="record-id-input" ref={(c) => this._textarea = c} />
+        </div>
       </div>
     );
   }
