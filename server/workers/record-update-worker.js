@@ -111,7 +111,9 @@ function markTaskAsFailed(task, failedMessage) {
 
 export function processTask(task, client) {
   const MELINDA_API_NO_REROUTE_OPTS = {handle_deleted: 1};
-  const transformOptions = {};
+  const transformOptions = {
+    deleteUnusedRecords: task.deleteUnusedRecords
+  };
 
   logger.log('info', 'record-update-worker: Querying for melinda id');
   return findMelindaId(task).then(taskWithResolvedId => {
