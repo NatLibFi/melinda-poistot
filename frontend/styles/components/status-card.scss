@@ -6,6 +6,19 @@
 
   .status-card {
     min-height: 215px;
+
+    .card-content {
+      min-height: 150px;
+    }
+
+    .card-title {
+      font-weight: 400;
+      vertical-align: top;
+      i {
+        font-size: 3rem;
+        margin-right: 6px;
+      }
+    }
   }
 
   .card-action {
@@ -36,16 +49,6 @@
     width: 41.6666666667%;
     padding: 0 1.5rem 0 0;
     transform: translate3d(0, 0, 0);
-  }
-
-  .status-card .card-title {
-    font-weight: 400;
-    vertical-align: top;
-  }
-
-  .status-card .card-title i {
-    font-size: 3rem;
-    margin-right: 6px;
   }
 
   .status-card-error .card-title {

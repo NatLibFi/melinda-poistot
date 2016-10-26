@@ -1,5 +1,5 @@
 import amqp from 'amqplib';
-import { readEnvironmentVariable } from './utils';
+import { readEnvironmentVariable, getMelindaLoadUserByLowtag } from './utils';
 import { logger } from './logger';
 import _ from 'lodash';
 import uuid from 'node-uuid';
@@ -19,9 +19,18 @@ export function connect() {
     });
 }
 
-export function startJob(records, lowTag, deleteUnusedRecords, sessionToken, userinfo) {
+export function startJob(records, lowTag, deleteUnusedRecords, replicateRecords, sessionToken, userinfo) {
   if (channel === undefined) {
     throw new Error('Queue for sending tasks is not available.');
+  }
+
+  if (replicateRecords) {
+    const loadUser = getMelindaLoadUserByLowtag(lowTag);
+    if (loadUser === undefined) {
+      throw new Error(`ReplicateRecords was set to true, but no load user was found for LOW: ${lowTag}`);
+    }
+    logger.log('info', `replicateRecords=${replicateRecords}, exchanging the sessionToken to ${loadUser.username}`);
+    sessionToken = loadUser.sessionToken;
   }
 
   channel.assertQueue(TASK_QUEUE, {durable: true});
@@ -29,7 +38,6 @@ export function startJob(records, lowTag, deleteUnusedRecords, sessionToken, use
   
   const jobId = uuid.v4();
   const tasks = records.map(_.partial(createTask, jobId, sessionToken, lowTag, deleteUnusedRecords));
-
   
   const jobPayload = new Buffer(JSON.stringify(createJob(jobId, tasks, userinfo)));
   // Node 6 has Buffer.from(msg) which should be used

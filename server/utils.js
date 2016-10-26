@@ -2,8 +2,12 @@
 import { logger } from './logger';
 import _ from 'lodash';
 import { authProvider } from './melinda-auth-provider';
-import { readSessionToken } from './session-crypt';
+import { readSessionToken, createSessionToken } from './session-crypt';
 import HttpStatus from 'http-status-codes';
+import fs from 'fs';
+import path from 'path';
+
+const MELINDA_LOAD_USER_FILE = readEnvironmentVariable('MELINDA_LOAD_USER_FILE', null);
 
 export function readEnvironmentVariable(name, defaultValue, opts) {
 
@@ -67,6 +71,52 @@ export function userinfoMiddleware(req, res, next) {
     res.sendStatus(HttpStatus.UNAUTHORIZED);
   }
 }
+
+export const getMelindaLoadUserByLowtag = createLoadUserIndexFn(MELINDA_LOAD_USER_FILE);
+
+export function createLoadUserIndexFn(relativeFilePath) {
+  let usersByLowtag;
+
+  return function(lowtag) {
+    if (usersByLowtag === undefined) {
+      const userList = readLoadUsersFile(relativeFilePath);
+      usersByLowtag = userList.reduce((acc, val) => _.set(acc, val.lowtag, val), {});
+    }
+
+    const user = _.get(usersByLowtag, lowtag.toUpperCase());
+    if (user === undefined) {
+      return undefined;
+    }
+
+    return _.assign({}, user, {sessionToken: createSessionToken(user.username, user.password )});
+  };
+}
+
+function readLoadUsersFile(relativeFilePath) {
+  if (relativeFilePath === null) {
+    logger.log('error', 'Melinda load users file is not available. LOAD-USERS are not usable.');
+    return [];
+  }
+
+  const filePath = path.resolve(process.cwd(), relativeFilePath);
+  try {
+    return fs.readFileSync(filePath, 'utf8')
+      .split('\n')
+      .filter(line => line.trim().length > 0)
+      .map(line => {
+        const [lowtag, username, password] = line.split('\t');
+        return {
+          lowtag: lowtag.trim().toUpperCase(), 
+          username: username.trim(), 
+          password: password.trim()
+        };
+      });
+  } catch(error) {
+    logger.log('error', 'Melinda load users file is not available. LOAD-USERS are not usable.', {filePath}, error);
+  }
+  return [];
+}
+
 
 export function exceptCoreErrors(fn) {
 

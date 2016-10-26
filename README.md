@@ -41,6 +41,7 @@ Each variable is mandatory unless it has a default value
 | SECRET_ENCRYPTION_KEY  | <random-generated-key>  | Key for encrypting/decrypting sessions |   |
 | SUPERUSER_LOWTAGS | '' | comma separated list of LOWTAGS available for superusers | ABC,DEF,GHI
 | CORS_WHITELIST | ["http://localhost:3000"] | json array of allowed hosts for CORS, put your frontend domain here. | |
+| MELINDA_LOAD_USER_FILE | null | file for melinda load users to be used when replicate option is true | ../conf/melinda-load-users.txt
 
 Note on SECRET_ENCRYPTION_KEY:
 All sessions will reset when the key changes. If the default value is used, then all sessions will reset every time the app restarts.
