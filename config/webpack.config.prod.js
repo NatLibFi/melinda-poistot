@@ -9,6 +9,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const PATHS = {
   app: path.resolve(__dirname, '../frontend/js'),
   common: path.resolve(__dirname, '../common'),
+  commons_frontend: path.resolve(__dirname, '../melinda-ui-commons/frontend'),
+  commons_styles: path.resolve(__dirname, '../melinda-ui-commons/frontend/styles'),
   styles: path.resolve(__dirname, '../frontend/styles'),
   images: path.resolve(__dirname, '../frontend/images'),
   build: path.resolve(__dirname, '../build/public')
@@ -60,6 +62,10 @@ module.exports = {
     colors: true
   },
   resolve: {
+    alias: {
+      commons: path.resolve(PATHS.commons_frontend, 'js'),
+      styles: PATHS.commons_styles
+    },
     // We can now require('file') instead of require('file.jsx')
     extensions: ['', '.js', '.jsx', '.scss']
   },
@@ -69,7 +75,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loaders: ['react-hot', 'babel'],
-        include: [PATHS.app, PATHS.common]
+        include: [PATHS.app, PATHS.common, PATHS.commons_frontend]
       },
       {
         test: /\.scss$/,
@@ -77,7 +83,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        include: PATHS.styles,
+        include: [PATHS.styles, PATHS.commons_styles],
         loader: ExtractTextPlugin.extract('style-loader', 'css-loader!postcss-loader')
       },
       // Inline base64 URLs for <=8k images, direct URLs for the rest
