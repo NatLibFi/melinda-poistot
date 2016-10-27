@@ -1,9 +1,10 @@
 'use strict';
 import express from 'express';
-import { logger, expressWinston } from './logger';
-import { readEnvironmentVariable } from './utils';
+import path from 'path';
+import { logger, expressWinston } from 'server/logger';
+import { readEnvironmentVariable } from 'server/utils';
 import cookieParser from 'cookie-parser';
-import { sessionController } from './session-controller';
+import { sessionController } from 'server/session-controller';
 import { recordListController } from './record-list-controller';
 
 import * as recordUpdateWorker from './workers/record-update-worker';
@@ -20,7 +21,7 @@ app.use(cookieParser());
 app.use('/session', sessionController);
 app.use('/records', recordListController);
 
-app.use(express.static('public'));
+app.use(express.static(path.resolve(__dirname, 'public')));
 
 app.listen(PORT, () => logger.log('info', `Application started on port ${PORT}`));
 

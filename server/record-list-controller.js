@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { logger } from './logger';
-import { corsOptions, requireBodyParams, userinfoMiddleware } from './utils';
+import { logger } from 'server/logger';
+import { corsOptions, requireBodyParams, userinfoMiddleware } from 'server/utils';
 import HttpStatus from 'http-status-codes';
 import { connect, startJob } from './record-list-service';
-import { requireSession, readSessionMiddleware } from './session-controller';
+import { requireSession, readSessionMiddleware } from 'server/session-controller';
 import cookieParser from 'cookie-parser';
 import { validate } from './common/input-parser';
 

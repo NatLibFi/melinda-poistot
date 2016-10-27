@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import { transformRecord } from './record-transform-service';
 import { FAKE_RECORD_FCC_SID, FAKE_RECORD, FAKE_DELETED_RECORD, FAKE_RECORD_SID_LOW, FAKE_RECORD_FOR_CLEANUP, FAKE_RECORD_ONLY_LOW_TEST, FAKE_RECORD_2_LOW } from './test_helpers/fake-data';
-import { exceptCoreErrors } from './utils';
+import { exceptCoreErrors } from 'server/utils';
 
 describe('Record transform service', () => {
 

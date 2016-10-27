@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { readEnvironmentVariable } from './utils';
+import { readEnvironmentVariable } from 'server/utils';
 import _ from 'lodash';
 
 const SMTP_CONNECTION_URL = readEnvironmentVariable('SMTP_CONNECTION_URL');

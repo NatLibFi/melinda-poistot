@@ -1,8 +1,8 @@
 import amqp from 'amqplib';
-import { readEnvironmentVariable, createTimer, exceptCoreErrors } from '../utils';
-import { logger } from '../logger';
+import { readEnvironmentVariable, createTimer, exceptCoreErrors } from 'server/utils';
+import { logger } from 'server/logger';
 import MelindaClient from 'melinda-api-client';
-import { readSessionToken } from '../session-crypt';
+import { readSessionToken } from 'server/session-crypt';
 import { resolveMelindaId } from '../record-id-resolution-service';
 import _ from 'lodash';
 import { transformRecord } from '../record-transform-service';

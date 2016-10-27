@@ -2,7 +2,7 @@ import _ from 'lodash';
 import xml2js from 'xml2js';
 import promisify from 'es6-promisify';
 import fetch from 'isomorphic-fetch';
-import { readEnvironmentVariable } from './utils';
+import { readEnvironmentVariable } from 'server/utils';
 const parseXMLStringToJSON = promisify(xml2js.parseString);
 const ALEPH_ERROR_EMPTY_SET = 'empty set';
 

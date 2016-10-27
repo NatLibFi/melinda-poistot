@@ -1,6 +1,6 @@
 import amqp from 'amqplib';
-import { readEnvironmentVariable } from '../utils';
-import { logger } from '../logger';
+import { readEnvironmentVariable } from 'server/utils';
+import { logger } from 'server/logger';
 import _ from 'lodash';
 import { mail } from '../mailer';
 

@@ -1,6 +1,6 @@
 import amqp from 'amqplib';
-import { readEnvironmentVariable, getMelindaLoadUserByLowtag } from './utils';
-import { logger } from './logger';
+import { readEnvironmentVariable, getMelindaLoadUserByLowtag } from 'server/utils';
+import { logger } from 'server/logger';
 import _ from 'lodash';
 import uuid from 'node-uuid';
 
