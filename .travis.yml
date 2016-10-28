@@ -1,9 +1,9 @@
 language: node_js
 node_js:
-  - "4.5.0"
+  - "6.9.1"
   - "node"
 after_script:
-  - if test "$TRAVIS_NODE_VERSION" != "4.5.0";then exit 0;fi
+  - if test "$TRAVIS_NODE_VERSION" != "6.9.1";then exit 0;fi
   - if test $TRAVIS_BRANCH = "master";then JOB=$JOB_PROD;elif test $TRAVIS_BRANCH = "test";then JOB=$JOB_TEST;elif test $TRAVIS_BRANCH = "fix-ci";then JOB=$JOB_TEST;fi
   - if test ! -z $JOB;then curl -X POST --data "authtoken=$AUTH_TOKEN&argString=-checkout-reference $TRAVIS_COMMIT" https://melinda-ci.lib.helsinki.fi/api/14/job/$JOB/executions;fi
 env:
