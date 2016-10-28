@@ -1,6 +1,6 @@
 import React from 'react';
 import CodeMirror from 'codemirror';
-import { parse } from '../../../common/input-parser';
+import { parse } from 'shared/input-parser';
 import _ from 'lodash';
 import { MAX_VISIBLE_ERROR_AMOUNT } from '../constants/general-constants';
 import { isFileApiSupported } from '../utils';

@@ -5,7 +5,7 @@ const autoprefixer = require('autoprefixer');
 // App files location
 const PATHS = {
   app: path.resolve(__dirname, '../frontend/js'),
-  common: path.resolve(__dirname, '../common'),
+  shared: path.resolve(__dirname, '../shared/shared'),
   commons_frontend: path.resolve(__dirname, '../melinda-ui-commons/frontend'),
   commons_styles: path.resolve(__dirname, '../melinda-ui-commons/frontend/styles'),
   styles: path.resolve(__dirname, '../frontend/styles'),
@@ -49,7 +49,8 @@ module.exports = {
   resolve: {
     alias: {
       commons: path.resolve(PATHS.commons_frontend, 'js'),
-      styles: PATHS.commons_styles
+      styles: PATHS.commons_styles,
+      shared: PATHS.shared
     },
     // We can now require('file') instead of require('file.jsx')
     extensions: ['', '.js', '.jsx', '.scss']
@@ -59,7 +60,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loaders: ['react-hot', 'babel'],
-        include: [PATHS.app, PATHS.common, PATHS.commons_frontend]
+        include: [PATHS.app, PATHS.shared, PATHS.commons_frontend]
       },
       {
         test: /\.scss$/,
