@@ -5,7 +5,7 @@ import MelindaClient from 'melinda-api-client';
 import { readSessionToken } from 'server/session-crypt';
 import { resolveMelindaId } from '../record-id-resolution-service';
 import _ from 'lodash';
-import { transformRecord } from '../record-transform-service';
+import { transformRecord } from 'server/record-transform-service';
 
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
@@ -118,9 +118,12 @@ export function processTask(task, client) {
   logger.log('info', 'record-update-worker: Querying for melinda id');
   return findMelindaId(task).then(taskWithResolvedId => {
     logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);
-    return client.loadRecord(taskWithResolvedId.recordId, MELINDA_API_NO_REROUTE_OPTS).then(response => {
+    return client.loadRecord(taskWithResolvedId.recordId, MELINDA_API_NO_REROUTE_OPTS).then(loadedRecord => {
       logger.log('info', 'record-update-worker: Transforming record', taskWithResolvedId.recordId);
-      return transformRecord(response, task.lowTag, task.recordIdHints.localId, transformOptions);
+      return transformRecord('REMOVE-LOCAL-REFERENCE', loadedRecord, _.assign({}, transformOptions, { 
+        libraryTag: task.lowTag, 
+        expectedLocalId: task.recordIdHints.localId
+      }));
     }).then(result => {
       const {record, report} = result;
       taskWithResolvedId.report = report;
