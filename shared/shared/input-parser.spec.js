@@ -28,7 +28,7 @@ const INVALID_INPUT_MULTIPLE_IDENTICAL_ROWS = `
 `.trim();
 
 
-describe.only('Format parser', () => {
+describe('Format parser', () => {
 
   describe('with valid input', () => {
     let result;
