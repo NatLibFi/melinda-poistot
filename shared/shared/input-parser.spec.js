@@ -16,7 +16,19 @@ FCC001173048
 asd
 `.trim();
 
-describe('Format parser', () => {
+const INVALID_INPUT_MULTIPLE_IDENTICAL_ROWS = `
+1184996 FCC001173048
+1184997 FCC001173047
+1184996 FCC001173042
+1184997  
+(FI-MELINDA)0011730411  
+
+1184991 FCC001173041 FCC001173044
+1184997 FCC001173047
+`.trim();
+
+
+describe.only('Format parser', () => {
 
   describe('with valid input', () => {
     let result;
@@ -67,6 +79,20 @@ describe('Format parser', () => {
     
     it('sets empty rows as undefined', () => {
       expect(result[3]).be.undefined;
+    });
+
+  });
+
+
+  describe('with invalid input of multiple identical rows', () => {
+    let result;
+    beforeEach(() => {
+      result = parse(INVALID_INPUT_MULTIPLE_IDENTICAL_ROWS);
+    });
+
+    it('adds error message for first row that is a duplicate in the set', () => {
+      expect(result[1]).be.instanceof(Error);
+      expect(result[1].message).to.equal('Rivi on identtinen rivin 8 kanssa.');
     });
 
   });
