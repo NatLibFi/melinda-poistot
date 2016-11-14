@@ -59,7 +59,7 @@ export class StatusCard extends React.Component {
      
     );
     function titleText(recordCount) {
-      return recordCount > 0 ? 'Tietuelistaus on valmiina lähettäväksi' : 'Lisää lista poistettvista tietueista';
+      return recordCount > 0 ? 'Tietuelistaus on valmis lähetettäväksi' : 'Lisää lista poistettvista tietueista';
     }
 
     function recordCountText(recordCount) {
