@@ -22,8 +22,9 @@
     "dev": "node ./bin/clean.js && npm run watch",
     "watch": "npm run watch:ui & npm run watch:server",
     "watch:ui": "DEBUG=1 webpack-dev-server --config ./config/webpack.config.dev.js --hot --inline --progres",
-    "watch:server": "NODE_PATH=melinda-ui-commons:shared NODE_ENV=debug nodemon --watch server --exec babel-node --presets=es2015 server/index.js",
-    "cli": "babel-node ./bin/cli.js"
+    "watch:server": "NODE_PATH=melinda-ui-commons:shared NODE_ENV=debug nodemon --watch server --exec babel-node server/index.js",
+    "cli": "babel-node ./bin/cli.js",
+    "mailtest": "NODE_PATH=melinda-ui-commons:shared babel-node ./bin/email-template-tester.js"
   },
   "keywords": [
     "MARC",
