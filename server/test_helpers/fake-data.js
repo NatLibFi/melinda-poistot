@@ -6,6 +6,16 @@ export const FAKE_RECORD = MarcRecord.fromString([
   '003    aaabbb',
   '100    ‡aTest Author',
   '245 0  ‡aSome content',
+  '245 0  ‡aTest Title‡bTest field‡cTest content',
+  '300    ‡aSub-A‡5TEST'
+].join('\n'));
+
+export const FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO = MarcRecord.fromString([
+  'LDR    abcdefghijk',
+  '001    28474',
+  '003    aaabbb',
+  '100    ‡aTest Author',
+  '245 0  ‡aSome content',
   '245 0  ‡aTest Title‡bTest field‡cTest content'
 ].join('\n'));
 

@@ -29,11 +29,13 @@ export class JobConfigurationPanel extends React.Component {
       visible: this.props.replicateRecords
     });
 
+    const replicationEnabledMessage = 'Huomaa, että replikointi voi poistaa tietueen paikalliskannasta vain, jos siihen ei ole linkattuna varasto- tai tilaustietoja. Lisäksi poistojen replikoiminen paikalliskantaan voi hidastaa muiden tietueiden siirtymistä Melindasta kaikkiin paikalliskantoihin.';
+
     return (
       <p>
         <input type="checkbox" className="filled-in" id="replicate-records-option" onChange={(e) => this.handleReplicateOptionChange(e)} checked={this.props.replicateRecords} />
         <label htmlFor="replicate-records-option">Haluan poistojen replikoituvan paikalliskantaan</label>
-        <span className={replicateRecordsTipClasses}>Tietuejoukon replikointi paikalliskantaan hidastaa muiden tietueiden siirtymistä melindasta paikalliskantaan.</span>
+        <span className={replicateRecordsTipClasses}>{replicationEnabledMessage}</span>
       </p>
     );
   }
@@ -43,11 +45,13 @@ export class JobConfigurationPanel extends React.Component {
       visible: this.props.deleteUnusedRecords
     });
 
+    const unusedRemovalEnabledMessage = 'Poista Melindasta vain turhat tietueet (esim. virhetietueet, tuplat, tai kokonaan poistetut opetusmonisteet), älä sellaisia, joista voi olla vielä iloa muille.';
+
     return ( 
       <p>
         <input type="checkbox" className="filled-in" id="delete-record-option" onChange={(e) => this.handleDeleteOptionChange(e)} checked={this.props.deleteUnusedRecords} />
-        <label htmlFor="delete-record-option">Poista tietue Melindasta jos siihen ei jää yhtään tietokantatunnusta.</label>
-        <span className={deleteRecordTipClasses}>Poista Melindasta vain turhat tietueet, älä sellasia joista on iloa muille.</span>
+        <label htmlFor="delete-record-option">Poista koko tietue Melindasta, jos siihen ei jää yhteen tietokantatunnusta</label>
+        <span className={deleteRecordTipClasses}>{unusedRemovalEnabledMessage}</span>
       </p>
     );
   }

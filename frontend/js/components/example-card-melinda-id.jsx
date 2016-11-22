@@ -7,9 +7,9 @@ export class ExampleCardMelindaId extends React.Component {
     return (
       <div className="card info-card">
         <div className="card-content">
-          <span className="card-title">Melindan tietuetunnisteen perusteella</span>
+          <span className="card-title">Poistot Melindan tietuetunnisteen perustella</span>
         
-          <p>Tietueita voi listata myös Melinda tietuetunnisteen avulla seuraavasti:</p>
+          <p>Tietueita voi listata myös Melindan tietuetunnisteen avulla seuraavasti:</p>
           <div className="block">
             <span className="legend">MELINDA_ID</span>
             <span>(FI-MELINDA)001173048</span>

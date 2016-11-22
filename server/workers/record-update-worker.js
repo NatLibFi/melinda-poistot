@@ -122,10 +122,19 @@ export function processTask(task, client) {
     logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);
     return client.loadRecord(taskWithResolvedId.recordId, MELINDA_API_NO_REROUTE_OPTS).then(loadedRecord => {
       logger.log('info', 'record-update-worker: Transforming record', taskWithResolvedId.recordId);
-      return transformRecord('REMOVE-LOCAL-REFERENCE', loadedRecord, transformOptions);
+      return transformRecord('REMOVE-LOCAL-REFERENCE', loadedRecord, transformOptions)
+        .then(result => {
+          return _.set(result, 'originalRecord', loadedRecord);
+        });
+
     }).then(result => {
-      const {record, report} = result;
+      const {record, report, originalRecord} = result;
       taskWithResolvedId.report = report;
+
+      if (recordsEqual(record, originalRecord)) {
+        throw new RecordProcessingError('Nothing changed in the record. Record not updated.', taskWithResolvedId);
+      }
+
       logger.log('info', 'record-update-worker: Updating record', taskWithResolvedId.recordId);
       return client.updateRecord(record).catch(convertMelindaApiClientErrorToError);
     }).then(response => {
@@ -165,6 +174,10 @@ export function processTask(task, client) {
       throw new RecordProcessingError(error.message, task);
     }
   }));
+}
+
+function recordsEqual(recordA, recordB) {
+  return recordA.toString() === recordB.toString();
 }
 
 function convertMelindaApiClientErrorToError(melindaApiClientError) {

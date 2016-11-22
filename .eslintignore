@@ -1,3 +1,4 @@
 bin/
 build/
 frontend/js/vendor/
+melinda-ui-commons/node_modules/
