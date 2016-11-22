@@ -27,7 +27,7 @@ describe('Record list service', () => {
   describe('startJob', () => {
     beforeEach(() => {
       return connect().then(() => {
-        startJob(TEST_RECORD_LIST);
+        startJob(TEST_RECORD_LIST, 'test', true, true);
       });
     });
 

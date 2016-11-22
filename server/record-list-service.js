@@ -24,10 +24,10 @@ export function startJob(records, lowTag, deleteUnusedRecords, replicateRecords,
     throw new Error('Queue for sending tasks is not available.');
   }
 
-  if (replicateRecords) {
+  if (!replicateRecords) {
     const loadUser = getMelindaLoadUserByLowtag(lowTag);
     if (loadUser === undefined) {
-      throw new Error(`ReplicateRecords was set to true, but no load user was found for LOW: ${lowTag}`);
+      throw new Error(`ReplicateRecords was set to ${replicateRecords}, but no load user was found for LOW: ${lowTag}`);
     }
     logger.log('info', `replicateRecords=${replicateRecords}, exchanging the sessionToken to ${loadUser.username}`);
     sessionToken = loadUser.sessionToken;
