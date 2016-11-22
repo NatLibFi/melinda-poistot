@@ -3,7 +3,7 @@ import { processTask, RecordProcessingError } from './record-update-worker';
 import sinon from 'sinon';
 import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 import { __RewireAPI__ as RewireAPI } from './record-update-worker';
-import { FAKE_RECORD } from '../test_helpers/fake-data';
+import { FAKE_RECORD, FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO } from '../test_helpers/fake-data';
 
 
 describe('Record update worker', () => {
@@ -29,7 +29,6 @@ describe('Record update worker', () => {
     RewireAPI.__ResetDependency__('logger');
   });
 
-
   describe('processTask', () => {
 
     let clientStub;
@@ -39,7 +38,6 @@ describe('Record update worker', () => {
       result = undefined;
       error = undefined;
     });
-
 
     describe('when everything works', () => {
 
@@ -197,6 +195,33 @@ describe('Record update worker', () => {
 
       it('sets the error message', () => {
         expect(error.message).to.equal(fakeErrorMessage);
+      });
+    });
+
+   
+    describe('when nothing changes in the processed record', () => {
+
+      beforeEach(() => {
+        resolveMelindaIdStub.resolves(3);
+
+        clientStub = createClientStub();
+        clientStub.loadRecord.resolves(FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO);
+     
+        return processTask(fakeTask, clientStub)
+          .then(res => result = res)
+          .catch(err => error = err);
+      });
+
+      it('rejects with processing error', () => {
+        expect(error).to.be.instanceof(RecordProcessingError);
+      });
+
+      it('sets the error message', () => {
+        expect(error.message).to.equal('Nothing changed in the record. Record not updated.');
+      });
+
+      it('does not call updateRecord', () => {
+        expect(clientStub.updateRecord.callCount).to.equal(0);
       });
     });
 
