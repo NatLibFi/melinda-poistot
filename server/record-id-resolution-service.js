@@ -3,11 +3,23 @@ import xml2js from 'xml2js';
 import promisify from 'es6-promisify';
 import fetch from 'isomorphic-fetch';
 import { readEnvironmentVariable } from 'server/utils';
-const parseXMLStringToJSON = promisify(xml2js.parseString);
-const ALEPH_ERROR_EMPTY_SET = 'empty set';
+import MelindaClient from 'melinda-api-client';
+import MarcRecord from 'marc-record-js';
 
+const parseXMLStringToJSON = promisify(xml2js.parseString);
+
+
+const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const base = readEnvironmentVariable('ALEPH_INDEX_BASE', 'fin01');
+
+const ALEPH_ERROR_EMPTY_SET = 'empty set';
+const apiPath = apiVersion !== null ? `/${apiVersion}` : '';
+const melindaClientConfig = {
+  endpoint: `${alephUrl}/API${apiPath}`,
+  user: '',
+  password: ''
+};
 
 export function resolveMelindaId(melindaId, localId, libraryTag, links) {
   if (libraryTag === undefined) {
@@ -16,11 +28,12 @@ export function resolveMelindaId(melindaId, localId, libraryTag, links) {
 
   return Promise.all([
     querySIDAindex(localId, libraryTag, links),
-    queryMIDDRindex(melindaId, links)
+    queryMIDDRindex(melindaId, links),
+    queryXServer(melindaId, links)
   ])
-  .then(([sidaRecordIdList, middrRecordIdList]) => {
+  .then(([sidaRecordIdList, middrRecordIdList, XServerRecordIdList]) => {
 
-    const combinedResolvedIdList = _.uniq(_.concat(sidaRecordIdList, middrRecordIdList));
+    const combinedResolvedIdList = _.uniq(_.concat(sidaRecordIdList, middrRecordIdList, XServerRecordIdList));
     return combinedResolvedIdList;
     
   })
@@ -61,6 +74,37 @@ function queryMIDDRindex(melindaId, links) {
     .then(parseXMLStringToJSON)
     .then(_.partial(loadRecordIdList, _, melindaIdOption));
 }
+
+function queryXServer(melindaId, links) {
+  const melindaIdOption = melindaId ? [melindaId] : [];
+
+  const queryIdList = _.concat(melindaIdOption, links);
+  if (queryIdList.length === 0) {
+    return Promise.resolve([]);
+  }
+
+  return Promise.all(queryIdList.map(isRecordValid)).then((validateResults) => {
+    return _.zipWith(queryIdList, validateResults, (id, isValid) => ({id, isValid}))
+      .filter(item => item.isValid)
+      .map(item => item.id);
+
+  });
+}
+
+function isRecordValid(melindaId) {
+  const client = new MelindaClient(melindaClientConfig);
+
+  return new Promise((resolve) => {
+    client.loadRecord(melindaId).then(responseRecord => {
+      const record = new MarcRecord(responseRecord);
+      resolve(!record.isDeleted());
+    }).catch(() => {
+      resolve(false);
+    }).done();
+
+  });
+}
+
 
 function loadRecordIdList(setResponse, defaultValue = []) {
 
