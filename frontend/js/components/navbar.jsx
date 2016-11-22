@@ -11,9 +11,9 @@ export class NavBar extends React.Component {
 
   componentDidMount() {
     
-    window.$('.dropdown-button').dropdown({
+    window.$('.nav-dropdown').dropdown({
       inDuration: 300,
-      outDuration: 225,
+      outDuration: 300,
       constrain_width: false,
       hover: false,
       gutter: 0,
@@ -33,7 +33,7 @@ export class NavBar extends React.Component {
               <li className="heading">{appTitle}</li>
             </ul>        
             <ul id="nav" className="right">
-              <li><a className="dropdown-button dropdown-button-menu" href="#" data-activates="mainmenu"><i className="material-icons right">more_vert</i>{username ? username : ''}</a></li>
+              <li><a className="nav-dropdown" href="#" data-activates="mainmenu"><i className="material-icons right">more_vert</i>{username ? username : ''}</a></li>
             </ul>
           </div>
         </nav>
