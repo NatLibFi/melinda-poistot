@@ -1,5 +1,6 @@
 import amqp from 'amqplib';
 import { readEnvironmentVariable, createTimer, exceptCoreErrors } from 'server/utils';
+import { recordIsUnused, markRecordAsDeleted } from 'server/record-utils';
 import { logger } from 'server/logger';
 import MelindaClient from 'melinda-api-client';
 import { readSessionToken } from 'server/session-crypt';
@@ -112,7 +113,8 @@ function markTaskAsFailed(task, failedMessage) {
 export function processTask(task, client) {
   const MELINDA_API_NO_REROUTE_OPTS = {handle_deleted: 1};
   const transformOptions = {
-    deleteUnusedRecords: task.deleteUnusedRecords
+    libraryTag: task.lowTag, 
+    expectedLocalId: task.recordIdHints.localId
   };
 
   logger.log('info', 'record-update-worker: Querying for melinda id');
@@ -120,15 +122,35 @@ export function processTask(task, client) {
     logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);
     return client.loadRecord(taskWithResolvedId.recordId, MELINDA_API_NO_REROUTE_OPTS).then(loadedRecord => {
       logger.log('info', 'record-update-worker: Transforming record', taskWithResolvedId.recordId);
-      return transformRecord('REMOVE-LOCAL-REFERENCE', loadedRecord, _.assign({}, transformOptions, { 
-        libraryTag: task.lowTag, 
-        expectedLocalId: task.recordIdHints.localId
-      }));
+      return transformRecord('REMOVE-LOCAL-REFERENCE', loadedRecord, transformOptions);
     }).then(result => {
       const {record, report} = result;
       taskWithResolvedId.report = report;
       logger.log('info', 'record-update-worker: Updating record', taskWithResolvedId.recordId);
       return client.updateRecord(record).catch(convertMelindaApiClientErrorToError);
+    }).then(response => {
+
+      if (task.deleteUnusedRecords) {
+        logger.log('info', 'record-update-worker: deleteUnusedRecords is true');
+        logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);
+        return client.loadRecord(response.recordId, MELINDA_API_NO_REROUTE_OPTS).then(loadedRecord => {
+          if (recordIsUnused(loadedRecord)) {
+            logger.log('info', 'record-update-worker: Deleting unused record', taskWithResolvedId.recordId);
+            markRecordAsDeleted(loadedRecord);
+            return client.updateRecord(loadedRecord)
+              .then(response => {
+                taskWithResolvedId.report.push('Deleted unused record.');
+                return response;
+              })
+              .catch(convertMelindaApiClientErrorToError);
+          } else {
+            return response;
+          }
+        });
+
+      } else {
+        return response;  
+      }
     }).then(response => {
       logger.log('info', 'record-update-worker: Updated record', response.recordId);
       taskWithResolvedId.updateResponse = response;

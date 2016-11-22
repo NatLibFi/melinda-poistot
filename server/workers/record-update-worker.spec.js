@@ -3,8 +3,9 @@ import { processTask, RecordProcessingError } from './record-update-worker';
 import sinon from 'sinon';
 import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 import { __RewireAPI__ as RewireAPI } from './record-update-worker';
-import { FAKE_RECORD } from '../test_helpers/fake-data';
-
+import { FAKE_RECORD, FAKE_RECORD_ONLY_LOW_TEST, FAKE_RECORD_2_LOW, FAKE_RECORD_WITH_LOW_TEST_REMOVED } from '../test_helpers/fake-data';
+import MarcRecord from 'marc-record-js';
+import _ from 'lodash';
 
 describe('Record update worker', () => {
 
@@ -200,6 +201,58 @@ describe('Record update worker', () => {
       });
     });
 
+    describe('when delete unused records option is true', () => {
+      describe('when a record has none of the following fields left: LOW/850/852/866', () => {
+         
+        beforeEach(() => {
+          resolveMelindaIdStub.resolves(3);
+
+          result = undefined;
+          clientStub = createClientStub();
+          clientStub.loadRecord.onCall(0).resolves(record(FAKE_RECORD_ONLY_LOW_TEST));
+          clientStub.loadRecord.onCall(1).resolves(record(FAKE_RECORD_WITH_LOW_TEST_REMOVED));
+          clientStub.updateRecord.resolves(TEST_UPDATE_RESPONSE);
+
+          const task = _.assign({}, fakeTask, {deleteUnusedRecords: true});
+          return processTask(task, clientStub).then(res => result = res);
+        });
+
+        it('should call updateRecord with deleted record', () => {
+          expect(clientStub.updateRecord.callCount).to.equal(2);
+
+          const secondCallArgument = clientStub.updateRecord.getCall(1).args[0];
+          expect(secondCallArgument.isDeleted()).to.equal(true);
+          
+        });
+
+        it('should report that the record was deleted', () => {
+          expect(result.report).to.include('Deleted unused record.');
+        });
+
+      });
+
+      describe('when record still has some LOW fields left', () => {
+        beforeEach(() => {
+          resolveMelindaIdStub.resolves(3);
+
+          result = undefined;
+          clientStub = createClientStub();
+          clientStub.loadRecord.resolves(record(FAKE_RECORD_2_LOW));
+          clientStub.updateRecord.resolves(TEST_UPDATE_RESPONSE);
+
+          const task = _.assign({}, fakeTask, {deleteUnusedRecords: true});
+          return processTask(task, clientStub).then(res => result = res);
+        });
+
+        it('should not try to call updateRecord with deleted record', () => {
+          expect(clientStub.updateRecord.callCount).to.equal(1);
+
+          const callArgument = clientStub.updateRecord.getCall(0).args[0];
+          expect(callArgument.isDeleted()).to.equal(false);
+          
+        });
+      });
+    });
   });
 });
 
@@ -209,4 +262,8 @@ function createClientStub() {
     updateRecord: sinon.stub(),
     createRecord: sinon.stub()
   };
+}
+
+function record(record) {
+  return new MarcRecord(record);
 }

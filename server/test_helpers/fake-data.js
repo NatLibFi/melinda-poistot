@@ -68,3 +68,14 @@ export const FAKE_RECORD_ONLY_LOW_TEST = MarcRecord.fromString([
   'SID    ‡btest-2‡c114',
   'LOW    ‡aTEST'
 ].join('\n'));
+
+export const FAKE_RECORD_WITH_LOW_TEST_REMOVED = MarcRecord.fromString([
+  'LDR    abcdefghijk',
+  '001    28474',
+  '100    ‡aTest Author‡9TEST <KEEP>‡9TEST-2 <KEEP>',
+  '245    ‡aSome content‡9TEST <DROP>',
+  '300    ‡aSub-A‡5TEST',
+  '301    ‡aSub-A‡5TEST‡5TEST-2',
+  'SID    ‡btest‡cFCC131',
+  'SID    ‡btest-2‡c114'
+].join('\n'));
