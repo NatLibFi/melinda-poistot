@@ -111,8 +111,12 @@ function markTaskAsFailed(task, failedMessage) {
 
 export function processTask(task, client) {
   const MELINDA_API_NO_REROUTE_OPTS = {handle_deleted: 1};
+
+  const skipLocalSidCheckForRemoval = task.recordIdHints.melindaId !== undefined && task.recordIdHints.localId === undefined;
+
   const transformOptions = {
-    deleteUnusedRecords: task.deleteUnusedRecords
+    deleteUnusedRecords: task.deleteUnusedRecords,
+    skipLocalSidCheck: skipLocalSidCheckForRemoval
   };
 
   logger.log('info', 'record-update-worker: Querying for melinda id');
