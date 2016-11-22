@@ -16,7 +16,7 @@
     "test": "npm run lint && npm run test:frontend && npm run test:server",
     "test:frontend": "NODE_PATH=melinda-ui-commons:shared BABEL_ENV=test mocha --compilers js:babel-core/register --require ignore-styles --require ./frontend/test_helpers/test_bootstrap.js \"frontend/**/*@(.spec.js|.spec.jsx)\" \"melinda-ui-commons/frontend/**/*@(.spec.js|.spec.jsx)\"",
     "test:frontend:watch": "npm run test:frontend -- --watch",
-    "test:server": "NODE_PATH=melinda-ui-commons:shared BABEL_ENV=test mocha --compilers js:babel-core/register --require ./server/test_helpers/test_bootstrap.js \"./server/**/*@(.spec.js|.spec.jsx)\" \"./melinda-ui-commons/server/**/*@(.spec.js|.spec.jsx)\"",
+    "test:server": "NODE_PATH=melinda-ui-commons:shared BABEL_ENV=test mocha --compilers js:babel-core/register --require ./server/test_helpers/test_bootstrap.js --require ./melinda-ui-commons/server/test_helpers/test_bootstrap.js \"./server/**/*@(.spec.js|.spec.jsx)\" \"./melinda-ui-commons/server/**/*@(.spec.js|.spec.jsx)\"",
     "test:server:watch": "npm run test:server -- --watch",
     "lint": "eslint --ext .jsx,.js .",
     "dev": "node ./bin/clean.js && npm run watch",
