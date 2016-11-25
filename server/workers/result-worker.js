@@ -1,3 +1,6 @@
+import {ReportEmail} from '../email-template';
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
 import amqp from 'amqplib';
 import { readEnvironmentVariable } from 'server/utils';
 import { logger } from 'server/logger';
@@ -125,10 +128,12 @@ function logJobResult(jobId, taskResults) {
 function dispatchEmail(jobId, emailAddress, taskResults) {
   logger.log('info', `Sending results of job ${jobId} to ${emailAddress}`);
 
+  const htmlEmailContent = ReactDOMServer.renderToStaticMarkup(<ReportEmail taskResults={taskResults} />);
+
   mail({
     to: emailAddress,
     subject: `Melinda job ${jobId} completed`,
-    text: taskResults.map(formatTaskResult).join('\n')
+    html: htmlEmailContent
   }).then(info => {
     logger.log('info', 'message sent', info);
   }).catch(error => {
