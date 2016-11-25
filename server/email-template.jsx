@@ -4,7 +4,8 @@ import _ from 'lodash';
 export class ReportEmail extends React.Component {
 
   static propTypes = {
-    taskResults: React.PropTypes.array.isRequired
+    taskResults: React.PropTypes.array.isRequired,
+    jobId: React.PropTypes.string.isRequired
   }
 
   renderRow(taskResult, key) {
@@ -66,21 +67,27 @@ export class ReportEmail extends React.Component {
     };
 
     return (
+      <div>
+      <p>Melindan poistot-käyttöliittymästä lähettämäsi tietuelistaus on käsitelty. Alta näet tulokset tietuekohtaisesti.</p>
+      <p>Tähän viestiin ei voi vastata. Tarvittaessa ota yhteyttä Melinda-tukeen (melinda-posti@helsinki.fi) 
+      ja liitä viestiisi poistoajon id: job ${this.props.jobId}</p>
+      
       <table cellSpacing="0" cellPadding="0">
         <thead>
           <tr style={{textAlign: 'left'}}>
-            <th style={columnStyle}>melinda-id</th>
-            <th style={columnStyle}>local-id</th>
-            <th style={columnStyle}>lowTag</th>
-            <th style={columnStyle}>status</th>
-            <th style={columnStyle}>message</th>
-            <th style={columnStyle}>report</th>
+            <th style={columnStyle}>Melinda-ID</th>
+            <th style={columnStyle}>paikalliskannan ID</th>
+            <th style={columnStyle}>tietokantatunnus</th>
+            <th style={columnStyle}>tila</th>
+            <th style={columnStyle}>viesti</th>
+            <th style={columnStyle}>raportti</th>
           </tr>
         </thead>
         <tbody>
         {rows.map(renderRow)}
         </tbody>
       </table>
+      </div>
     );
   }
 }
