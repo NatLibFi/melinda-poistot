@@ -1,8 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import { corsOptions, requireBodyParams, userinfoMiddleware } from 'server/utils';
+import { corsOptions } from 'server/utils';
 import { requireSession, readSessionMiddleware } from 'server/session-controller';
-import _ from 'lodash';
 
 export default function StatusController(resultWorker) {
   
