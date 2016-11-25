@@ -67,6 +67,7 @@
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-2": "^6.13.0",
     "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
     "chai-immutable": "^1.6.0",
     "cheerio": "^0.22.0",
     "codemirror": "^5.19.0",
