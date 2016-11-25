@@ -6,13 +6,17 @@ import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 
 describe('Record list service', () => {  
   let fetchStub;
+  let isRecordValidStub;
 
   beforeEach(() => {
     fetchStub = sinon.stub();
+    isRecordValidStub = sinon.stub();
     RewireAPI.__Rewire__('fetch', fetchStub);
+    RewireAPI.__Rewire__('isRecordValid', isRecordValidStub);
   });
   afterEach(() => {
     RewireAPI.__ResetDependency__('fetch');
+    RewireAPI.__ResetDependency__('isRecordValid');
   });
 
   describe('resolveMelindaId', () => {
@@ -134,7 +138,7 @@ describe('Record list service', () => {
 
     });
 
-    describe('when sida and middr index resolve into multiple different ids', () => {
+    describe('when sida and middr index and direct query resolve into multiple different ids', () => {
 
       let error;
 
@@ -145,6 +149,7 @@ describe('Record list service', () => {
         textBodyReadStub.onCall(1).resolves(createFindResponse());
         textBodyReadStub.onCall(2).resolves(createPresentResponse(2));
         textBodyReadStub.onCall(3).resolves(createPresentResponse(3));
+        isRecordValidStub.withArgs(111).resolves(true);
         
         fetchStub.resolves({
           text: textBodyReadStub
@@ -158,7 +163,7 @@ describe('Record list service', () => {
       });
 
       it('has proper error message', () => {
-        expect(error.message).to.equal('Resolved into multiple records: 2, 3');
+        expect(error.message).to.equal('Resolved into multiple records: 2, 3, 111');
       });
 
     });
@@ -174,13 +179,13 @@ describe('Record list service', () => {
         textBodyReadStub.onCall(1).resolves(createFindResponse());
         textBodyReadStub.onCall(2).resolves(createPresentResponse(2));
         textBodyReadStub.onCall(3).resolves(createPresentResponse(2));
-        
+        isRecordValidStub.withArgs('2').resolves(true);
         
         fetchStub.resolves({
           text: textBodyReadStub
         });
 
-        return resolveMelindaId(undefined, 123, 'TEST-LOW', [111]).then(res => result = res);
+        return resolveMelindaId(undefined, 123, 'TEST-LOW', ['2']).then(res => result = res);
       });
 
       it('resolves the melinda id correctly', () => {
@@ -215,7 +220,32 @@ describe('Record list service', () => {
 
     });
 
-    describe('when match is not found from middr or sida index and melindaId is undefined', () => {
+    describe('when match is only found directly from melinda', () => {
+
+      let result;
+      const melinda_id_param = undefined;
+
+      beforeEach(() => {
+        result = undefined;
+        const textBodyReadStub = sinon.stub();
+        textBodyReadStub.onCall(0).resolves(FAKE_ALEPH_EMPTYSET_RESPONSE);
+        textBodyReadStub.onCall(1).resolves(FAKE_ALEPH_EMPTYSET_RESPONSE);
+        isRecordValidStub.withArgs(111).resolves(true);
+
+        fetchStub.resolves({
+          text: textBodyReadStub
+        });
+
+        return resolveMelindaId(melinda_id_param, 123, 'TEST-LOW', [111]).then(res => result = res);
+      });
+
+      it('resolves the melinda id correctly', () => {
+        expect(result).to.equal(111);
+      });
+
+    });
+
+    describe('when match is not found from middr or sida index nor directly from melinda and melindaId is undefined', () => {
 
       let error;
       const melinda_id_param = undefined;
@@ -225,6 +255,7 @@ describe('Record list service', () => {
         const textBodyReadStub = sinon.stub();
         textBodyReadStub.onCall(0).resolves(FAKE_ALEPH_EMPTYSET_RESPONSE);
         textBodyReadStub.onCall(1).resolves(FAKE_ALEPH_EMPTYSET_RESPONSE);
+        isRecordValidStub.withArgs(111).resolves(false);
         
         fetchStub.resolves({
           text: textBodyReadStub
@@ -292,11 +323,15 @@ describe('Record list service', () => {
 
       it('calls fetch only for sida index', () => {
         expect(fetchStub.callCount).to.equal(2);
+        expect(isRecordValidStub.callCount).to.equal(0);
       });
       
       it('resolves the melinda id correctly', () => {
         expect(result).to.equal('2');
       });
+
+
+
 
     });
 
