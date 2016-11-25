@@ -112,7 +112,12 @@ function markTaskAsFailed(task, failedMessage) {
 
 export function processTask(task, client) {
   const MELINDA_API_NO_REROUTE_OPTS = {handle_deleted: 1};
+
+  const skipLocalSidCheckForRemoval = task.recordIdHints.melindaId !== undefined && task.recordIdHints.localId === undefined;
+
   const transformOptions = {
+    deleteUnusedRecords: task.deleteUnusedRecords,
+    skipLocalSidCheck: skipLocalSidCheckForRemoval,
     libraryTag: task.lowTag, 
     expectedLocalId: task.recordIdHints.localId
   };
