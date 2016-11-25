@@ -75,7 +75,7 @@ module.exports = {
     loaders: [
       {
         test: /\.jsx?$/,
-        loaders: ['react-hot', 'babel'],
+        loaders: ['babel'],
         include: [PATHS.app, PATHS.shared, PATHS.commons_frontend]
       },
       {
