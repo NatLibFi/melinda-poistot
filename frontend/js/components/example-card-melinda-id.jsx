@@ -15,7 +15,8 @@ export class ExampleCardMelindaId extends React.Component {
             <span>(FI-MELINDA)001173048</span>
             <span>(FI-MELINDA)001167257</span>
           </div>
-          
+
+          <p>Melindan tietuetunniste löytyy paikalliskannan tietueen kentästä 035 $a mm. Aurora-paikalliskannoissa.</p>          
         </div>
       </div>
     );

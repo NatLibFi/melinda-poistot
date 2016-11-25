@@ -128,7 +128,7 @@ function logJobResult(jobId, taskResults) {
 function dispatchEmail(jobId, emailAddress, taskResults) {
   logger.log('info', `Sending results of job ${jobId} to ${emailAddress}`);
 
-  const htmlEmailContent = ReactDOMServer.renderToStaticMarkup(<ReportEmail taskResults={taskResults} />);
+  const htmlEmailContent = ReactDOMServer.renderToStaticMarkup(<ReportEmail taskResults={taskResults} jobId={jobId} />);
 
   mail({
     to: emailAddress,

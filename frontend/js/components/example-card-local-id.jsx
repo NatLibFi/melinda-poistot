@@ -8,9 +8,9 @@ export class ExampleCardLocalId extends React.Component {
     return (
       <div className="card info-card">
         <div className="card-content">
-          <span className="card-title">Poistot paikalliskannan tietuetunnisteen perusteella</span>
+          <span className="card-title">Poistot Voyager-paikalliskannan tietuetunnisteen perusteella</span>
 
-          <p>Listaa paikalliskannan tietuetunniste eli bibid:</p>
+          <p>Listaa Voyager-paikalliskannan tietuetunniste eli bibid:</p>
           <div className="block">
             <span className="legend">BIB_ID</span>
             <span>1185010</span>
