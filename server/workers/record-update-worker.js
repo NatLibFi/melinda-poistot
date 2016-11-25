@@ -1,5 +1,6 @@
 import amqp from 'amqplib';
 import { readEnvironmentVariable, createTimer, exceptCoreErrors } from 'server/utils';
+import { recordIsUnused, markRecordAsDeleted } from 'server/record-utils';
 import { logger } from 'server/logger';
 import MelindaClient from 'melinda-api-client';
 import { readSessionToken } from 'server/session-crypt';
@@ -116,7 +117,9 @@ export function processTask(task, client) {
 
   const transformOptions = {
     deleteUnusedRecords: task.deleteUnusedRecords,
-    skipLocalSidCheck: skipLocalSidCheckForRemoval
+    skipLocalSidCheck: skipLocalSidCheckForRemoval,
+    libraryTag: task.lowTag, 
+    expectedLocalId: task.recordIdHints.localId
   };
 
   logger.log('info', 'record-update-worker: Querying for melinda id');
@@ -124,15 +127,44 @@ export function processTask(task, client) {
     logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);
     return client.loadRecord(taskWithResolvedId.recordId, MELINDA_API_NO_REROUTE_OPTS).then(loadedRecord => {
       logger.log('info', 'record-update-worker: Transforming record', taskWithResolvedId.recordId);
-      return transformRecord('REMOVE-LOCAL-REFERENCE', loadedRecord, _.assign({}, transformOptions, { 
-        libraryTag: task.lowTag, 
-        expectedLocalId: task.recordIdHints.localId
-      }));
+      return transformRecord('REMOVE-LOCAL-REFERENCE', loadedRecord, transformOptions)
+        .then(result => {
+          return _.set(result, 'originalRecord', loadedRecord);
+        });
+
     }).then(result => {
-      const {record, report} = result;
+      const {record, report, originalRecord} = result;
       taskWithResolvedId.report = report;
+
+      if (recordsEqual(record, originalRecord)) {
+        throw new RecordProcessingError('Nothing changed in the record. Record not updated.', taskWithResolvedId);
+      }
+
       logger.log('info', 'record-update-worker: Updating record', taskWithResolvedId.recordId);
       return client.updateRecord(record).catch(convertMelindaApiClientErrorToError);
+    }).then(response => {
+
+      if (task.deleteUnusedRecords) {
+        logger.log('info', 'record-update-worker: deleteUnusedRecords is true');
+        logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);
+        return client.loadRecord(response.recordId, MELINDA_API_NO_REROUTE_OPTS).then(loadedRecord => {
+          if (recordIsUnused(loadedRecord)) {
+            logger.log('info', 'record-update-worker: Deleting unused record', taskWithResolvedId.recordId);
+            markRecordAsDeleted(loadedRecord);
+            return client.updateRecord(loadedRecord)
+              .then(response => {
+                taskWithResolvedId.report.push('Deleted unused record.');
+                return response;
+              })
+              .catch(convertMelindaApiClientErrorToError);
+          } else {
+            return response;
+          }
+        });
+
+      } else {
+        return response;  
+      }
     }).then(response => {
       logger.log('info', 'record-update-worker: Updated record', response.recordId);
       taskWithResolvedId.updateResponse = response;
@@ -147,6 +179,10 @@ export function processTask(task, client) {
       throw new RecordProcessingError(error.message, task);
     }
   }));
+}
+
+function recordsEqual(recordA, recordB) {
+  return recordA.toString() === recordB.toString();
 }
 
 function convertMelindaApiClientErrorToError(melindaApiClientError) {
