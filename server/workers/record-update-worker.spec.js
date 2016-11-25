@@ -224,7 +224,7 @@ describe('Record update worker', () => {
         });
 
         it('should report that the record was deleted', () => {
-          expect(result.report).to.include('Deleted unused record.');
+          expect(result.report).to.include('Koko tietue poistettu.');
         });
 
       });
@@ -270,7 +270,7 @@ describe('Record update worker', () => {
       });
 
       it('sets the error message', () => {
-        expect(error.message).to.equal('Nothing changed in the record. Record not updated.');
+        expect(error.message).to.equal('Tietueessa ei tapahtunut muutoksia. Tietuetta ei päivitetty.');
       });
 
       it('does not call updateRecord', () => {

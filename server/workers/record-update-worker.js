@@ -137,7 +137,7 @@ export function processTask(task, client) {
       taskWithResolvedId.report = report;
 
       if (recordsEqual(record, originalRecord)) {
-        throw new RecordProcessingError('Nothing changed in the record. Record not updated.', taskWithResolvedId);
+        throw new RecordProcessingError('Tietueessa ei tapahtunut muutoksia. Tietuetta ei päivitetty.', taskWithResolvedId);
       }
 
       logger.log('info', 'record-update-worker: Updating record', taskWithResolvedId.recordId);
@@ -153,7 +153,7 @@ export function processTask(task, client) {
             markRecordAsDeleted(loadedRecord);
             return client.updateRecord(loadedRecord)
               .then(response => {
-                taskWithResolvedId.report.push('Deleted unused record.');
+                taskWithResolvedId.report.push('Koko tietue poistettu.');
                 return response;
               })
               .catch(convertMelindaApiClientErrorToError);
