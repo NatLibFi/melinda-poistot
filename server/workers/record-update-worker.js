@@ -7,11 +7,13 @@ import { readSessionToken } from 'server/session-crypt';
 import { resolveMelindaId } from '../record-id-resolution-service';
 import _ from 'lodash';
 import { transformRecord } from 'server/record-transform-service';
+import { checkAlephHealth } from '../aleph-health-check-service';
 
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
 const minTaskIntervalSeconds = readEnvironmentVariable('MIN_TASK_INTERVAL_SECONDS', 10);
 const SLOW_PROCESSING_WAIT_TIME_MS = 10000;
+const ALEPH_UNAVAILABLE_WAIT_TIME = 10000;
 
 const apiPath = apiVersion !== null ? `/${apiVersion}` : '';
 
@@ -61,48 +63,69 @@ function startTaskExecutor(channel) {
           password: password
         });
 
-        processTask(task, client).then(taskResponse => {
-          channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskResponse)), {persistent: true});  
-        }).catch(error => {
-          
-          if (error instanceof RecordProcessingError) {
-            logger.log('info', 'record-update-worker: Processing failed:', error.message);
-            const failedTask = markTaskAsFailed(error.task, error.message);
-            channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)), {persistent: true});   
-          } else {
-            logger.log('error', 'record-update-worker: Processing failed:', error);
-            const failedTask = markTaskAsFailed(task, error.message);
-            channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)), {persistent: true});   
-          }
-         
-        }).then(() => {
-          const taskProcessingTimeMs = taskProcessingTimer.elapsed();
+        assertAlephHealth()
+          .then(() => processTask(task, client))
+          .then(taskResponse => {
+            channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskResponse)), {persistent: true});  
+          }).catch(error => {
+            
+            if (error instanceof RecordProcessingError) {
+              logger.log('info', 'record-update-worker: Processing failed:', error.message);
+              const failedTask = markTaskAsFailed(error.task, error.message);
+              channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)), {persistent: true});   
+            } else {
+              logger.log('error', 'record-update-worker: Processing failed:', error);
+              const failedTask = markTaskAsFailed(task, error.message);
+              channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)), {persistent: true});   
+            }
+           
+          }).then(() => {
+            const taskProcessingTimeMs = taskProcessingTimer.elapsed();
 
-          logger.log('info', `record-update-worker: Task processed in ${taskProcessingTimeMs}ms.`);
+            logger.log('info', `record-update-worker: Task processed in ${taskProcessingTimeMs}ms.`);
 
-          waitTimeMs = Math.max(0, minTaskIntervalSeconds * 1000 - taskProcessingTimeMs);
+            waitTimeMs = Math.max(0, minTaskIntervalSeconds * 1000 - taskProcessingTimeMs);
 
-          if (waitTimeMs === 0) {
-            logger.log('info', `record-update-worker: Processing was slower than MIN_TASK_INTERVAL_SECONDS, forcing wait time to ${SLOW_PROCESSING_WAIT_TIME_MS}ms.`);
-            waitTimeMs = SLOW_PROCESSING_WAIT_TIME_MS;
-          } 
-          
-          channel.ack(msg);
+            if (waitTimeMs === 0) {
+              logger.log('info', `record-update-worker: Processing was slower than MIN_TASK_INTERVAL_SECONDS, forcing wait time to ${SLOW_PROCESSING_WAIT_TIME_MS}ms.`);
+              waitTimeMs = SLOW_PROCESSING_WAIT_TIME_MS;
+            } 
+            
+            channel.ack(msg);
 
-        }).catch(error => {
-          logger.log('error', error);
-        });
+          }).catch(error => {
+            logger.log('error', error);
+          });
 
       } catch(error) {
         //logger.log('error', 'Dropped invalid task', error);
         const {consumerTag, deliveryTag} = msg;
-        logger.log('error', 'record-update-worker: Dropped invalid task', {consumerTag, deliveryTag});
+        logger.log('error', 'record-update-worker: Dropped invalid task', {consumerTag, deliveryTag}, error.message);
         channel.ack(msg);
         return; 
       }
 
     }, waitTimeMs);
 
+  });
+}
+
+function assertAlephHealth() {
+  const waitTimeSeconds = ALEPH_UNAVAILABLE_WAIT_TIME / 1000;
+
+  return new Promise((resolve) => {
+
+    checkAndRetry();
+
+    function checkAndRetry() {
+      checkAlephHealth()
+        .then(() => resolve())
+        .catch(error => {
+          
+          logger.log('info', `Aleph is not healthy. Waiting ${waitTimeSeconds} seconds.`, error.message);
+          setTimeout(() => checkAndRetry(), ALEPH_UNAVAILABLE_WAIT_TIME);
+        });
+    }
   });
 }
 
