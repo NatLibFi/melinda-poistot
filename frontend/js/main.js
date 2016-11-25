@@ -2,6 +2,7 @@ import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BaseComponentContainer } from './components/base-component';
+import { StatusPage } from './components/status/status-page';
 import thunkMiddleware from 'redux-thunk';
 import createLogger from 'redux-logger';
 import { createStore, applyMiddleware, compose } from 'redux';
@@ -29,6 +30,7 @@ const store = createStore(
 const routes = (
   <Route component={App}>
     <Route path='/' component={BaseComponentContainer} />
+    <Route path='/status' component={StatusPage} />
   </Route>
 );
 
