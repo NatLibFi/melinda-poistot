@@ -43,7 +43,7 @@ export class BaseComponent extends React.Component {
     if (this.props.sessionState === 'VALIDATION_ONGOING') {
       return this.renderValidationIndicator();
     } else {
-      return (<SigninFormPanelContainer title='melinda-local-ref-removal'/>);
+      return (<SigninFormPanelContainer title='Tietokantatunnusten poisto'/>);
     }
   }
 
