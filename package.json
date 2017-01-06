@@ -22,8 +22,9 @@
     "dev": "node ./bin/clean.js && npm run watch",
     "watch": "npm run watch:ui & npm run watch:server",
     "watch:ui": "DEBUG=1 webpack-dev-server --config ./config/webpack.config.dev.js --hot --inline --progres",
-    "watch:server": "NODE_PATH=melinda-ui-commons:shared NODE_ENV=debug nodemon --watch server --exec babel-node --presets=es2015 server/index.js",
-    "cli": "babel-node ./bin/cli.js"
+    "watch:server": "NODE_PATH=melinda-ui-commons:shared NODE_ENV=debug nodemon --watch server --exec babel-node server/index.js",
+    "cli": "babel-node ./bin/cli.js",
+    "mailtest": "NODE_PATH=melinda-ui-commons:shared babel-node ./bin/email-template-tester.js"
   },
   "keywords": [
     "MARC",
@@ -50,6 +51,8 @@
     "moment": "^2.15.1",
     "node-uuid": "^1.4.7",
     "nodemailer": "^2.6.4",
+    "react": "^15.4.0",
+    "react-dom": "^15.4.0",
     "winston": "^2.2.0",
     "xml2js": "^0.4.17"
   },

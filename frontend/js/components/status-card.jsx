@@ -107,6 +107,7 @@ export class StatusCard extends React.Component {
         </span>
         
         <p>{this.props.submitJobError.message}</p>
+        <p>Jos ongelma toistuu edelleen, ota yhteyttä Melinda-tukeen (melinda-posti@helsinki.fi).</p>
       </div>
     );
   }
