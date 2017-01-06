@@ -9,6 +9,7 @@ import { recordListController } from './record-list-controller';
 
 import * as recordUpdateWorker from './workers/record-update-worker';
 import ResultWorker from './workers/result-worker';
+import StatusController from './status-controller';
 
 //const NODE_ENV = readEnvironmentVariable('NODE_ENV', 'dev');
 const PORT = readEnvironmentVariable('HTTP_PORT', 3001);
@@ -29,3 +30,5 @@ recordUpdateWorker.connect().then(() => logger.log('info', 'Record update worker
 
 const resultWorker = new ResultWorker();
 resultWorker.connect().then(() => logger.log('info', 'Result worker ready.'));
+
+app.use('/status', new StatusController(resultWorker));

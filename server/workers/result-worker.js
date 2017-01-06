@@ -115,6 +115,24 @@ export default class ResultWorker {
       this.currentJobs.delete(jobId);
     }
   }
+
+  getStatusInfo() {
+    const statusForCurrentJobs = Object.create(null);
+    for (let [k,v] of this.currentJobs) {
+      
+      const allTasksCount = v.job.taskIdList.length;
+      const incompleteTaskCount = v.inCompleteTasks.size;
+
+      statusForCurrentJobs[k] = {
+        allTasksCount,
+        incompleteTaskCount,
+        jobId: k
+      };
+    }
+
+    return statusForCurrentJobs;
+
+  }
 }
 
 function logJobResult(jobId, taskResults) {
