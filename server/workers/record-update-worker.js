@@ -1,6 +1,6 @@
 import amqp from 'amqplib';
 import { readEnvironmentVariable, createTimer, exceptCoreErrors } from 'server/utils';
-import { recordIsUnused, markRecordAsDeleted } from 'server/record-utils';
+import { recordIsUnused, markRecordAsDeleted, isComponentRecord } from 'server/record-utils';
 import { logger } from 'server/logger';
 import MelindaClient from 'melinda-api-client';
 import { readSessionToken } from 'server/session-crypt';
@@ -125,7 +125,13 @@ export function processTask(task, client) {
   logger.log('info', 'record-update-worker: Querying for melinda id');
   return findMelindaId(task).then(taskWithResolvedId => {
     logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);
+
     return client.loadRecord(taskWithResolvedId.recordId, MELINDA_API_NO_REROUTE_OPTS).then(loadedRecord => {
+
+      if (isComponentRecord(loadedRecord)) {
+        throw new RecordProcessingError('Record is a component record. Record not updated.', taskWithResolvedId);
+      }
+      
       logger.log('info', 'record-update-worker: Transforming record', taskWithResolvedId.recordId);
       return transformRecord('REMOVE-LOCAL-REFERENCE', loadedRecord, transformOptions)
         .then(result => {
