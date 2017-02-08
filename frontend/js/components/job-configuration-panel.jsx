@@ -29,7 +29,7 @@ export class JobConfigurationPanel extends React.Component {
       visible: this.props.replicateRecords
     });
 
-    const replicationEnabledMessage = 'Huomaa, että replikointi voi poistaa tietueen paikalliskannasta vain, jos siihen ei ole linkattuna varasto- tai tilaustietoja. Lisäksi poistojen replikoiminen paikalliskantaan voi hidastaa muiden tietueiden siirtymistä Melindasta kaikkiin paikalliskantoihin.';
+    const replicationEnabledMessage = 'Huomaa, että poistot paikalliskannasta toimivat vain, jos paikalliskannan tietueessa on 035 $a-osakentässä FCC-alkuinen Melinda-ID. Tietueeseen ei myöskään saa olla linkattuna varasto- tai tilaustietoja. Poistojen replikoiminen paikalliskantaan voi hidastaa muiden tietueiden siirtymistä Melindasta kaikkiin paikalliskantoihin.';
 
     return (
       <p>
