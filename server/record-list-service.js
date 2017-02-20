@@ -53,7 +53,7 @@ export function startJob(records, lowTag, deleteUnusedRecords, replicateRecords,
   
 }
 
-function createTask(jobId, sessionToken, lowTag, deleteUnusedRecords, bypassSIDdeleteion, recordIdHints) {
+function createTask(jobId, sessionToken, lowTag, deleteUnusedRecords, bypassSIDdeletion, recordIdHints) {
   return {
     jobId,
     taskId: uuid.v4(),
