@@ -33,7 +33,8 @@ export class NavBar extends React.Component {
               <li className="heading">{appTitle}</li>
             </ul>        
             <ul id="nav" className="right">
-              <li><a className="nav-dropdown" href="#" data-activates="mainmenu"><i className="material-icons right">more_vert</i>{username ? username : ''}</a></li>
+              <li><a className="nav-dropdown" href="#" data-activates="mainmenu" ref={(c) => this._dropdown = c} onClick={this.preventDefault}>
+              <i className="material-icons right">more_vert</i>{username ? username : ''}</a></li>
             </ul>
           </div>
         </nav>
