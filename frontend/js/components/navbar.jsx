@@ -39,6 +39,7 @@ export class NavBar extends React.Component {
         </nav>
 
         <ul id='mainmenu' className='dropdown-content'>
+          <li><a href="https://www.kiwi.fi/display/melinda/Tietokantatunnusten+massapoisto+Melindasta" target="_blank">Ohjeet</a></li>
           <li className="divider" />
           <li><a href="#" onClick={this.props.onLogout}>Kirjaudu ulos</a></li>
         </ul>
