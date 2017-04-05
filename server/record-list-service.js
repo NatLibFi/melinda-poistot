@@ -33,11 +33,13 @@ export function startJob(records, lowTag, deleteUnusedRecords, replicateRecords,
     sessionToken = loadUser.sessionToken;
   }
 
+  const bypassSIDdeletion = replicateRecords;
+  
   channel.assertQueue(TASK_QUEUE, {durable: true});
   channel.assertQueue(JOB_QUEUE, {durable: true});
   
   const jobId = uuid.v4();
-  const tasks = records.map(_.partial(createTask, jobId, sessionToken, lowTag, deleteUnusedRecords));
+  const tasks = records.map(_.partial(createTask, jobId, sessionToken, lowTag, deleteUnusedRecords, bypassSIDdeletion));
   
   const jobPayload = new Buffer(JSON.stringify(createJob(jobId, tasks, userinfo)));
   // Node 6 has Buffer.from(msg) which should be used
@@ -51,14 +53,15 @@ export function startJob(records, lowTag, deleteUnusedRecords, replicateRecords,
   
 }
 
-function createTask(jobId, sessionToken, lowTag, deleteUnusedRecords, recordIdHints) {
+function createTask(jobId, sessionToken, lowTag, deleteUnusedRecords, bypassSIDdeletion, recordIdHints) {
   return {
     jobId,
     taskId: uuid.v4(),
     recordIdHints,
     lowTag,
     sessionToken,
-    deleteUnusedRecords
+    deleteUnusedRecords,
+    bypassSIDdeletion
   };
 }
 
