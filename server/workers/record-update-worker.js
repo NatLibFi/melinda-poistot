@@ -28,7 +28,7 @@
 import { readEnvironmentVariable, createTimer, exceptCoreErrors } from 'server/utils';
 import { recordIsUnused, markRecordAsDeleted, isComponentRecord } from 'server/record-utils';
 import { logger } from 'server/logger';
-import MelindaClient from 'melinda-api-client';
+import MelindaClient from '@natlibfi/melinda-api-client';
 import { readSessionToken } from 'server/session-crypt';
 import { resolveMelindaId } from '../record-id-resolution-service';
 import _ from 'lodash';
