@@ -1,9 +1,26 @@
 {
-  "name": "melinda-local-ref-removal",
-  "version": "0.0.1",
-  "description": "Application for removing references to local databases from Melinda",
+  "name": "@natlibfi/melinda-local-ref-removal-ui",
+  "version": "1.0.0",
+  "description": "UI for removing references to local databases from Melinda",
+  "keywords": [
+    "MARC",
+    "Melinda"
+  ],
+  "homepage": "https://github.com/natlibfi/melinda-local-ref-removal-ui",
+  "bugs": {
+    "url": "https://github.com/natlibfi/melinda-local-ref-removal-ui/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:natlibfi/melinda-local-ref-removal-ui.git"
+  },
+  "author": {
+    "name": "The National Library of Finland"
+  },
+  "license": "AGPL-3.0+",
   "main": "index.js",
   "scripts": {
+    "postinstall": "cd melinda-ui-commons && npm install",
     "clean:build": "node ./bin/clean.js createdir",
     "build:html": "node ./bin/buildHtml.js",
     "start": "NODE_PATH=build/commons:build/shared node build/index.js",
@@ -24,14 +41,9 @@
     "watch:ui": "DEBUG=1 webpack-dev-server --config ./config/webpack.config.dev.js --hot --inline --progres",
     "watch:server": "NODE_PATH=melinda-ui-commons:shared NODE_ENV=debug nodemon --watch server --exec babel-node server/index.js",
     "cli": "babel-node ./bin/cli.js",
-    "mailtest": "NODE_PATH=melinda-ui-commons:shared babel-node ./bin/email-template-tester.js"
+    "mailtest": "NODE_PATH=melinda-ui-commons:shared babel-node ./bin/email-template-tester.js",
+    "publish-to-npm": "npm test && npm publish --access=public"
   },
-  "keywords": [
-    "MARC",
-    "Melinda"
-  ],
-  "author": "Pasi Tuominen <pasi.tuominen@gmail.com>",
-  "license": "MIT",
   "dependencies": {
     "amqplib": "^0.5.1",
     "body-parser": "^1.15.2",
@@ -47,7 +59,7 @@
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.15.0",
     "marc-record-js": "^0.3.1",
-    "melinda-api-client": "^1.1.0",
+    "@natlibfi/melinda-api-client": "^1.1.4",
     "moment": "^2.15.1",
     "node-uuid": "^1.4.7",
     "nodemailer": "^2.6.4",
