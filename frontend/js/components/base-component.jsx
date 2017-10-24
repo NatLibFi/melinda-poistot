@@ -70,11 +70,7 @@ export class BaseComponent extends React.Component {
     if (this.props.sessionState === 'VALIDATION_ONGOING') {
       return this.renderValidationIndicator();
     } else {
-<<<<<<< HEAD
-      return (<SigninFormPanelContainer title='Kokoelmien poisto'/>);
-=======
       return (<SigninFormPanelContainer title='Tietokantatunnusten poisto'/>);
->>>>>>> master
     }
   }
 
