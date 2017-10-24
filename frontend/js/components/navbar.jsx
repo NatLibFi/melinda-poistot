@@ -60,12 +60,14 @@ export class NavBar extends React.Component {
               <li className="heading">{appTitle}</li>
             </ul>        
             <ul id="nav" className="right">
-              <li><a className="nav-dropdown" href="#" data-activates="mainmenu"><i className="material-icons right">more_vert</i>{username ? username : ''}</a></li>
+              <li><a className="nav-dropdown" href="#" data-activates="mainmenu" ref={(c) => this._dropdown = c} onClick={this.preventDefault}>
+              <i className="material-icons right">more_vert</i>{username ? username : ''}</a></li>
             </ul>
           </div>
         </nav>
 
         <ul id='mainmenu' className='dropdown-content'>
+          <li><a href="https://www.kiwi.fi/display/melinda/Tietokantatunnusten+massapoisto+Melindasta" target="_blank">Ohjeet</a></li>
           <li className="divider" />
           <li><a href="#" onClick={this.props.onLogout}>Kirjaudu ulos</a></li>
         </ul>

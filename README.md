@@ -1,5 +1,7 @@
 # UI for removing references to local databases from Melinda [![NPM Version](https://img.shields.io/npm/v/@natlibfi/melinda-local-ref-removal-ui.svg)](https://npmjs.org/package/@natlibfi/melinda-local-ref-removal-ui) [![Build Status](https://travis-ci.org/NatLibFi/melinda-local-ref-removal-ui.svg?branch=master)](https://travis-ci.org/NatLibFi/melinda-local-ref-removal-ui)
 
+This application removes local database markers from Melinda records.
+
 ## Building the application
 
 Install all dependencies:

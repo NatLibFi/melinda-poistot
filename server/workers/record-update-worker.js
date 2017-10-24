@@ -168,7 +168,8 @@ export function processTask(task, client) {
     deleteUnusedRecords: task.deleteUnusedRecords,
     skipLocalSidCheck: skipLocalSidCheckForRemoval,
     libraryTag: task.lowTag, 
-    expectedLocalId: task.recordIdHints.localId
+    expectedLocalId: task.recordIdHints.localId,
+    bypassSIDdeletion: task.bypassSIDdeletion
   };
 
   logger.log('info', 'record-update-worker: Querying for melinda id');
