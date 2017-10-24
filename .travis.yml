@@ -2,6 +2,8 @@ language: node_js
 node_js:
   - "6.9.1"
   - "node"
+before_script:
+  - npm install && cd melinda-ui-commons && npm install
 after_script:
   - if test "$TRAVIS_NODE_VERSION" != "6.9.1";then exit 0;fi
   - if test $TRAVIS_BRANCH = "master";then JOB=$JOB_PROD;elif test $TRAVIS_BRANCH = "test";then JOB=$JOB_TEST;elif test $TRAVIS_BRANCH = "fix-ci";then JOB=$JOB_TEST;fi
