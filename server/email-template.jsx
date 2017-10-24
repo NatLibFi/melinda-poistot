@@ -70,7 +70,7 @@ export class ReportEmail extends React.Component {
       <div>
       <p>Melindan poistot-käyttöliittymästä lähettämäsi tietuelistaus on käsitelty. Alta näet tulokset tietuekohtaisesti.</p>
       <p>Tähän viestiin ei voi vastata. Tarvittaessa ota yhteyttä Melinda-tukeen (melinda-posti@helsinki.fi) 
-      ja liitä viestiisi poistoajon id: job ${this.props.jobId}</p>
+      ja liitä viestiisi poistoajon id: job {this.props.jobId}</p>
       
       <table cellSpacing="0" cellPadding="0">
         <thead>

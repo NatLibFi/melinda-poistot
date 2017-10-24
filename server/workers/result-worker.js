@@ -150,7 +150,7 @@ function dispatchEmail(jobId, emailAddress, taskResults) {
 
   mail({
     to: emailAddress,
-    subject: `Melinda job ${jobId} completed`,
+    subject: `Melinda-poistot ajo ${jobId} valmistui`,
     html: htmlEmailContent
   }).then(info => {
     logger.log('info', 'message sent', info);
