@@ -1,5 +1,4 @@
-# Tietokantatunnusten poisto Melindasta
-[![Build Status](https://travis-ci.org/NatLibFi/melinda-local-ref-removal-ui.svg?branch=master)](https://travis-ci.org/NatLibFi/melinda-local-ref-removal-ui)
+# UI for removing references to local databases from Melinda [![NPM Version](https://img.shields.io/npm/v/@natlibfi/melinda-local-ref-removal-ui.svg)](https://npmjs.org/package/@natlibfi/melinda-local-ref-removal-ui) [![Build Status](https://travis-ci.org/NatLibFi/melinda-local-ref-removal-ui.svg?branch=master)](https://travis-ci.org/NatLibFi/melinda-local-ref-removal-ui)
 
 This application removes local database markers from Melinda records.
 
@@ -59,4 +58,9 @@ crypto.randomBytes(32).toString('base64')
 
 This will start webpack-dev-server for frontend codebase and nodemon for the backend.
 
+## License and copyright
+
+Copyright (c) 2016-2017 **University Of Helsinki (The National Library Of Finland)**
+
+This project's source code is licensed under the terms of **GNU Affero General Public License Version 3** or any later version.
 
