@@ -103,6 +103,7 @@
     "node-uuid": "^1.4.7",
     "nodemon": "^1.10.2",
     "postcss-loader": "^1.1.1",
+    "prop-types": "^15.6.0",
     "q": "^1.4.1",
     "react": "^15.4.1",
     "react-addons-test-utils": "^15.4.0",

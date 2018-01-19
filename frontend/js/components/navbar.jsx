@@ -26,14 +26,15 @@
 *
 */
 import React from 'react';
+import PropTypes from 'prop-types';
 import '../../styles/components/navbar.scss';
 
 export class NavBar extends React.Component {
 
   static propTypes = {
-    onLogout: React.PropTypes.func.isRequired,
-    appTitle: React.PropTypes.string.isRequired,
-    username: React.PropTypes.string
+    onLogout: PropTypes.func.isRequired,
+    appTitle: PropTypes.string.isRequired,
+    username: PropTypes.string
   }
 
   componentDidMount() {

@@ -26,6 +26,7 @@
 *
 */
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Preloader } from './preloader';
 import _ from 'lodash';
 import classNames from 'classnames';
@@ -35,14 +36,14 @@ import '../../styles/components/status-card';
 
 export class StatusCard extends React.Component {
   static propTypes = {
-    onSubmitList: React.PropTypes.func.isRequired,
-    onStartNewList: React.PropTypes.func.isRequired,
-    validRecordCount: React.PropTypes.number,
-    userinfo: React.PropTypes.object,
-    submitStatus: React.PropTypes.string.isRequired,
-    submitJobError: React.PropTypes.string,
-    recordParseErrors: React.PropTypes.array,
-    submitEnabled: React.PropTypes.object
+    onSubmitList: PropTypes.func.isRequired,
+    onStartNewList: PropTypes.func.isRequired,
+    validRecordCount: PropTypes.number,
+    userinfo: PropTypes.object,
+    submitStatus: PropTypes.string.isRequired,
+    submitJobError: PropTypes.string,
+    recordParseErrors: PropTypes.array,
+    submitEnabled: PropTypes.object
   }
 
   onSubmit(event) {

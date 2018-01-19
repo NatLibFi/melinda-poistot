@@ -26,6 +26,7 @@
 *
 */
 import React from 'react';
+import PropTypes from 'prop-types';
 import CodeMirror from 'codemirror';
 import { parse } from 'shared/input-parser';
 import _ from 'lodash';
@@ -37,10 +38,10 @@ import '../../styles/components/record-id-input-area';
 export class RecordIdInputArea extends React.Component {
 
   static propTypes = {  
-    onChange: React.PropTypes.func.isRequired,
-    recordParseErrors: React.PropTypes.array,
-    readOnly: React.PropTypes.bool,
-    submitStatus: React.PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+    recordParseErrors: PropTypes.array,
+    readOnly: PropTypes.bool,
+    submitStatus: PropTypes.string.isRequired,
   }
   
   constructor(props) {

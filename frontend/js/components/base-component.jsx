@@ -26,6 +26,7 @@
 *
 */
 import React from 'react';
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import '../../styles/main.scss';
@@ -44,18 +45,18 @@ import { ExampleCardMelindaId } from './example-card-melinda-id';
 export class BaseComponent extends React.Component {
 
   static propTypes = {
-    sessionState: React.PropTypes.string.isRequired,
-    removeSession: React.PropTypes.func.isRequired,
-    setRecordIdList: React.PropTypes.func.isRequired,
-    resetWorkspace: React.PropTypes.func.isRequired,
-    submitJob: React.PropTypes.func.isRequired,
-    userinfo: React.PropTypes.object,
-    validRecordCount: React.PropTypes.number,
-    submitStatus: React.PropTypes.string.isRequired,
-    submitJobError: React.PropTypes.string,
-    recordParseErrors: React.PropTypes.array,
-    editorIsReadOnly: React.PropTypes.bool,
-    submitEnabled: React.PropTypes.object
+    sessionState: PropTypes.string.isRequired,
+    removeSession: PropTypes.func.isRequired,
+    setRecordIdList: PropTypes.func.isRequired,
+    resetWorkspace: PropTypes.func.isRequired,
+    submitJob: PropTypes.func.isRequired,
+    userinfo: PropTypes.object,
+    validRecordCount: PropTypes.number,
+    submitStatus: PropTypes.string.isRequired,
+    submitJobError: PropTypes.string,
+    recordParseErrors: PropTypes.array,
+    editorIsReadOnly: PropTypes.bool,
+    submitEnabled: PropTypes.object
   }
 
   handleLogout() {

@@ -26,6 +26,7 @@
 *
 */
 import React from 'react';
+import PropTypes from 'prop-types';
 import * as sessionActionCreators from '../action-creators/session-actions';
 import {connect} from 'react-redux';
 import '../../styles/components/signin-form-panel.scss';
@@ -33,10 +34,10 @@ import '../../styles/components/signin-form-panel.scss';
 export class SigninFormPanel extends React.Component {
 
   static propTypes = {
-    title: React.PropTypes.string.isRequired,
-    startSession: React.PropTypes.func.isRequired,
-    createSessionErrorMessage: React.PropTypes.string,
-    sessionState: React.PropTypes.string,
+    title: PropTypes.string.isRequired,
+    startSession: PropTypes.func.isRequired,
+    createSessionErrorMessage: PropTypes.string,
+    sessionState: PropTypes.string,
   }
   constructor() {
     super();

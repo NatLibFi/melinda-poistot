@@ -26,13 +26,14 @@
 *
 */
 import React from 'react';
+import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 export class ReportEmail extends React.Component {
 
   static propTypes = {
-    taskResults: React.PropTypes.array.isRequired,
-    jobId: React.PropTypes.string.isRequired
+    taskResults: PropTypes.array.isRequired,
+    jobId: PropTypes.string.isRequired
   }
 
   renderRow(taskResult, key) {
