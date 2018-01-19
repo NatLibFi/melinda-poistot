@@ -28,7 +28,6 @@
 import { expect } from 'chai';
 import ResultWorker from './result-worker';
 import { __RewireAPI__ as ComponentRewriteApi } from './result-worker';
-import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 
 describe('result worker', function() {
   let resultWorker;

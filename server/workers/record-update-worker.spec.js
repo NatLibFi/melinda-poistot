@@ -27,7 +27,6 @@
 */import {expect} from 'chai';
 import { processTask, RecordProcessingError } from './record-update-worker';
 import sinon from 'sinon';
-import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 import { __RewireAPI__ as RewireAPI } from './record-update-worker';
 import { FAKE_RECORD, FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO, FAKE_RECORD_ONLY_LOW_TEST, FAKE_RECORD_2_LOW, FAKE_RECORD_WITH_LOW_TEST_REMOVED } from '../test_helpers/fake-data';
 import MarcRecord from 'marc-record-js';

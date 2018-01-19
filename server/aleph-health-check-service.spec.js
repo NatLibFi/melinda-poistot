@@ -28,13 +28,11 @@
 import { checkAlephHealth } from './aleph-health-check-service';
 import { __RewireAPI__ as RewireAPI } from './aleph-health-check-service';
 import sinon from 'sinon';
-import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 import chaiAsPromised from 'chai-as-promised';
 import { readEnvironmentVariable } from 'server/utils';
 
 chai.use(chaiAsPromised);
 var expect = chai.expect;
-
 const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const apiPath = apiVersion !== null ? `/${apiVersion}` : '';
