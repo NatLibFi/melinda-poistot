@@ -32,7 +32,7 @@ import '../../styles/main.scss';
 export class App extends React.Component {
 
   static propTypes = {
-    children: PropTypes.element.isRequired
+    children: PropTypes.arrayOf(PropTypes.element)
   }
 
   render() {
