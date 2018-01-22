@@ -31,7 +31,6 @@ const plugins = [
     __DEV__: JSON.stringify(JSON.parse(process.env.DEBUG || 'false'))
   }),
   new webpack.optimize.OccurrenceOrderPlugin(),
-  new webpack.optimize.DedupePlugin(),
   new webpack.optimize.UglifyJsPlugin({
     compress: {
       warnings: false
@@ -51,7 +50,6 @@ const sassLoaders = [
 module.exports = {
   entry: {
     app: path.resolve(PATHS.app, 'main.js'),
-    vendor: ['react']
   },
   output: {
     path: PATHS.build,
@@ -71,7 +69,6 @@ module.exports = {
     extensions: ['.js', '.jsx', '.scss']
   },
   module: {
-    noParse: /\.min\.js$/,
     loaders: [
       {
         test: /\.jsx?$/,
