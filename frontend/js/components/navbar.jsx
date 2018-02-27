@@ -26,14 +26,15 @@
 *
 */
 import React from 'react';
+import PropTypes from 'prop-types';
 import '../../styles/components/navbar.scss';
 
 export class NavBar extends React.Component {
 
   static propTypes = {
-    onLogout: React.PropTypes.func.isRequired,
-    appTitle: React.PropTypes.string.isRequired,
-    username: React.PropTypes.string
+    onLogout: PropTypes.func.isRequired,
+    appTitle: PropTypes.string.isRequired,
+    username: PropTypes.string
   }
 
   componentDidMount() {
@@ -67,7 +68,7 @@ export class NavBar extends React.Component {
         </nav>
 
         <ul id='mainmenu' className='dropdown-content'>
-          <li><a href="https://www.kiwi.fi/display/melinda/Tietokantatunnusten+massapoisto+Melindasta" target="_blank">Ohjeet</a></li>
+          <li><a href="https://www.kiwi.fi/display/melinda/Tietokantatunnusten+massapoisto+Melindasta" target="_blank" rel="noopener noreferrer">Ohjeet</a></li>
           <li className="divider" />
           <li><a href="#" onClick={this.props.onLogout}>Kirjaudu ulos</a></li>
         </ul>

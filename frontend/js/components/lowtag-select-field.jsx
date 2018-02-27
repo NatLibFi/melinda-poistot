@@ -27,13 +27,14 @@
 */
 /* global $, Materialize */
 import React from 'react';
+import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 export class LowTagSelectField extends React.Component {
 
   static propTypes = {
-    availableLowTags: React.PropTypes.array.isRequired,
-    onSelectLowTag: React.PropTypes.func.isRequired
+    availableLowTags: PropTypes.array.isRequired,
+    onSelectLowTag: PropTypes.func.isRequired
   }
 
   componentDidMount() {

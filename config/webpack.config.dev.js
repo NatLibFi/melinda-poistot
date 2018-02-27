@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const autoprefixer = require('autoprefixer');
 
 // App files location
 const PATHS = {
@@ -14,14 +13,14 @@ const PATHS = {
 
 const plugins = [
   // Shared code
-  new webpack.optimize.CommonsChunkPlugin('vendor', 'js/vendor.bundle.js'),
+  new webpack.optimize.CommonsChunkPlugin({ name:'vendor', filename: 'js/vendor.bundle.js' }),
   // Avoid publishing files when compilation fails
-  new webpack.NoErrorsPlugin(),
+  new webpack.NoEmitOnErrorsPlugin(),
   new webpack.DefinePlugin({
-    'process.env.NODE_ENV': JSON.stringify('development'),
+    'process.§.NODE_ENV': JSON.stringify('development'),
     __DEV__: JSON.stringify(JSON.parse(process.env.DEBUG || 'false'))
   }),
-  new webpack.optimize.OccurenceOrderPlugin()
+  new webpack.optimize.OccurrenceOrderPlugin()
 ];
 
 const sassLoaders = [
@@ -32,7 +31,6 @@ const sassLoaders = [
 ];
 
 module.exports = {
-  env : process.env.NODE_ENV,
   entry: {
     app: path.resolve(PATHS.app, 'main.js'),
     vendor: ['react']
@@ -53,13 +51,13 @@ module.exports = {
       shared: PATHS.shared
     },
     // We can now require('file') instead of require('file.jsx')
-    extensions: ['', '.js', '.jsx', '.scss']
+    extensions: ['.js', '.jsx', '.scss']
   },
   module: {
     loaders: [
       {
         test: /\.jsx?$/,
-        loaders: ['babel'],
+        loaders: ['babel-loader'],
         include: [PATHS.app, PATHS.shared, PATHS.commons_frontend]
       },
       {
@@ -78,11 +76,6 @@ module.exports = {
     ]
   },
   plugins: plugins,
-  postcss: function () {
-    return [autoprefixer({
-      browsers: ['last 6 versions']
-    })];
-  },
   devServer: {
     contentBase: path.resolve(__dirname, '../frontend'),
     port: 3000,

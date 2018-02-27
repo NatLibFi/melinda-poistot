@@ -24,15 +24,18 @@
 * @licend  The above is the entire license notice
 * for the JavaScript code in this file.
 *
-*/import jsdom from 'jsdom';
+*/
+
+import { JSDOM } from 'jsdom';
 import chai from 'chai';
 import chaiImmutable from 'chai-immutable';
 
-const doc = jsdom.jsdom('<!doctype html><html><body></body></html>');
-const win = doc.defaultView;
+const { window } = new JSDOM('<!doctype html><html><body></body></html>');
+const { document } = window;
+// const win = doc.defaultView;
 
-global.document = doc;
-global.window = win;
+global.document = document;
+global.window = window;
 global.__DEV__ = true;
 
 global.window.$ = require('jquery');
@@ -45,7 +48,7 @@ Object.keys(window).forEach((key) => {
 
 chai.use(chaiImmutable);
 
-doc.createRange = function() {
+global.document.createRange = function() {
   return {
     setEnd: function(){},
     setStart: function(){},

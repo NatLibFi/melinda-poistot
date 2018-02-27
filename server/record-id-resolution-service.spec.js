@@ -28,7 +28,6 @@
 import { resolveMelindaId } from './record-id-resolution-service';
 import { __RewireAPI__ as RewireAPI } from './record-id-resolution-service';
 import sinon from 'sinon';
-import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 
 describe('Record list service', () => {  
   let fetchStub;

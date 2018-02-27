@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const autoprefixer = require('autoprefixer');
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -24,15 +23,14 @@ const plugins = [
     }
   ]),
   // Shared code
-  new webpack.optimize.CommonsChunkPlugin('vendor', 'js/vendor.bundle.js'),
+  new webpack.optimize.CommonsChunkPlugin({ name:'vendor', filename: 'js/vendor.bundle.js' }),
   // Avoid publishing files when compilation fails
-  new webpack.NoErrorsPlugin(),
+  new webpack.NoEmitOnErrorsPlugin(),
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify('production'),
     __DEV__: JSON.stringify(JSON.parse(process.env.DEBUG || 'false'))
   }),
-  new webpack.optimize.OccurenceOrderPlugin(),
-  new webpack.optimize.DedupePlugin(),
+  new webpack.optimize.OccurrenceOrderPlugin(),
   new webpack.optimize.UglifyJsPlugin({
     compress: {
       warnings: false
@@ -43,6 +41,7 @@ const plugins = [
 ];
 
 const sassLoaders = [
+  'style-loader',
   'css-loader?sourceMap',
   'postcss-loader',
   'sass-loader?outputStyle=compressed'
@@ -51,7 +50,6 @@ const sassLoaders = [
 module.exports = {
   entry: {
     app: path.resolve(PATHS.app, 'main.js'),
-    vendor: ['react']
   },
   output: {
     path: PATHS.build,
@@ -68,24 +66,23 @@ module.exports = {
       shared: PATHS.shared
     },
     // We can now require('file') instead of require('file.jsx')
-    extensions: ['', '.js', '.jsx', '.scss']
+    extensions: ['.js', '.jsx', '.scss']
   },
   module: {
-    noParse: /\.min\.js$/,
     loaders: [
       {
         test: /\.jsx?$/,
-        loaders: ['babel'],
+        loaders: ['babel-loader'],
         include: [PATHS.app, PATHS.shared, PATHS.commons_frontend]
       },
       {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('style-loader', sassLoaders.join('!'))
+        loader: sassLoaders.join('!')
       },
       {
         test: /\.css$/,
         include: [PATHS.styles, PATHS.commons_styles],
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!postcss-loader')
+        loader: 'style-loader!css-loader!postcss-loader'
       },
       // Inline base64 URLs for <=8k images, direct URLs for the rest
       {
@@ -99,10 +96,5 @@ module.exports = {
     ]
   },
   plugins: plugins,
-  postcss: function () {
-    return [autoprefixer({
-      browsers: ['last 6 versions']
-    })];
-  },
   devtool: 'source-map'
 };

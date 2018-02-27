@@ -26,7 +26,7 @@
 *
 */
 import React from 'react';
-import { renderIntoDocument } from 'react-addons-test-utils';
+import { renderIntoDocument } from 'react-dom/test-utils';
 import {expect} from 'chai';
 
 import { RecordIdInputArea } from './record-id-input-area';
@@ -44,7 +44,7 @@ describe('RecordIdInputArea', () => {
   });
 
   it('contains a CodeMirror editor', () => {
-    expect(editor).to.be.an.object;
+    expect(editor).to.be.an('object');
   });
   
   describe('when editor is set to readOnly', () => {

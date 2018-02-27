@@ -26,6 +26,7 @@
 *
 */
 import React from 'react';
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import { setSelectedLowTag, setDeleteOption, setReplicateOption } from '../action-creators/record-list-form-actions';
 import '../../styles/components/job-configuration-panel';
@@ -35,12 +36,12 @@ import classNames from 'classnames';
 
 export class JobConfigurationPanel extends React.Component {
   static propTypes = {
-    availableLowTags: React.PropTypes.array.isRequired,
-    setSelectedLowTag: React.PropTypes.func.isRequired,
-    setDeleteOption:  React.PropTypes.func.isRequired,
-    setReplicateOption:  React.PropTypes.func.isRequired,
-    deleteUnusedRecords: React.PropTypes.bool.isRequired,
-    replicateRecords: React.PropTypes.bool.isRequired
+    availableLowTags: PropTypes.array.isRequired,
+    setSelectedLowTag: PropTypes.func.isRequired,
+    setDeleteOption:  PropTypes.func.isRequired,
+    setReplicateOption:  PropTypes.func.isRequired,
+    deleteUnusedRecords: PropTypes.bool.isRequired,
+    replicateRecords: PropTypes.bool.isRequired
   }
 
   handleDeleteOptionChange(event) {

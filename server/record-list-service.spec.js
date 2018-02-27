@@ -28,7 +28,6 @@
 import { connect, startJob } from './record-list-service';
 import { __RewireAPI__ as AuthProviderRewireAPI } from './record-list-service';
 import sinon from 'sinon';
-import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 
 describe('Record list service', () => {
   const TEST_RECORD_LIST = [1,2,3];
