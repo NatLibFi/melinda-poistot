@@ -33,7 +33,7 @@ import HttpStatus from 'http-status-codes';
 import { connect, startJob } from './record-list-service';
 import { requireSession, readSessionMiddleware } from 'server/session-controller';
 import cookieParser from 'cookie-parser';
-import { validate } from 'shared/input-parser';
+import { validate } from './shared/input-parser';
 
 // Connect to AMQP host
 connect();
@@ -61,6 +61,6 @@ recordListController.post('/', cors(corsOptions), readSessionMiddleware, require
     logger.log('error', 'Unable to start job', error);
     return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
   }
-  
+
   return res.sendStatus(HttpStatus.OK);
 });

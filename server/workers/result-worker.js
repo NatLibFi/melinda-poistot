@@ -34,6 +34,8 @@ import _ from 'lodash';
 import { mail } from '../mailer';
 
 const AMQP_HOST = readEnvironmentVariable('AMQP_HOST');
+const AMQP_USERNAME = readEnvironmentVariable('AMQP_USERNAME', 'guest', { hideDefaultValue: true });
+const AMQP_PASSWORD = readEnvironmentVariable('AMQP_PASSWORD', 'guest', { hideDefaultValue: true });
 const INCOMING_TASK_RESULT_QUEUE = 'task_result_queue';
 const INCOMING_JOB_QUEUE = 'job_queue';
 
@@ -45,7 +47,7 @@ export default class ResultWorker {
   }
 
   connect() {
-    return amqp.connect(`amqp://${AMQP_HOST}`)
+    return amqp.connect(`amqp://${AMQP_USERNAME}:${AMQP_PASSWORD}@${AMQP_HOST}`)
       .then(conn => conn.createChannel())
       .then(ch => {
         ch.assertQueue(INCOMING_TASK_RESULT_QUEUE, {durable: true});
@@ -136,7 +138,7 @@ export default class ResultWorker {
 
       logJobResult(jobId, this.completeJobs[jobId]);
       dispatchEmail(jobId, jobAggregate.email, this.completeJobs[jobId]);
-   
+
       delete(this.completeJobs[jobId]);
       this.currentJobs.delete(jobId);
     }
@@ -145,7 +147,7 @@ export default class ResultWorker {
   getStatusInfo() {
     const statusForCurrentJobs = Object.create(null);
     for (let [k,v] of this.currentJobs) {
-      
+
       const allTasksCount = v.job.taskIdList.length;
       const incompleteTaskCount = v.inCompleteTasks.size;
 
@@ -200,7 +202,7 @@ function formatTaskResult(taskResult) {
 }
 
 function readTaskResult(msg) {
-  const taskResult = JSON.parse(msg.content.toString());  
+  const taskResult = JSON.parse(msg.content.toString());
   return {
     msg,
     ...taskResult
@@ -208,5 +210,5 @@ function readTaskResult(msg) {
 }
 
 function readJob(msg) {
-  return JSON.parse(msg.content.toString());  
+  return JSON.parse(msg.content.toString());
 }
