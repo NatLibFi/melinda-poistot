@@ -35,7 +35,6 @@ import _ from 'lodash';
 import { transformRecord } from 'server/record-transform-service';
 import { checkAlephHealth } from '../aleph-health-check-service';
 
-const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const apiUrl = readEnvironmentVariable('MELINDA_API', null);
 const minTaskIntervalSeconds = readEnvironmentVariable('MIN_TASK_INTERVAL_SECONDS', 10);
 const SLOW_PROCESSING_WAIT_TIME_MS = 10000;
