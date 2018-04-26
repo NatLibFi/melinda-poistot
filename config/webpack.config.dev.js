@@ -4,9 +4,9 @@ const webpack = require('webpack');
 // App files location
 const PATHS = {
   app: path.resolve(__dirname, '../frontend/js'),
-  shared: path.resolve(__dirname, '../shared/shared'),
-  commons_frontend: path.resolve(__dirname, '../melinda-ui-commons/frontend'),
-  commons_styles: path.resolve(__dirname, '../melinda-ui-commons/frontend/styles'),
+  shared: path.resolve(__dirname, '../shared'),
+  commons_frontend: path.resolve(__dirname, '../../node_modules/@natlibfi/melinda-ui-commons/frontend'),
+  commons_styles: path.resolve(__dirname, '../../node_modules/@natlibfi/melinda-ui-commons/frontend/styles'),
   styles: path.resolve(__dirname, '../frontend/styles'),
   build: path.resolve(__dirname, '../build')
 };

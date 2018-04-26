@@ -33,23 +33,22 @@ import { readEnvironmentVariable } from 'server/utils';
 
 chai.use(chaiAsPromised);
 var expect = chai.expect;
-const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
+const apiUrl = readEnvironmentVariable('MELINDA_API', null);
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
-const apiPath = apiVersion !== null ? `/${apiVersion}` : '';
 
-const fakeApiUrl = `${alephUrl}/API${apiPath}`;
+const fakeApiUrl = apiUrl;
 const fakeXServerUrl = `${alephUrl}/X`;
 
 const FAKE_RESULT_OK = { status: 200 };
 const FAKE_RESULT_ERROR = { status: 503 };
 
-describe('Aleph health check service', () => {  
+describe('Aleph health check service', () => {
   let fetchStub;
-  
+
   beforeEach(() => {
     fetchStub = sinon.stub();
     RewireAPI.__Rewire__('fetch', fetchStub);
-  
+
   });
   afterEach(() => {
     RewireAPI.__ResetDependency__('fetch');

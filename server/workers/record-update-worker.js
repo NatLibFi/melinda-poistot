@@ -36,25 +36,25 @@ import { transformRecord } from 'server/record-transform-service';
 import { checkAlephHealth } from '../aleph-health-check-service';
 
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
-const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
+const apiUrl = readEnvironmentVariable('MELINDA_API', null);
 const minTaskIntervalSeconds = readEnvironmentVariable('MIN_TASK_INTERVAL_SECONDS', 10);
 const SLOW_PROCESSING_WAIT_TIME_MS = 10000;
 const ALEPH_UNAVAILABLE_WAIT_TIME = 10000;
 
-const apiPath = apiVersion !== null ? `/${apiVersion}` : '';
-
 const defaultConfig = {
-  endpoint: `${alephUrl}/API${apiPath}`,
+  endpoint: apiUrl,
   user: '',
   password: ''
 };
 
 const AMQP_HOST = readEnvironmentVariable('AMQP_HOST');
+const AMQP_USERNAME = readEnvironmentVariable('AMQP_USERNAME', 'guest', { hideDefaultValue: true });
+const AMQP_PASSWORD = readEnvironmentVariable('AMQP_PASSWORD', 'guest', { hideDefaultValue: true });
 const INCOMING_TASK_QUEUE = 'task_queue';
 const OUTGOING_TASK_QUEUE = 'task_result_queue';
 
 export function connect() {
-  return amqp.connect(`amqp://${AMQP_HOST}`)
+  return amqp.connect(`amqp://${AMQP_USERNAME}:${AMQP_PASSWORD}@${AMQP_HOST}`)
     .then(conn => conn.createChannel())
     .then(ch => {
       ch.assertQueue(INCOMING_TASK_QUEUE, {durable: true});
@@ -72,7 +72,7 @@ function startTaskExecutor(channel) {
 
   let waitTimeMs = 0;
   channel.consume(INCOMING_TASK_QUEUE, function(msg) {
-    
+
     logger.log('info', 'record-update-worker: Received task', msg.content.toString());
 
     logger.log('info', `record-update-worker: Waiting ${waitTimeMs}ms before starting the task.`);
@@ -92,19 +92,19 @@ function startTaskExecutor(channel) {
         assertAlephHealth()
           .then(() => processTask(task, client))
           .then(taskResponse => {
-            channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskResponse)), {persistent: true});  
+            channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskResponse)), {persistent: true});
           }).catch(error => {
-            
+
             if (error instanceof RecordProcessingError) {
               logger.log('info', 'record-update-worker: Processing failed:', error.message);
               const failedTask = markTaskAsFailed(error.task, error.message);
-              channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)), {persistent: true});   
+              channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)), {persistent: true});
             } else {
               logger.log('error', 'record-update-worker: Processing failed:', error);
               const failedTask = markTaskAsFailed(task, error.message);
-              channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)), {persistent: true});   
+              channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)), {persistent: true});
             }
-           
+
           }).then(() => {
             const taskProcessingTimeMs = taskProcessingTimer.elapsed();
 
@@ -115,8 +115,8 @@ function startTaskExecutor(channel) {
             if (waitTimeMs === 0) {
               logger.log('info', `record-update-worker: Processing was slower than MIN_TASK_INTERVAL_SECONDS, forcing wait time to ${SLOW_PROCESSING_WAIT_TIME_MS}ms.`);
               waitTimeMs = SLOW_PROCESSING_WAIT_TIME_MS;
-            } 
-            
+            }
+
             channel.ack(msg);
 
           }).catch(error => {
@@ -128,7 +128,7 @@ function startTaskExecutor(channel) {
         const {consumerTag, deliveryTag} = msg;
         logger.log('error', 'record-update-worker: Dropped invalid task', {consumerTag, deliveryTag}, error.message);
         channel.ack(msg);
-        return; 
+        return;
       }
 
     }, waitTimeMs);
@@ -147,7 +147,7 @@ function assertAlephHealth() {
       checkAlephHealth()
         .then(() => resolve())
         .catch(error => {
-          
+
           logger.log('info', `Aleph is not healthy. Waiting ${waitTimeSeconds} seconds.`, error.message);
           setTimeout(() => checkAndRetry(), ALEPH_UNAVAILABLE_WAIT_TIME);
         });
@@ -167,7 +167,7 @@ export function processTask(task, client) {
   const transformOptions = {
     deleteUnusedRecords: task.deleteUnusedRecords,
     skipLocalSidCheck: skipLocalSidCheckForRemoval,
-    libraryTag: task.lowTag, 
+    libraryTag: task.lowTag,
     expectedLocalId: task.recordIdHints.localId,
     bypassSIDdeletion: task.bypassSIDdeletion
   };
@@ -181,7 +181,7 @@ export function processTask(task, client) {
       if (isComponentRecord(loadedRecord)) {
         throw new RecordProcessingError('Record is a component record. Record not updated.', taskWithResolvedId);
       }
-      
+
       logger.log('info', 'record-update-worker: Transforming record', taskWithResolvedId.recordId);
       return transformRecord('REMOVE-LOCAL-REFERENCE', loadedRecord, transformOptions)
         .then(result => {
@@ -219,7 +219,7 @@ export function processTask(task, client) {
         });
 
       } else {
-        return response;  
+        return response;
       }
     }).then(response => {
       logger.log('info', 'record-update-worker: Updated record', response.recordId);
@@ -265,7 +265,7 @@ function findMelindaId(task) {
 }
 
 function readTask(msg) {
-  return JSON.parse(msg.content.toString());  
+  return JSON.parse(msg.content.toString());
 }
 
 export function RecordProcessingError(message, task) {

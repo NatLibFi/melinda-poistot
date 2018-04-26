@@ -27,10 +27,8 @@
 */import fetch from 'isomorphic-fetch';
 import { readEnvironmentVariable } from 'server/utils';
 
-const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
+const apiUrl = readEnvironmentVariable('MELINDA_API', null);
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
-const apiPath = apiVersion !== null ? `/${apiVersion}` : '';
-const apiUrl = `${alephUrl}/API${apiPath}`;
 const XServerUrl = `${alephUrl}/X`;
 
 export function checkAlephHealth() {

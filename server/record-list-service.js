@@ -31,12 +31,14 @@ import _ from 'lodash';
 import uuid from 'node-uuid';
 
 const AMQP_HOST = readEnvironmentVariable('AMQP_HOST');
+const AMQP_USERNAME = readEnvironmentVariable('AMQP_USERNAME', 'guest', { hideDefaultValue: true });
+const AMQP_PASSWORD = readEnvironmentVariable('AMQP_PASSWORD', 'guest', { hideDefaultValue: true });
 const TASK_QUEUE = 'task_queue';
 const JOB_QUEUE = 'job_queue';
 
 let channel;
 export function connect() {
-  return amqp.connect(`amqp://${AMQP_HOST}`)
+  return amqp.connect(`amqp://${AMQP_USERNAME}:${AMQP_PASSWORD}@${AMQP_HOST}`)
     .then(conn => conn.createChannel())
     .then(ch => channel = ch)
     .catch(error => {
@@ -60,13 +62,13 @@ export function startJob(records, lowTag, deleteUnusedRecords, replicateRecords,
   }
 
   const bypassSIDdeletion = replicateRecords;
-  
+
   channel.assertQueue(TASK_QUEUE, {durable: true});
   channel.assertQueue(JOB_QUEUE, {durable: true});
-  
+
   const jobId = uuid.v4();
   const tasks = records.map(_.partial(createTask, jobId, sessionToken, lowTag, deleteUnusedRecords, bypassSIDdeletion));
-  
+
   const jobPayload = new Buffer(JSON.stringify(createJob(jobId, tasks, userinfo)));
   // Node 6 has Buffer.from(msg) which should be used
   channel.sendToQueue(JOB_QUEUE, jobPayload, {persistent: true});
@@ -76,7 +78,7 @@ export function startJob(records, lowTag, deleteUnusedRecords, replicateRecords,
     // Node 6 has Buffer.from(msg) which should be used
     channel.sendToQueue(TASK_QUEUE, new Buffer(JSON.stringify(task)), {persistent: true});
   });
-  
+
 }
 
 function createTask(jobId, sessionToken, lowTag, deleteUnusedRecords, bypassSIDdeletion, recordIdHints) {

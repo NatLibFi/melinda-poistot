@@ -34,6 +34,8 @@ Each variable is mandatory unless it has a default value
 | ALEPH_USER_LIBRARY | | aleph base for users | usr00 |
 | HTTP_PORT  | 3001  |   |   |
 | AMQP_HOST  |   | hostname of amqp server  | localhost  |
+| AMQP_USERNAME  |   | username for the amqp server  | guest  |
+| AMQP_PASSWORD  |   | password of amqp server  | guest  |
 | MELINDA_API_VERSION  | null  |   |   |
 | MIN_TASK_INTERVAL_SECONDS  | 10  | Time to take per task, in seconds  |   |
 | SMTP_CONNECTION_URL  |   | SMTP url for sending mail  | smtp://user:pass@smtp.server.tld  |
@@ -47,7 +49,7 @@ Each variable is mandatory unless it has a default value
 Note on SECRET_ENCRYPTION_KEY:
 All sessions will reset when the key changes. If the default value is used, then all sessions will reset every time the app restarts.
 
-SECRET_ENCRYPTION_KEY can be generated with nodejs: 
+SECRET_ENCRYPTION_KEY can be generated with nodejs:
 ```
 crypto.randomBytes(32).toString('base64')
 ```
@@ -63,4 +65,3 @@ This will start webpack-dev-server for frontend codebase and nodemon for the bac
 Copyright (c) 2016-2017 **University Of Helsinki (The National Library Of Finland)**
 
 This project's source code is licensed under the terms of **GNU Affero General Public License Version 3** or any later version.
-

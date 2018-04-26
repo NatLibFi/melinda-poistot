@@ -35,14 +35,13 @@ import MarcRecord from 'marc-record-js';
 const parseXMLStringToJSON = promisify(xml2js.parseString);
 
 
-const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
+const apiUrl = readEnvironmentVariable('MELINDA_API', null);
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const base = readEnvironmentVariable('ALEPH_INDEX_BASE', 'fin01');
 
 const ALEPH_ERROR_EMPTY_SET = 'empty set';
-const apiPath = apiVersion !== null ? `/${apiVersion}` : '';
 const melindaClientConfig = {
-  endpoint: `${alephUrl}/API${apiPath}`,
+  endpoint: apiUrl,
   user: '',
   password: ''
 };
@@ -61,7 +60,7 @@ export function resolveMelindaId(melindaId, localId, libraryTag, links) {
 
     const combinedResolvedIdList = _.uniq(_.concat(sidaRecordIdList, middrRecordIdList, XServerRecordIdList));
     return combinedResolvedIdList;
-    
+
   })
   .then(validateResult)
   .then(recordIdList => {
@@ -76,7 +75,7 @@ function querySIDAindex(localId, libraryTag, links) {
 
   const query = [`sida=${localId}${normalizedLibraryTag}`].concat(linksPart).join(' OR ');
   const requestUrl = `${alephUrl}/X?op=find&request=${encodeURIComponent(query)}&base=${base}`;
-  
+
   return fetch(requestUrl)
     .then(response => response.text())
     .then(parseXMLStringToJSON)
@@ -93,7 +92,7 @@ function queryMIDDRindex(melindaId, links) {
   }
 
   const query = queryIdList.map(recordId => `MIDRR=${_.padStart(recordId, 9, '0')}`).join(' OR ');
-  
+
   const requestUrl = `${alephUrl}/X?op=find&request=${encodeURIComponent(query)}&base=${base}`;
   return fetch(requestUrl)
     .then(response => response.text())
@@ -140,9 +139,9 @@ function loadRecordIdList(setResponse, defaultValue = []) {
       return defaultValue;
     } else {
       throw new Error(error);
-    }  
+    }
   }
-  
+
   const { set_number, no_entries } = setResponse.find;
   const presentRequestUrl = `${alephUrl}/X?op=present&set_number=${set_number}&set_entry=1-${no_entries}`;
 
@@ -154,7 +153,7 @@ function loadRecordIdList(setResponse, defaultValue = []) {
 
 function validateResult(resolvedRecordIdList) {
   const numberOfRecords = resolvedRecordIdList.length;
-  
+
   if (numberOfRecords > 1) {
     throw new Error(`Resolved into multiple records: ${resolvedRecordIdList.join(', ')}`);
   }
