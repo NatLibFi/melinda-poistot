@@ -5,8 +5,8 @@ const webpack = require('webpack');
 const PATHS = {
   app: path.resolve(__dirname, '../frontend/js'),
   shared: path.resolve(__dirname, '../shared'),
-  commons_frontend: path.resolve(__dirname, '../../node_modules/@natlibfi/melinda-ui-commons/frontend'),
-  commons_styles: path.resolve(__dirname, '../../node_modules/@natlibfi/melinda-ui-commons/frontend/styles'),
+  commons_frontend: path.resolve(__dirname, '../../node_modules/@natlibfi/melinda-ui-commons/dist/frontend'),
+  commons_styles: path.resolve(__dirname, '../../node_modules/@natlibfi/melinda-ui-commons/dist/frontend/styles'),
   styles: path.resolve(__dirname, '../frontend/styles'),
   build: path.resolve(__dirname, '../build')
 };
@@ -21,13 +21,6 @@ const plugins = [
     __DEV__: JSON.stringify(JSON.parse(process.env.DEBUG || 'false'))
   }),
   new webpack.optimize.OccurrenceOrderPlugin()
-];
-
-const sassLoaders = [
-  'style-loader',
-  'css-loader?sourceMap',
-  'postcss-loader',
-  'sass-loader?outputStyle=expanded'
 ];
 
 module.exports = {
@@ -62,11 +55,20 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loader: sassLoaders.join('!')
+        use: [
+          'style-loader',
+          'css-loader?sourceMap',
+          { loader: 'postcss-loader', options: { config: { path: 'postcss.config' } } },
+          'sass-loader?outputStyle=compressed'
+        ]
       },
       {
         test: /\.css$/,
-        loader: 'style-loader!css-loader!postcss-loader'
+        use: [
+          'style-loader',
+          'css-loader',
+          { loader: 'postcss-loader', options: { config: { path: 'postcss.config' } } }
+        ]
       },
       // Inline base64 URLs for <=8k images, direct URLs for the rest
       {
