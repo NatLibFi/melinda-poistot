@@ -8,8 +8,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const PATHS = {
   app: path.resolve(__dirname, '../frontend/js'),
   shared: path.resolve(__dirname, '../shared'),
-  commons_frontend: path.resolve(__dirname, '../../node_modules/@natlibfi/melinda-ui-commons/frontend'),
-  commons_styles: path.resolve(__dirname, '../../node_modules/@natlibfi/melinda-ui-commons/frontend/styles'),
+  commons_frontend: path.resolve(__dirname, '../../node_modules/@natlibfi/melinda-ui-commons/dist/frontend'),
+  commons_styles: path.resolve(__dirname, '../../node_modules/@natlibfi/melinda-ui-commons/dist/frontend/styles'),
   styles: path.resolve(__dirname, '../frontend/styles'),
   images: path.resolve(__dirname, '../frontend/images'),
   build: path.resolve(__dirname, '../build/public')
