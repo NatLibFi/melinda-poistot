@@ -40,13 +40,6 @@ const plugins = [
   new ExtractTextPlugin('css/app.css', { allChunks: true })
 ];
 
-const sassLoaders = [
-  'style-loader',
-  'css-loader?sourceMap',
-  'postcss-loader',
-  'sass-loader?outputStyle=compressed'
-];
-
 module.exports = {
   entry: {
     app: path.resolve(PATHS.app, 'main.js'),
@@ -77,12 +70,21 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loader: sassLoaders.join('!')
+        use: [
+          'style-loader',
+          'css-loader?sourceMap',
+          { loader: 'postcss-loader', options: { config: { path: 'postcss.config' } } },
+          'sass-loader?outputStyle=compressed'
+        ]
       },
       {
         test: /\.css$/,
         include: [PATHS.styles, PATHS.commons_styles],
-        loader: 'style-loader!css-loader!postcss-loader'
+        use: [
+          'style-loader',
+          'css-loader',
+          { loader: 'postcss-loader', options: { config: { path: 'postcss.config' } } }
+        ]
       },
       // Inline base64 URLs for <=8k images, direct URLs for the rest
       {
