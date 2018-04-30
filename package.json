@@ -1,6 +1,6 @@
 {
   "name": "@natlibfi/melinda-local-ref-removal-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "UI for removing references to local databases from Melinda",
   "keywords": [
     "MARC",
