@@ -18,6 +18,7 @@ const plugins = [
   new webpack.NoEmitOnErrorsPlugin(),
   new webpack.DefinePlugin({
     'process.§.NODE_ENV': JSON.stringify('development'),
+    'process.env.DATA_PROTECTION_CONSENT_URL': JSON.stringify('https://www.kiwi.fi/download/attachments/93205241/melinda-verkkok%C3%A4ytt%C3%B6liittym%C3%A4t%20asiantuntijoille.pdf?api=v2'),
     __DEV__: JSON.stringify(JSON.parse(process.env.DEBUG || 'false'))
   }),
   new webpack.optimize.OccurrenceOrderPlugin()
