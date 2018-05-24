@@ -3,6 +3,16 @@
   "env": {
     "test": {
       "plugins": ["rewire"]
+    },
+    "production": {
+      "plugins": [
+        ["module-resolver", {
+          "root": ["."],
+          "alias": {
+            "shared": "./build/shared"
+          }
+        }]
+      ]
     }
   },
   "plugins": [
@@ -11,7 +21,7 @@
       "alias": {
         "server": "@natlibfi/melinda-ui-commons/dist/server/",
         "commons": "@natlibfi/melinda-ui-commons/dist/frontend/js/",
-        "shared": "./build/shared",
+        "shared": "./shared"
       }
     }]
   ]

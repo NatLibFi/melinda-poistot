@@ -5,8 +5,8 @@ const webpack = require('webpack');
 const PATHS = {
   app: path.resolve(__dirname, '../frontend/js'),
   shared: path.resolve(__dirname, '../shared'),
-  commons_frontend: path.resolve(__dirname, '../../node_modules/@natlibfi/melinda-ui-commons/dist/frontend'),
-  commons_styles: path.resolve(__dirname, '../../node_modules/@natlibfi/melinda-ui-commons/dist/frontend/styles'),
+  commons_frontend: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend'),
+  commons_styles: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend/styles'),
   styles: path.resolve(__dirname, '../frontend/styles'),
   build: path.resolve(__dirname, '../build')
 };
@@ -23,7 +23,7 @@ const plugins = [
   }),
   new webpack.optimize.OccurrenceOrderPlugin()
 ];
-
+console.log(PATHS.commons_frontend);
 module.exports = {
   entry: {
     app: path.resolve(PATHS.app, 'main.js'),
@@ -52,7 +52,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loaders: ['babel-loader'],
-        include: [PATHS.app, PATHS.shared, PATHS.commons_frontend]
+        include: [PATHS.app, PATHS.commons_frontend]
       },
       {
         test: /\.scss$/,
