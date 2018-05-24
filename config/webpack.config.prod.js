@@ -7,9 +7,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 // App files location
 const PATHS = {
   app: path.resolve(__dirname, '../frontend/js'),
-  shared: path.resolve(__dirname, '../shared'),
-  commons_frontend: path.resolve(__dirname, '../../node_modules/@natlibfi/melinda-ui-commons/dist/frontend'),
-  commons_styles: path.resolve(__dirname, '../../node_modules/@natlibfi/melinda-ui-commons/dist/frontend/styles'),
+  shared: path.resolve(__dirname, '../shared/shared'),
+  commons_frontend: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend'),
+  commons_styles: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend/styles'),
   styles: path.resolve(__dirname, '../frontend/styles'),
   images: path.resolve(__dirname, '../frontend/images'),
   build: path.resolve(__dirname, '../build/public')
@@ -28,7 +28,7 @@ const plugins = [
   new webpack.NoEmitOnErrorsPlugin(),
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify('production'),
-    'process.env.DATA_PROTECTION_CONSENT_URL': JSON.stringify('https://www.kiwi.fi/download/attachments/93205241/melinda-verkkok%C3%A4ytt%C3%B6liittym%C3%A4t%20asiantuntijoille.pdf?api=v2'),  
+    'process.env.DATA_PROTECTION_CONSENT_URL': JSON.stringify('https://www.kiwi.fi/download/attachments/93205241/melinda-verkkok%C3%A4ytt%C3%B6liittym%C3%A4t%20asiantuntijoille.pdf?api=v2'),
     __DEV__: JSON.stringify(JSON.parse(process.env.DEBUG || 'false'))
   }),
   new webpack.optimize.OccurrenceOrderPlugin(),

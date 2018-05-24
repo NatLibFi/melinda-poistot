@@ -34,7 +34,7 @@ import { removeSession } from '../action-creators/session-actions';
 import { setRecordIdList, submitJob } from '../action-creators/record-list-form-actions';
 import { resetWorkspace } from '../action-creators/ui-actions';
 import { NavBar } from './navbar';
-import { SigninFormPanelContainer } from './signin-form-panel';
+import { SigninFormPanelContainer } from 'commons/components/signin-form-panel';
 import { JobConfigurationPanelContainer } from './job-configuration-panel';
 import { RecordIdInputArea } from './record-id-input-area';
 import { StatusCard } from './status-card';
@@ -78,10 +78,10 @@ export class BaseComponent extends React.Component {
   renderMainPanel() {
 
     const firstName = _.head(_.get(this.props.userinfo, 'name', '').split(' '));
-  
+
     return (
       <div>
-        <NavBar 
+        <NavBar
           onLogout={() => this.handleLogout()}
           username={firstName}
           appTitle='Tietokantatunnusten poisto Melindasta'
@@ -90,7 +90,7 @@ export class BaseComponent extends React.Component {
 
         <div className="row">
           <div className="col s6 l4 offset-l1">
-            <RecordIdInputArea 
+            <RecordIdInputArea
               submitStatus={this.props.submitStatus}
               recordParseErrors={this.props.recordParseErrors}
               onChange={(list) => this.props.setRecordIdList(list)}
@@ -101,8 +101,8 @@ export class BaseComponent extends React.Component {
             <ExampleCardLocalId />
             <ExampleCardMelindaId />
 
-            <StatusCard 
-              onSubmitList={() => this.props.submitJob()} 
+            <StatusCard
+              onSubmitList={() => this.props.submitJob()}
               validRecordCount={this.props.validRecordCount}
               userinfo={this.props.userinfo}
               submitStatus={this.props.submitStatus}
@@ -118,7 +118,7 @@ export class BaseComponent extends React.Component {
   }
 
   render() {
-    
+
     if (this.props.sessionState == 'SIGNIN_OK') {
       return this.renderMainPanel();
     } else if (this.props.sessionState == 'VALIDATION_ONGOING') {

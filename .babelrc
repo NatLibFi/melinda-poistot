@@ -10,7 +10,7 @@
       "root": ["."],
       "alias": {
         "server": "@natlibfi/melinda-ui-commons/dist/server/",
-        "commons": "@natlibfi/melinda-ui-commons/dist/frontend/js/",
+        "commons": "@natlibfi/melinda-ui-commons/dist/frontend/js/"
       }
     }]
   ]
