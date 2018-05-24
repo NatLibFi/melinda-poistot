@@ -4,7 +4,7 @@ const webpack = require('webpack');
 // App files location
 const PATHS = {
   app: path.resolve(__dirname, '../frontend/js'),
-  shared: path.resolve(__dirname, '../shared'),
+  shared: path.resolve(__dirname, '../shared/shared'),
   commons_frontend: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend'),
   commons_styles: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend/styles'),
   styles: path.resolve(__dirname, '../frontend/styles'),
@@ -52,7 +52,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loaders: ['babel-loader'],
-        include: [PATHS.app, PATHS.commons_frontend]
+        include: [PATHS.app, PATHS.shared, PATHS.commons_frontend]
       },
       {
         test: /\.scss$/,
