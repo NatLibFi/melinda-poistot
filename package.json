@@ -31,7 +31,7 @@
     "test": "npm run lint && npm run test:shared && npm run test:frontend && npm run test:server",
     "test:frontend": "NODE_PATH=build/shared BABEL_ENV=test mocha --compilers js:babel-core/register --require ignore-styles --require ./frontend/test_helpers/test_bootstrap.js \"frontend/**/*@(.spec.js|.spec.jsx)\"",
     "test:frontend:watch": "npm run test:frontend -- --watch",
-    "test:server": "NODE_PATH=build/shared BABEL_ENV=test mocha --compilers js:babel-core/register --require ./server/test_helpers/test_bootstrap.js --require @natlibfi/melinda-ui-commons/dist/server/test_helpers/test_bootstrap.js \"./server/**/*@(.spec.js|.spec.jsx)\"",
+    "test:server": "npm run lint && NODE_PATH=build/shared BABEL_ENV=test mocha --compilers js:babel-core/register --require ./server/test_helpers/test_bootstrap.js --require @natlibfi/melinda-ui-commons/dist/server/test_helpers/test_bootstrap.js \"./server/**/*@(.spec.js|.spec.jsx)\"",
     "test:server:watch": "npm run test:server -- --watch",
     "test:shared": "NODE_PATH=build/shared BABEL_ENV=test mocha --compilers js:babel-core/register --require ./server/test_helpers/test_bootstrap.js --require @natlibfi/melinda-ui-commons/dist/server/test_helpers/test_bootstrap.js \"shared/**/*@(.spec.js|.spec.jsx)\"",
     "test:shared:watch": "npm run test:server -- --watch",

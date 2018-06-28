@@ -68,6 +68,16 @@ export function resolveMelindaId(melindaId, localId, libraryTag, links) {
   });
 }
 
+export function findComponentIds(melindaId){
+  return Promise.all([
+    queryMHOSTindex(melindaId)
+  ])
+  .then(recordIdList => {
+    return _.uniq(_.head(recordIdList));
+  });
+ 
+}
+
 function querySIDAindex(localId, libraryTag, links) {
   const normalizedLibraryTag = libraryTag.toLowerCase();
 
@@ -99,6 +109,25 @@ function queryMIDDRindex(melindaId, links) {
     .then(parseXMLStringToJSON)
     .then(_.partial(loadRecordIdList, _, melindaIdOption));
 }
+
+function queryMHOSTindex(melindaId) {
+ 
+  if (!melindaId) {
+    return Promise.resolve([]);
+  }
+
+  const queryIdList = [melindaId]; 
+
+  const query = queryIdList.map(recordId =>`MHOST=${_.padStart(recordId, 9, '0')}`).join(' OR ');
+
+  const requestUrl = `${alephUrl}/X?op=find&request=${encodeURIComponent(query)}&base=${base}`;
+  return fetch(requestUrl)
+    .then(response => response.text())
+    .then(parseXMLStringToJSON)
+    //.then(_.partial(loadRecordIdList, _, [melindaId]));
+    .then(_.partial(loadRecordIdList, _, []));
+}
+
 
 function queryXServer(melindaId, links) {
   const melindaIdOption = melindaId ? [melindaId] : [];

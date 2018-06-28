@@ -178,8 +178,18 @@ export function processTask(task, client) {
     return client.loadRecord(taskWithResolvedId.recordId, MELINDA_API_NO_REROUTE_OPTS).then(loadedRecord => {
 
       if (isComponentRecord(loadedRecord)) {
+        // check here if task includes hostData ie. should LOW-tag not be removed from record (in case of several hosts)
+        // handle component according to hostData
         throw new RecordProcessingError('Record is a component record. Record not updated.', taskWithResolvedId);
       }
+
+      // Check whether record is host record
+
+      if (task.handleComponents) {
+        // add possible components to queue
+        
+      }
+
 
       logger.log('info', 'record-update-worker: Transforming record', taskWithResolvedId.recordId);
       return transformRecord('REMOVE-LOCAL-REFERENCE', loadedRecord, transformOptions)

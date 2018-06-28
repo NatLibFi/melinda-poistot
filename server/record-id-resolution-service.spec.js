@@ -25,7 +25,7 @@
 * for the JavaScript code in this file.
 *
 */import {expect} from 'chai';
-import { resolveMelindaId } from './record-id-resolution-service';
+import { resolveMelindaId, findComponentIds } from './record-id-resolution-service';
 import { __RewireAPI__ as RewireAPI } from './record-id-resolution-service';
 import sinon from 'sinon';
 
@@ -42,6 +42,74 @@ describe('Record list service', () => {
   afterEach(() => {
     RewireAPI.__ResetDependency__('fetch');
     RewireAPI.__ResetDependency__('isRecordValid');
+  });
+
+  describe('findComponentIds', () => {
+
+    describe('when there are matches found in MHOST index', () => {
+
+      let result;
+
+      beforeEach(() => {
+
+        const textBodyReadStub = sinon.stub();
+        textBodyReadStub.onCall(0).resolves(createFindResponse());
+        textBodyReadStub.onCall(1).resolves(createPresentResponse(2,2,3,4,5,6,7,8,9,10));
+        
+        fetchStub.resolves({
+          text: textBodyReadStub
+        });
+
+        return findComponentIds(123).then(res => result = res);
+      });
+
+      it('should return an array of component ids', () => {
+        expect(result).to.be.a('array');
+      });
+
+
+      it('resolves unique melinda ids for matches correctly', () => {
+        expect(result).to.have.members(['2','3','4','5','6','7','8','9','10']);
+      });
+
+    });
+
+    describe('when there are no matches found in MHOST index', () => {
+
+      let result;
+
+      beforeEach(() => {
+
+        const textBodyReadStub = sinon.stub();
+        textBodyReadStub.onCall(0).resolves(FAKE_ALEPH_EMPTYSET_RESPONSE);
+        
+        fetchStub.resolves({
+          text: textBodyReadStub
+        });
+
+        return findComponentIds(123).then(res => result = res);
+      });
+
+      it('should return an empty array of component ids', () => {
+        expect(result).to.be.a('array').that.not.to.have.length.above(0);
+      });
+
+    });
+
+    describe('when there is no melindaId given', () => {
+
+      let result;
+
+      beforeEach(() => {
+        return findComponentIds().then(res => result = res);
+      });
+
+      it('should return an empty array of component ids', () => {
+        expect(result).to.be.a('array').that.not.to.have.length.above(0);
+      });
+
+    });
+
   });
 
   describe('resolveMelindaId', () => {
