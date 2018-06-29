@@ -178,7 +178,7 @@ export function processTask(task, client) {
 
     return client.loadRecord(taskWithResolvedId.recordId, MELINDA_API_NO_REROUTE_OPTS).then(loadedRecord => {
 
-      if (isComponentRecord(loadedRecord)) {
+      if (isComponentRecord(loadedRecord) || hasHostLink(loadedRecord)) {
         
         // check here if task includes hostData ie. should LOW-tag not be removed from record (in case of several hosts)
         // handle component according to hostData
@@ -245,7 +245,7 @@ export function processTask(task, client) {
         logger.log('info', 'record-update-worker: deleteUnusedRecords is true');
         logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);
         return client.loadRecord(response.recordId, MELINDA_API_NO_REROUTE_OPTS).then(loadedRecord => {
-          if (recordIsUnused(loadedRecord)) {
+          if (recordIsUnused(loadedRecord) && recordHasNoArtoTag(loadedRecord) ) {
             logger.log('info', 'record-update-worker: Deleting unused record', taskWithResolvedId.recordId);
             markRecordAsDeleted(loadedRecord);
             return client.updateRecord(loadedRecord)
@@ -317,6 +317,14 @@ function findMelindaId(task) {
 
 function readTask(msg) {
   return JSON.parse(msg.content.toString());
+}
+
+function recordHasNoArtoTag(record){
+  return !(record.containsFieldWithValue('960', 'a', 'ARTO'));
+}
+
+function hasHostLink(record) {
+  return (record.fields && record.fields.filter(field => ['773'].some(tag => tag === field.tag)).length > 0);
 }
 
 export function RecordProcessingError(message, task) {

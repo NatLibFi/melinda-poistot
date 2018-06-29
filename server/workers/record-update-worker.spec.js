@@ -28,7 +28,7 @@
 import { processTask, RecordProcessingError } from './record-update-worker';
 import sinon from 'sinon';
 import { __RewireAPI__ as RewireAPI } from './record-update-worker';
-import { FAKE_RECORD, FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO, FAKE_RECORD_ONLY_LOW_TEST, FAKE_RECORD_2_LOW, FAKE_RECORD_WITH_LOW_TEST_REMOVED } from '../test_helpers/fake-data';
+import { FAKE_RECORD, FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO, FAKE_RECORD_ONLY_LOW_TEST, FAKE_RECORD_2_LOW, FAKE_RECORD_WITH_LOW_TEST_REMOVED, FAKE_RECORD_WITH_ARTO, FAKE_RECORD_COMPONENT_BOTH, FAKE_RECORD_COMPONENT_LDR, FAKE_RECORD_COMPONENT_LINK } from '../test_helpers/fake-data';
 import MarcRecord from 'marc-record-js';
 import _ from 'lodash';
 
@@ -366,6 +366,29 @@ describe('Record update worker', () => {
           
         });
       });
+
+      describe('when record has ARTO tag 960 left', () => {
+        beforeEach(() => {
+          resolveMelindaIdStub.resolves(3);
+
+          result = undefined;
+          clientStub = createClientStub();
+          clientStub.loadRecord.resolves(record(FAKE_RECORD_WITH_ARTO));
+          clientStub.updateRecord.resolves(TEST_UPDATE_RESPONSE);
+
+          const task = _.assign({}, fakeTask, {deleteUnusedRecords: true});
+          return processTask(task, clientStub).then(res => result = res);
+        });
+
+        it('should not try to call updateRecord with deleted record', () => {
+          expect(clientStub.updateRecord.callCount).to.equal(1);
+
+          const callArgument = clientStub.updateRecord.getCall(0).args[0];
+          expect(callArgument.isDeleted()).to.equal(false);
+          
+        });
+      });
+
     });
 
     describe('when nothing changes in the processed record', () => {
@@ -394,7 +417,86 @@ describe('Record update worker', () => {
       });
     });
 
+    describe('when record is component', () => {
+
+      beforeEach(() => {
+        resolveMelindaIdStub.resolves(3);
+
+        clientStub = createClientStub();
+        clientStub.loadRecord.resolves(FAKE_RECORD_COMPONENT_BOTH);
+     
+        return processTask(fakeTask, clientStub)
+          .then(res => result = res)
+          .catch(err => error = err);
+      });
+
+      it('rejects with processing error', () => {
+        expect(error).to.be.instanceof(RecordProcessingError);
+      });
+
+      it('sets the error message', () => {
+        expect(error.message).to.equal('Record is a component record. Record not updated.');
+      });
+
+      it('does not call updateRecord', () => {
+        expect(clientStub.updateRecord.callCount).to.equal(0);
+      });
+    });
+
+    describe('when record is component', () => {
+
+      beforeEach(() => {
+        resolveMelindaIdStub.resolves(3);
+
+        clientStub = createClientStub();
+        clientStub.loadRecord.resolves(FAKE_RECORD_COMPONENT_LINK);
+     
+        return processTask(fakeTask, clientStub)
+          .then(res => result = res)
+          .catch(err => error = err);
+      });
+
+      it('rejects with processing error', () => {
+        expect(error).to.be.instanceof(RecordProcessingError);
+      });
+
+      it('sets the error message', () => {
+        expect(error.message).to.equal('Record is a component record. Record not updated.');
+      });
+
+      it('does not call updateRecord', () => {
+        expect(clientStub.updateRecord.callCount).to.equal(0);
+      });
+    });
+
+    describe('when record is component', () => {
+
+      beforeEach(() => {
+        resolveMelindaIdStub.resolves(3);
+
+        clientStub = createClientStub();
+        clientStub.loadRecord.resolves(FAKE_RECORD_COMPONENT_LDR);
+     
+        return processTask(fakeTask, clientStub)
+          .then(res => result = res)
+          .catch(err => error = err);
+      });
+
+      it('rejects with processing error', () => {
+        expect(error).to.be.instanceof(RecordProcessingError);
+      });
+
+      it('sets the error message', () => {
+        expect(error.message).to.equal('Record is a component record. Record not updated.');
+      });
+
+      it('does not call updateRecord', () => {
+        expect(clientStub.updateRecord.callCount).to.equal(0);
+      });
+    });
+
   });
+  
 });
 
 function createClientStub() {
