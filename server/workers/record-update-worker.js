@@ -185,11 +185,12 @@ export function processTask(task, client) {
 
       // Check whether record is host record
 
-      if (task.handleComponents) {
+      if (taskWithResolvedId.handleComponents) {
         // add possible components to queue
         
-      }
 
+
+      }
 
       logger.log('info', 'record-update-worker: Transforming record', taskWithResolvedId.recordId);
       return transformRecord('REMOVE-LOCAL-REFERENCE', loadedRecord, transformOptions)
@@ -202,7 +203,9 @@ export function processTask(task, client) {
       taskWithResolvedId.report = report;
 
       if (recordsEqual(record, originalRecord)) {
-        throw new RecordProcessingError('Tietueessa ei tapahtunut muutoksia. Tietuetta ei päivitetty.', taskWithResolvedId);
+        if (!(taskWithResolvedId.deleteUnusedRecords)) {
+          throw new RecordProcessingError('Tietueessa ei tapahtunut muutoksia. Tietuetta ei päivitetty.', taskWithResolvedId);
+        }
       }
 
       logger.log('info', 'record-update-worker: Updating record', taskWithResolvedId.recordId);

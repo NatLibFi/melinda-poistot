@@ -46,6 +46,8 @@ const melindaClientConfig = {
   password: ''
 };
 
+const FIND_SET_MAX_ENTRIES=99;
+
 export function resolveMelindaId(melindaId, localId, libraryTag, links) {
   if (libraryTag === undefined) {
     throw new Error('Library tag cannot be undefined');
@@ -124,8 +126,7 @@ function queryMHOSTindex(melindaId) {
   return fetch(requestUrl)
     .then(response => response.text())
     .then(parseXMLStringToJSON)
-    //.then(_.partial(loadRecordIdList, _, [melindaId]));
-    .then(_.partial(loadRecordIdList, _, []));
+    .then(loadRecordIdListBigSet);
 }
 
 
@@ -178,6 +179,56 @@ function loadRecordIdList(setResponse, defaultValue = []) {
     .then(response => response.text())
     .then(parseXMLStringToJSON)
     .then(json => selectRecordIdList(json));
+}
+
+function loadRecordIdListBigSet(setResponse, defaultValue = []) {
+
+  const error = _.head(_.get(setResponse, 'find.error'));
+  if (error !== undefined) {
+    if (_.head(setResponse.find.error) === ALEPH_ERROR_EMPTY_SET) {
+      return defaultValue;
+    } else {
+      throw new Error(error);
+    }
+  }
+
+  const { set_number, no_entries } = setResponse.find;
+
+  //if (no_entries > 100) {
+  //  throw new Error('Set has more than 100 entries, cannot fetch');
+  //}
+  
+  return fetchItems(set_number, no_entries);
+}
+
+function fetchItems(set_number, no_entries, allData = [], offset = 1) {
+  
+  const end = offset + FIND_SET_MAX_ENTRIES;
+  const presentRequestUrl = `${alephUrl}/X?op=present&set_number=${set_number}&set_entry=${offset}-${end}`;
+  
+  return fetch(presentRequestUrl)
+    .then(response => {
+      if (response.status && response.status != 200) {
+        throw new Error(response.status);
+      }
+      
+      return response.text()
+        .then(parseXMLStringToJSON)
+        .then(jsonBody => {
+          const records=_.get(jsonBody, 'present.record', []);
+          const recordIds = records.map(record => _.get(record, 'doc_number[0]'));
+          
+          // TODO: this should check that all expected records are returned
+
+          allData = allData.concat(recordIds);      
+          if (end <= no_entries) {
+            return fetchItems(set_number, no_entries, allData, end+1);
+          }
+          else {
+            return Promise.resolve(allData);
+          }
+        });
+    });
 }
 
 function validateResult(resolvedRecordIdList) {

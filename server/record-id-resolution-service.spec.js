@@ -49,18 +49,20 @@ describe('Record list service', () => {
     describe('when there are matches found in MHOST index', () => {
 
       let result;
+     // let error;
 
       beforeEach(() => {
 
         const textBodyReadStub = sinon.stub();
         textBodyReadStub.onCall(0).resolves(createFindResponse());
         textBodyReadStub.onCall(1).resolves(createPresentResponse(2,2,3,4,5,6,7,8,9,10));
-        
+
         fetchStub.resolves({
           text: textBodyReadStub
         });
 
         return findComponentIds(123).then(res => result = res);
+        //.catch(err => error = err);
       });
 
       it('should return an array of component ids', () => {
@@ -73,6 +75,38 @@ describe('Record list service', () => {
       });
 
     });
+
+    describe('when there are over 100 matches found in MHOST index', () => {
+
+      let result;
+
+      beforeEach(() => {
+
+        const textBodyReadStub = sinon.stub();
+        textBodyReadStub.onCall(0).resolves(createFindResponseBigSet());
+        textBodyReadStub.onCall(1).resolves(createPresentResponse(12,12,13,14,15,16,17,18,19,110));
+        textBodyReadStub.onCall(2).resolves(createPresentResponse(2,2,3,4,5,6,7,8,9,10));
+
+
+        fetchStub.resolves({
+          text: textBodyReadStub
+        });
+
+        return findComponentIds(123).then(res => result = res);
+        //.catch(err => error = err);
+      });
+
+      it('should return an array of component ids', () => {
+        expect(result).to.be.a('array');
+      });
+
+
+      it('resolves unique melinda ids for matches correctly', () => {
+        expect(result).to.have.members(['2','3','4','5','6','7','8','9','10','12','13','14','15','16','17','18','19','110' ]);
+      });
+
+    });
+
 
     describe('when there are no matches found in MHOST index', () => {
 
@@ -450,8 +484,18 @@ function createFindResponse() {
 <?xml version = "1.0" encoding = "UTF-8"?>
 <find>
 <set_number>000098</set_number>
-<no_records>000000015</no_records>
-<no_entries>000000015</no_entries>
+<no_records>000000010</no_records>
+<no_entries>000000010</no_entries>
+</find>`;
+}
+
+function createFindResponseBigSet() {
+  return `
+<?xml version = "1.0" encoding = "UTF-8"?>
+<find>
+<set_number>000098</set_number>
+<no_records>000000150</no_records>
+<no_entries>000000150</no_entries>
 </find>`;
 }
 
@@ -459,8 +503,7 @@ function createPresentResponse(...ids) {
  
   const records = ids.map(id => `<record><doc_number>${id}</doc_number></record>`);
   
-  return `
-<?xml version = "1.0" encoding = "UTF-8"?>
+  return `<?xml version = "1.0" encoding = "UTF-8"?>
 <present>${records}
 </present>`;
 }

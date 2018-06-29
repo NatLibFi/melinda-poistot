@@ -254,6 +254,35 @@ describe('Record update worker', () => {
 
       });
 
+      describe('when there was no changes, but record is unused', () => {
+         
+        beforeEach(() => {
+          resolveMelindaIdStub.resolves(3);
+
+          result = undefined;
+          clientStub = createClientStub();
+          clientStub.loadRecord.onCall(0).resolves(record(FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO));
+          clientStub.loadRecord.onCall(1).resolves(record(FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO));
+          clientStub.updateRecord.resolves(TEST_UPDATE_RESPONSE);
+
+          const task = _.assign({}, fakeTask, {deleteUnusedRecords: true});
+          return processTask(task, clientStub).then(res => result = res);
+        });
+
+        it('should call updateRecord with deleted record', () => {
+          expect(clientStub.updateRecord.callCount).to.equal(2);
+
+          const secondCallArgument = clientStub.updateRecord.getCall(1).args[0];
+          expect(secondCallArgument.isDeleted()).to.equal(true);
+          
+        });
+
+        it('should report that the record was deleted', () => {
+          expect(result.report).to.include('Koko tietue poistettu.');
+        });
+
+      });
+
       describe('when record still has some LOW fields left', () => {
         beforeEach(() => {
           resolveMelindaIdStub.resolves(3);
