@@ -41,17 +41,21 @@ describe('Record update worker', () => {
   };
 
   let resolveMelindaIdStub;
+  let findComponentIdsStub;
   let loggerStub;
 
   beforeEach(() => {
     resolveMelindaIdStub = sinon.stub();
+    findComponentIdsStub = sinon.stub();
     loggerStub = { log: sinon.stub() };
 
     RewireAPI.__Rewire__('resolveMelindaId', resolveMelindaIdStub);
+    RewireAPI.__Rewire__('findComponentIds', findComponentIdsStub);
     RewireAPI.__Rewire__('logger', loggerStub);
   });
   afterEach(() => {
     RewireAPI.__ResetDependency__('resolveMelindaId');
+    RewireAPI.__ResetDependency__('findComponentIds');
     RewireAPI.__ResetDependency__('logger');
   });
 
@@ -222,6 +226,64 @@ describe('Record update worker', () => {
       it('sets the error message', () => {
         expect(error.message).to.equal(fakeErrorMessage);
       });
+    });
+
+
+    describe('when handleComponents option is true', () => {
+
+      const fakeTaskWithLocalID = {
+        recordIdHints: { localId: 3 },
+        lowTag: 'test',
+        handleComponents: true,
+        bypassSIDdeletion: false
+      };
+
+      beforeEach(() => {
+        resolveMelindaIdStub.resolves(33);
+        findComponentIdsStub.resolves(['1','2','3','4','5','6']);
+        clientStub = createClientStub();
+        clientStub.loadRecord.resolves(FAKE_RECORD);
+        clientStub.updateRecord.resolves(TEST_UPDATE_RESPONSE);
+
+        return processTask(fakeTaskWithLocalID, clientStub)
+          .then(res => result = res);
+          
+      });
+
+      it('sets the recordId to resolved value', () => {
+        expect(result.recordId).to.equal(33);
+      });
+
+      it('sets compomentList to an array of component recordIds', () => {
+        expect(result.componentList).to.be.a('Array').that.has.members(['1','2','3','4','5','6']);
+      });
+
+
+    });
+
+    describe('when handleComponents option is false', () => {
+
+      const fakeTaskWithLocalID = {
+        recordIdHints: { localId: 3 },
+        lowTag: 'test'
+      };
+
+      beforeEach(() => {
+        resolveMelindaIdStub.resolves(33);
+        findComponentIdsStub.resolves(['1','2','3','4','5','6']);
+        clientStub = createClientStub();
+        clientStub.loadRecord.resolves(FAKE_RECORD);
+        clientStub.updateRecord.resolves(TEST_UPDATE_RESPONSE);
+
+        return processTask(fakeTaskWithLocalID, clientStub)
+          .then(res => result = res);
+          
+      });
+
+      it('does not set componentList', () => {
+        expect(result).not.have.property('componentList');
+      });
+
     });
 
     describe('when delete unused records option is true', () => {

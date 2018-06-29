@@ -30,10 +30,11 @@ import { recordIsUnused, markRecordAsDeleted, isComponentRecord } from 'server/r
 import { logger } from 'server/logger';
 import MelindaClient from '@natlibfi/melinda-api-client';
 import { readSessionToken } from 'server/session-crypt';
-import { resolveMelindaId } from '../record-id-resolution-service';
+import { resolveMelindaId, findComponentIds } from '../record-id-resolution-service';
 import _ from 'lodash';
 import { transformRecord } from 'server/record-transform-service';
 import { checkAlephHealth } from '../aleph-health-check-service';
+import { startJob } from '../record-list-service';
 
 const apiUrl = readEnvironmentVariable('MELINDA_API', null);
 const minTaskIntervalSeconds = readEnvironmentVariable('MIN_TASK_INTERVAL_SECONDS', 10);
@@ -178,25 +179,53 @@ export function processTask(task, client) {
     return client.loadRecord(taskWithResolvedId.recordId, MELINDA_API_NO_REROUTE_OPTS).then(loadedRecord => {
 
       if (isComponentRecord(loadedRecord)) {
+        
         // check here if task includes hostData ie. should LOW-tag not be removed from record (in case of several hosts)
         // handle component according to hostData
         throw new RecordProcessingError('Record is a component record. Record not updated.', taskWithResolvedId);
       }
 
-      // Check whether record is host record
-
-      if (taskWithResolvedId.handleComponents) {
-        // add possible components to queue
-        
-
-
+      if (taskWithResolvedId.componentList && taskWithResolvedId.componentList.length > 0) {
+        return processComponents().then(continueWithHost);
+      }
+      else {
+        return continueWithHost();
       }
 
-      logger.log('info', 'record-update-worker: Transforming record', taskWithResolvedId.recordId);
-      return transformRecord('REMOVE-LOCAL-REFERENCE', loadedRecord, transformOptions)
-        .then(result => {
-          return _.set(result, 'originalRecord', loadedRecord);
+      function processComponents() {
+        logger.log('info', 'record-update-worker: Adding components to queue', taskWithResolvedId.recordId);
+        // Add here every component into task queue
+        
+        const hostInfo = taskWithResolvedId.recordId;
+        const componentRecordHints = [];
+
+        taskWithResolvedId.componentList.forEach(component => {
+          componentRecordHints.push({melindaId: component});
         });
+
+
+        let componentUserinfo = {}; 
+        if (taskWithResolvedId.sessionToken) {
+          componentUserinfo = readSessionToken(taskWithResolvedId.sessionToken);
+        }
+       
+        const componentReplicateRecords = !(taskWithResolvedId.bypassSIDdeletion);
+
+        return startJob(componentRecordHints, taskWithResolvedId.lowTag, taskWithResolvedId.deleteUnusedRecords, componentReplicateRecords, taskWithResolvedId.sessionToken, componentUserinfo, hostInfo)
+          .then( jobId => {
+            logger.log('info', 'record-update-worker: Created new job '+jobId+'for component records.', taskWithResolvedId.recordId);
+            return Promise.resolve(jobId);
+          });
+      }
+
+      function continueWithHost() {
+        logger.log('info', 'record-update-worker: Transforming record', taskWithResolvedId.recordId);
+        return transformRecord('REMOVE-LOCAL-REFERENCE', loadedRecord, transformOptions)
+            .then(result => {
+              return _.set(result, 'originalRecord', loadedRecord);
+            });
+      }
+
 
     }).then(result => {
       const {record, report, originalRecord} = result;
@@ -273,6 +302,16 @@ function findMelindaId(task) {
   return resolveMelindaId(recordIdHints.melindaId, recordIdHints.localId, task.lowTag, melindaIdLinks)
     .then(recordId => {
       return _.assign({}, task, {recordId});
+    }).then(task => {
+      if (task.handleComponents) {
+        return findComponentIds(task.recordId)
+          .then(componentList => {
+            return _.assign({}, task, {componentList: componentList});
+          });
+      }
+      else {
+        return task;
+      }
     });
 }
 
