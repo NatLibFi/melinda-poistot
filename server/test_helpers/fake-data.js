@@ -159,4 +159,16 @@ export const FAKE_RECORD_COMPONENT_LINK = MarcRecord.fromString([
   '773    ‡w(FI-MELINDA)123456'
 ].join('\n'));
 
+export const FAKE_RECORD_TWO_COMPONENT_LINKS = MarcRecord.fromString([
+  'LDR    abcdefgxijk',
+  '001    28474',
+  '003    aaabbb',
+  '100    ‡aTest Author',
+  '245 0  ‡aSome content',
+  '245 0  ‡aTest Title‡bTest field‡cTest content',
+  '300    ‡aSub-A‡5TEST',
+  '773    ‡w(FI-MELINDA)123456',
+  '773    ‡w(FI-MELINDA)456123'
+].join('\n'));
+
 

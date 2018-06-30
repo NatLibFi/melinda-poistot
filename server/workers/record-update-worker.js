@@ -179,24 +179,32 @@ export function processTask(task, client) {
     return client.loadRecord(taskWithResolvedId.recordId, MELINDA_API_NO_REROUTE_OPTS).then(loadedRecord => {
 
       if (isComponentRecord(loadedRecord) || hasHostLink(loadedRecord)) {
+        //return checkComponentValidity(loadedRecord).then(processComponents).then(continueWithHost);
+        taskWithResolvedId.report.push('Osakohde.');
+       
+        //taskWithResolvedId.hostInfo.push('Host');
+        const hostLinks = getHostLinks(loadedRecord);
+        taskWithResolvedId.hosts = hostLinks;
         
+        //taskWithResolvedId.hosts.push(hostLinks);
         // check here if task includes hostData ie. should LOW-tag not be removed from record (in case of several hosts)
-        // handle component according to hostData
-        throw new RecordProcessingError('Record is a component record. Record not updated.', taskWithResolvedId);
+        if (hostLinks.length > 0) {
+          throw new RecordProcessingError('Record is a component record with several host links. Record not updated.', taskWithResolvedId);
+        }
       }
-
+      
       if (taskWithResolvedId.componentList && taskWithResolvedId.componentList.length > 0) {
         return processComponents().then(continueWithHost);
       }
       else {
         return continueWithHost();
       }
+      
 
       function processComponents() {
         logger.log('info', 'record-update-worker: Adding components to queue', taskWithResolvedId.recordId);
-        // Add here every component into task queue
-        
-        const hostInfo = taskWithResolvedId.recordId;
+       
+        const hostInfo = [taskWithResolvedId.recordId];
         const componentRecordHints = [];
 
         taskWithResolvedId.componentList.forEach(component => {
@@ -213,8 +221,10 @@ export function processTask(task, client) {
 
         return startJob(componentRecordHints, taskWithResolvedId.lowTag, taskWithResolvedId.deleteUnusedRecords, componentReplicateRecords, taskWithResolvedId.sessionToken, componentUserinfo, hostInfo)
           .then( jobId => {
+            const componentListReport='Created new job '+jobId+' for '+componentRecordHints.length+' component records.';
+            taskWithResolvedId.report.push(componentListReport); 
             logger.log('info', 'record-update-worker: Created new job '+jobId+'for component records.', taskWithResolvedId.recordId);
-            return Promise.resolve(jobId);
+            return Promise.resolve(taskWithResolvedId);
           });
       }
 
@@ -229,7 +239,7 @@ export function processTask(task, client) {
 
     }).then(result => {
       const {record, report, originalRecord} = result;
-      taskWithResolvedId.report = report;
+      taskWithResolvedId.report.push(...report); 
 
       if (recordsEqual(record, originalRecord)) {
         if (!(taskWithResolvedId.deleteUnusedRecords)) {
@@ -306,11 +316,11 @@ function findMelindaId(task) {
       if (task.handleComponents) {
         return findComponentIds(task.recordId)
           .then(componentList => {
-            return _.assign({}, task, {componentList: componentList});
+            return _.assign({}, task, {componentList: componentList}, {report: []});
           });
       }
       else {
-        return task;
+        return _.assign({}, task, {report: ['Components not handled']});
       }
     });
 }
@@ -327,6 +337,20 @@ function hasHostLink(record) {
   return (record.fields && record.fields.filter(field => ['773'].some(tag => tag === field.tag)).length > 0);
 }
 
+function getHostLinks(record) {
+  //return ['1234','1424'];
+  const hostLinkSubfields = record.getFields('773').map(field => getSubfields(field,'w')
+                                                   .map(subfield => subfield.value)
+                                                   .filter(value => value.match(/^\(FI-MELINDA\)/)));
+
+  return _.uniq(hostLinkSubfields.map(subfield => subfield[0].replace('(FI-MELINDA)','')));
+  
+}
+
+function getSubfields(field, code) {
+  return field.subfields.filter(sub => sub.code === code);
+}
+ 
 export function RecordProcessingError(message, task) {
   const temp = Error.call(this, message);
   temp.name = this.name = 'RecordProcessingError';

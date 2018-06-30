@@ -28,7 +28,9 @@
 import { processTask, RecordProcessingError } from './record-update-worker';
 import sinon from 'sinon';
 import { __RewireAPI__ as RewireAPI } from './record-update-worker';
-import { FAKE_RECORD, FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO, FAKE_RECORD_ONLY_LOW_TEST, FAKE_RECORD_2_LOW, FAKE_RECORD_WITH_LOW_TEST_REMOVED, FAKE_RECORD_WITH_ARTO, FAKE_RECORD_COMPONENT_BOTH, FAKE_RECORD_COMPONENT_LDR, FAKE_RECORD_COMPONENT_LINK } from '../test_helpers/fake-data';
+import { FAKE_RECORD, FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO, 
+          FAKE_RECORD_ONLY_LOW_TEST, FAKE_RECORD_2_LOW, FAKE_RECORD_WITH_LOW_TEST_REMOVED, 
+          FAKE_RECORD_WITH_ARTO, FAKE_RECORD_TWO_COMPONENT_LINKS, } from '../test_helpers/fake-data';
 import MarcRecord from 'marc-record-js';
 import _ from 'lodash';
 
@@ -259,6 +261,7 @@ describe('Record update worker', () => {
       });
 
 
+
     });
 
     describe('when handleComponents option is false', () => {
@@ -283,6 +286,10 @@ describe('Record update worker', () => {
       it('does not set componentList', () => {
         expect(result).not.have.property('componentList');
       });
+
+      //it('should report that components were not handled', () => {
+      //  expect(result.report).to.include('Components not handled.');
+      //});
 
     });
 
@@ -416,18 +423,26 @@ describe('Record update worker', () => {
         expect(clientStub.updateRecord.callCount).to.equal(0);
       });
     });
-
-    describe('when record is component', () => {
+    
+    describe('when record is component with several links', () => {
 
       beforeEach(() => {
         resolveMelindaIdStub.resolves(3);
 
         clientStub = createClientStub();
-        clientStub.loadRecord.resolves(FAKE_RECORD_COMPONENT_BOTH);
+        clientStub.loadRecord.resolves(FAKE_RECORD_TWO_COMPONENT_LINKS);
      
         return processTask(fakeTask, clientStub)
           .then(res => result = res)
           .catch(err => error = err);
+      });
+
+      it('should report that the record was a component record', () => {
+        expect(error.task.report).to.include('Osakohde.');
+      });
+
+      it('should have array of host links', () => {
+        expect(error.task.hosts).to.be.a('Array').that.has.members(['123456','456123']);
       });
 
       it('rejects with processing error', () => {
@@ -435,64 +450,14 @@ describe('Record update worker', () => {
       });
 
       it('sets the error message', () => {
-        expect(error.message).to.equal('Record is a component record. Record not updated.');
+        expect(error.message).to.equal('Record is a component record with several host links. Record not updated.');
       });
 
       it('does not call updateRecord', () => {
         expect(clientStub.updateRecord.callCount).to.equal(0);
       });
-    });
 
-    describe('when record is component', () => {
 
-      beforeEach(() => {
-        resolveMelindaIdStub.resolves(3);
-
-        clientStub = createClientStub();
-        clientStub.loadRecord.resolves(FAKE_RECORD_COMPONENT_LINK);
-     
-        return processTask(fakeTask, clientStub)
-          .then(res => result = res)
-          .catch(err => error = err);
-      });
-
-      it('rejects with processing error', () => {
-        expect(error).to.be.instanceof(RecordProcessingError);
-      });
-
-      it('sets the error message', () => {
-        expect(error.message).to.equal('Record is a component record. Record not updated.');
-      });
-
-      it('does not call updateRecord', () => {
-        expect(clientStub.updateRecord.callCount).to.equal(0);
-      });
-    });
-
-    describe('when record is component', () => {
-
-      beforeEach(() => {
-        resolveMelindaIdStub.resolves(3);
-
-        clientStub = createClientStub();
-        clientStub.loadRecord.resolves(FAKE_RECORD_COMPONENT_LDR);
-     
-        return processTask(fakeTask, clientStub)
-          .then(res => result = res)
-          .catch(err => error = err);
-      });
-
-      it('rejects with processing error', () => {
-        expect(error).to.be.instanceof(RecordProcessingError);
-      });
-
-      it('sets the error message', () => {
-        expect(error.message).to.equal('Record is a component record. Record not updated.');
-      });
-
-      it('does not call updateRecord', () => {
-        expect(clientStub.updateRecord.callCount).to.equal(0);
-      });
     });
 
   });
