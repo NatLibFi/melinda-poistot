@@ -188,7 +188,7 @@ export function processTask(task, client) {
         
         //taskWithResolvedId.hosts.push(hostLinks);
         // check here if task includes hostData ie. should LOW-tag not be removed from record (in case of several hosts)
-        if (hostLinks.length > 0) {
+        if (hostLinks.length > 1) {
           throw new RecordProcessingError('Record is a component record with several host links. Record not updated.', taskWithResolvedId);
         }
       }
