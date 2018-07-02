@@ -237,7 +237,7 @@ describe('Record update worker', () => {
         recordIdHints: { localId: 3 },
         lowTag: 'test',
         handleComponents: true,
-        bypassSIDdeletion: false
+        bypassSIDdeletion: true
       };
 
       beforeEach(() => {
