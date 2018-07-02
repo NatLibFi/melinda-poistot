@@ -217,7 +217,7 @@ export function processTask(task, client) {
           componentUserinfo = readSessionToken(taskWithResolvedId.sessionToken);
         }
        
-        const componentReplicateRecords = !(taskWithResolvedId.bypassSIDdeletion);
+        const componentReplicateRecords = (taskWithResolvedId.bypassSIDdeletion);
 
         return startJob(componentRecordHints, taskWithResolvedId.lowTag, taskWithResolvedId.deleteUnusedRecords, componentReplicateRecords, taskWithResolvedId.sessionToken, componentUserinfo, hostInfo)
           .then( jobId => {
