@@ -47,3 +47,4 @@ tmp
 merge-action-archive
 
 server/common
+.env

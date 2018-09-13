@@ -1,0 +1,16 @@
+pipeline:
+  generate-tags:
+    image: quay.io/natlibfi/drone-gen-tags
+  test:
+  - npm install
+  - npm test
+  docker:
+    image: plugins/docker
+    registry: quay.io
+    repo: quay.io/natlibfi/melinda-local-ref-removal-ui
+    secrets:
+    - docker_username
+    - docker_password
+    when:
+      event: [push, tag]
+branches: [master, test]
