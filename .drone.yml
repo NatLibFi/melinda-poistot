@@ -2,8 +2,10 @@ pipeline:
   generate-tags:
     image: quay.io/natlibfi/drone-gen-tags
   test:
-  - npm install
-  - npm test
+    image: node:8
+    commands:
+    - npm install
+    - npm test
   docker:
     image: plugins/docker
     registry: quay.io
@@ -13,4 +15,4 @@ pipeline:
     - docker_password
     when:
       event: [push, tag]
-branches: [master, test]
+      branch: [master, test]
