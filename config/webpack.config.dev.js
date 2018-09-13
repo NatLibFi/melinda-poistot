@@ -7,7 +7,7 @@ const PATHS = {
   commons_frontend: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend'),
   commons_styles: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend/styles'),
   styles: path.resolve(__dirname, '../frontend/styles'),
-  shared: path.resolve(__dirname, '../shared/shared'),
+  shared: path.resolve(__dirname, '../dist/shared/shared'),
   build: path.resolve(__dirname, '../dist')
 };
 
@@ -41,7 +41,7 @@ module.exports = {
   resolve: {
     alias: {
       commons: path.resolve(PATHS.commons_frontend, 'js'),
-      styles: PATHS.commons_styles,
+      styles: PATHS.commons_styles
       shared: PATHS.shared
     },
     // We can now require('file') instead of require('file.jsx')

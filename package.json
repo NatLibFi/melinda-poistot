@@ -29,7 +29,7 @@
     "build:server": "NODE_ENV=production babel server --ignore spec.js --out-dir dist --source-maps",
     "build:frontend": "NODE_ENV=production webpack --config ./config/webpack.config.prod.js --progress",
     "test": "npm run lint && npm run test:shared && npm run test:frontend && npm run test:server",
-    "test:frontend": "NODE_PATH=dist/shared BABEL_ENV=test mocha --compilers js:babel-core/register --require ignore-styles --require ./frontend/test_helpers/test_bootstrap.js \"frontend/**/*@(.spec.js|.spec.jsx)\"",
+    "test:frontend": "npm run build:shared && NODE_PATH=dist/shared BABEL_ENV=test mocha --compilers js:babel-core/register --require ignore-styles --require ./frontend/test_helpers/test_bootstrap.js \"frontend/**/*@(.spec.js|.spec.jsx)\"",
     "test:frontend:watch": "npm run test:frontend -- --watch",
     "test:server": "NODE_PATH=dist/shared BABEL_ENV=test mocha --compilers js:babel-core/register --require ./server/test_helpers/test_bootstrap.js --require @natlibfi/melinda-ui-commons/dist/server/test_helpers/test_bootstrap.js \"./server/**/*@(.spec.js|.spec.jsx)\"",
     "test:server:watch": "npm run test:server -- --watch",
