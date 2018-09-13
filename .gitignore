@@ -40,10 +40,11 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-build
+dist
 tmp
 
 # default dir for merge-action-archive
 merge-action-archive
 
 server/common
+.env

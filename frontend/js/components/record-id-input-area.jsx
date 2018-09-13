@@ -66,7 +66,7 @@ export class RecordIdInputArea extends React.Component {
 
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const readOnly = _.get(nextProps, 'readOnly', false);
     const { recordParseErrors, submitStatus } = nextProps;
 
