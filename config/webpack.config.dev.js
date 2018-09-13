@@ -41,7 +41,7 @@ module.exports = {
   resolve: {
     alias: {
       commons: path.resolve(PATHS.commons_frontend, 'js'),
-      styles: PATHS.commons_styles
+      styles: PATHS.commons_styles,
       shared: PATHS.shared
     },
     // We can now require('file') instead of require('file.jsx')
