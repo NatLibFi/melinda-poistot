@@ -30,7 +30,7 @@ import { JSDOM } from 'jsdom';
 import chai from 'chai';
 import chaiImmutable from 'chai-immutable';
 
-const { window } = new JSDOM('<!doctype html><html><body></body></html>');
+const { window } = new JSDOM('<!doctype html><html><body></body></html>', { url: 'https://foo.bar' });
 const { document } = window;
 // const win = doc.defaultView;
 

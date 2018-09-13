@@ -7,12 +7,12 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 // App files location
 const PATHS = {
   app: path.resolve(__dirname, '../frontend/js'),
-  shared: path.resolve(__dirname, '../shared/shared'),
   commons_frontend: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend'),
   commons_styles: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend/styles'),
   styles: path.resolve(__dirname, '../frontend/styles'),
   images: path.resolve(__dirname, '../frontend/images'),
-  build: path.resolve(__dirname, '../build/public')
+  shared: path.resolve(__dirname, '../dist/shared/shared'),
+  build: path.resolve(__dirname, '../dist/public')
 };
 
 const plugins = [
