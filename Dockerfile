@@ -2,6 +2,8 @@ FROM node:8-alpine
 CMD ["/usr/local/bin/node", "index.js"]
 WORKDIR /home/node
 
+ENV NODE_PATH shared
+
 COPY --chown=node:node . build
 
 RUN apk add -U --no-cache --virtual .build-deps git sudo \
