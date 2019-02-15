@@ -1,6 +1,6 @@
-# UI for removing references to local databases from Melinda [![NPM Version](https://img.shields.io/npm/v/@natlibfi/melinda-local-ref-removal-ui.svg)](https://npmjs.org/package/@natlibfi/melinda-local-ref-removal-ui) [![Build Status](https://travis-ci.org/NatLibFi/melinda-local-ref-removal-ui.svg?branch=master)](https://travis-ci.org/NatLibFi/melinda-local-ref-removal-ui)
+# UI for removing references to local libraries from Melinda [![NPM Version](https://img.shields.io/npm/v/@natlibfi/melinda-poistot.svg)](https://npmjs.org/package/@natlibfi/melinda-poistot) [![Build Status](https://travis-ci.org/NatLibFi/melinda-poistot.svg?branch=master)](https://travis-ci.org/NatLibFi/melinda-poistot)
 
-UI for removing references to local databases from Melinda
+UI for removing references to local libraries from Melinda
 
 ## Building the application
 
@@ -62,6 +62,6 @@ This will start webpack-dev-server for frontend codebase and nodemon for the bac
 
 ## License and copyright
 
-Copyright (c) 2016-2017 **University Of Helsinki (The National Library Of Finland)**
+Copyright (c) 2016-2019 **University Of Helsinki (The National Library Of Finland)**
 
 This project's source code is licensed under the terms of **GNU Affero General Public License Version 3** or any later version.

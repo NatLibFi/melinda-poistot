@@ -2,18 +2,18 @@
 *
 * @licstart  The following is the entire license notice for the JavaScript code in this file.
 *
-* UI for removing references to local databases from Melinda
+* UI for removing references to local libraries from Melinda
 *
-* Copyright (C) 2016-2017 University Of Helsinki (The National Library Of Finland)
+* Copyright (C) 2016-2019 University Of Helsinki (The National Library Of Finland)
 *
-* This file is part of melinda-local-ref-removal-ui
+* This file is part of melinda-poistot
 *
-* melinda-local-ref-removal-ui program is free software: you can redistribute it and/or modify
+* melinda-poistot program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
 * published by the Free Software Foundation, either version 3 of the
 * License, or (at your option) any later version.
 *
-* melinda-local-ref-removal-ui is distributed in the hope that it will be useful,
+* melinda-poistot is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU Affero General Public License for more details.

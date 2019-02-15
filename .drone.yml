@@ -9,7 +9,7 @@ pipeline:
   docker:
     image: plugins/docker
     registry: quay.io
-    repo: quay.io/natlibfi/melinda-local-ref-removal-ui
+    repo: quay.io/natlibfi/melinda-poistot
     secrets:
     - docker_username
     - docker_password

@@ -1,18 +1,18 @@
 {
-  "name": "@natlibfi/melinda-local-ref-removal-ui",
+  "name": "@natlibfi/melinda-poistot",
   "version": "1.0.1",
-  "description": "UI for removing references to local databases from Melinda",
+  "description": "UI for removing references to local libraries from Melinda",
   "keywords": [
     "MARC",
     "Melinda"
   ],
-  "homepage": "https://github.com/natlibfi/melinda-local-ref-removal-ui",
+  "homepage": "https://github.com/natlibfi/melinda-poistot",
   "bugs": {
-    "url": "https://github.com/natlibfi/melinda-local-ref-removal-ui/issues"
+    "url": "https://github.com/natlibfi/melinda-poistot/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:natlibfi/melinda-local-ref-removal-ui.git"
+    "url": "git@github.com:natlibfi/melinda-poistot.git"
   },
   "author": {
     "name": "The National Library of Finland"
