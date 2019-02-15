@@ -1,4 +1,4 @@
-# UI for removing references to local libraries from Melinda [![NPM Version](https://img.shields.io/npm/v/@natlibfi/melinda-poistot.svg)](https://npmjs.org/package/@natlibfi/melinda-poistot) [![Build Status](https://travis-ci.org/NatLibFi/melinda-poistot.svg?branch=master)](https://travis-ci.org/NatLibFi/melinda-poistot)
+# UI for removing references to local libraries from Melinda [![Build Status](https://travis-ci.org/NatLibFi/melinda-poistot.svg?branch=master)](https://travis-ci.org/NatLibFi/melinda-poistot)
 
 UI for removing references to local libraries from Melinda
 
