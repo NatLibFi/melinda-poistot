@@ -60,6 +60,7 @@ export class ExampleCardLocalId extends React.Component {
           </div>
 
           <p>Jos tietueessa ei ole 035-kentissä lainkaan FCC-alkuisia tunnisteita, riittää pelkkä paikalliskannan tietuetunniste.</p>
+          <p>Koha-kirjastojärjestelmän käyttäjille lisätietoja tarvittavista tietue-ID:istä löytyy sivulta <a href="https://www.kiwi.fi/pages/viewpage.action?pageId=111706316">Poisto-ohje Koha-kirjastojärjestelmän käyttäjille</a></p>
           
         </div>
       </div>
