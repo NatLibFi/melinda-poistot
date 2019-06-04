@@ -24,7 +24,10 @@
 * @licend  The above is the entire license notice
 * for the JavaScript code in this file.
 *
-*/'use strict';
+*/
+
+'use strict';
+
 import express from 'express';
 import path from 'path';
 import { logger, expressWinston } from 'server/logger';
@@ -37,9 +40,10 @@ import * as recordUpdateWorker from './workers/record-update-worker';
 import ResultWorker from './workers/result-worker';
 import StatusController from './status-controller';
 
-//const NODE_ENV = readEnvironmentVariable('NODE_ENV', 'dev');
-const PORT = readEnvironmentVariable('HTTP_PORT', 3001);
+process.on('uncaughtException', handleException);
+process.on('unhandledRejection', handleException);
 
+const PORT = readEnvironmentVariable('HTTP_PORT', 3001);    
 const app = express();
 
 app.use(expressWinston);
@@ -52,9 +56,20 @@ app.use(express.static(path.resolve(__dirname, 'public')));
 
 app.listen(PORT, () => logger.log('info', `Application started on port ${PORT}`));
 
-recordUpdateWorker.connect().then(() => logger.log('info', 'Record update worker ready.'));
+recordUpdateWorker.connect().then(() => {    
+  logger.log('info', 'Record update worker ready.');
+  
+  const resultWorker = new ResultWorker();    
+  
+  resultWorker.connect().then(() => {
+    
+    logger.log('info', 'Result worker ready.');
+    
+    app.use('/status', new StatusController(resultWorker));
+  });
+});
 
-const resultWorker = new ResultWorker();
-resultWorker.connect().then(() => logger.log('info', 'Result worker ready.'));
-
-app.use('/status', new StatusController(resultWorker));
+function handleException(err) {
+  logger.log('error', 'stack' in err ? err.stack : err);
+  process.exit(1);
+}
