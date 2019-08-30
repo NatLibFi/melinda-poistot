@@ -59,7 +59,7 @@ export class NavBar extends React.Component {
         <nav> 
           <div className="nav-wrapper">
             <img 
-              className="mt-logo" 
+              className="mt-logo left" 
               src={melindaLogo}
             />
             <ul id="nav" className="left">
