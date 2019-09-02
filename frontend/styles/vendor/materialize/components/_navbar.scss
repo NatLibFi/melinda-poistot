@@ -124,6 +124,21 @@ nav {
       }
     }
 
+    .user-name-menu-item {
+      flex-wrap: wrap;
+      text-align: center;
+      font-size: $navbar-font-size;
+      color: #000000;
+      font-weight: bold;
+      background-color: rgba(0,0,0,.1);
+      padding: 14px 16px;
+      cursor: default;
+      
+      &:hover {
+        background: rgba(0,0,0,.1); // removes flicker when mouseover
+      }
+    }
+
     &.left {
       float: left;
     }
