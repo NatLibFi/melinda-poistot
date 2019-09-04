@@ -27,8 +27,9 @@
 */
 import _ from 'lodash';
 
-const MELINDA_ID_PATTERN = /^\(FI-MELINDA\)(\d+)$/;
+const MELINDA_ID_PATTERN = /^\(FI-MELINDA\)\d+$/;
 const LOCAL_ID_PATTERN = /^\d+(\s+FCC\d+)*$/;
+const MULTI_ID_PATTERN = /^((\(FI-MELINDA\)\d+|FCC\d+)\s*)*$/;
 
 export function parse(input) {
   const items = input.split('\n').map(trimmer).map(matcher);
@@ -81,6 +82,19 @@ function matcher(inputLine) {
       links: _.tail(cols)
     };
   }
+if (MULTI_ID_PATTERN.test(inputLine)) {
+  const cols = inputLine.replace(/\(FI-MELINDA\)/g, 'FCC');
+  if (cols.includes(' ')) {
+    return {
+      localId: '',
+      links: inputLine.split(/\s+/)
+    };
+  }
+  return {
+    localId: '',
+    links: inputLine
+  };
+}
 
   return new Error('Rivi ei ole sallitussa muodossa'); 
 }
