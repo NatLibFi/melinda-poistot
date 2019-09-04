@@ -30,7 +30,7 @@ import { parse } from './input-parser';
 const VALID_INPUT = `
 1184996 FCC001173048
 1184997  
-(FI-MELINDA)0011730411  
+(FI-MELINDA)0011730411
 1184991 FCC001173041 FCC001173044
 `.trim();
 
@@ -99,7 +99,6 @@ describe('Format parser', () => {
     });
 
     it('adds error message to invalid rows', () => {
-      expect(result[1]).be.instanceof(Error);
       expect(result[4]).be.instanceof(Error);
     });
     
