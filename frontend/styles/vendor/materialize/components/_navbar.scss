@@ -1,7 +1,6 @@
 nav {
   color: $navbar-font-color;
   @extend .z-depth-1;
-  background-color: $primary-color;
   width: 100%;
   height: $navbar-height-mobile;
   line-height: $navbar-height-mobile;
@@ -20,6 +19,11 @@ nav {
   .nav-wrapper {
     position: relative;
     height: 100%;
+  }
+
+  .mt-logo {
+    height: 70px;
+    padding-bottom: 5px;
   }
 
   @media #{$large-and-up} {
@@ -115,6 +119,21 @@ nav {
 
       &:hover {
         background-color: rgba(0,0,0,.1);
+      }
+    }
+
+    .user-name-menu-item {
+      flex-wrap: wrap;
+      text-align: center;
+      font-size: $navbar-font-size;
+      color: #000000;
+      font-weight: bold;
+      background-color: rgba(0,0,0,.1);
+      padding: 14px 16px;
+      cursor: default;
+      
+      &:hover {
+        background: rgba(0,0,0,.1); // removes flicker when mouseover
       }
     }
 

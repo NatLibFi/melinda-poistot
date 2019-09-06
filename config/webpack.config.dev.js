@@ -7,7 +7,7 @@ const PATHS = {
   commons_frontend: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend'),
   commons_styles: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend/styles'),
   styles: path.resolve(__dirname, '../frontend/styles'),
-  shared: path.resolve(__dirname, '../dist/shared/shared'),
+  shared: path.resolve(__dirname, '../shared/shared'),
   build: path.resolve(__dirname, '../dist')
 };
 

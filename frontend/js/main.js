@@ -38,6 +38,8 @@ import {HashRouter,Route} from 'react-router-dom';
 import {App} from './components/app';
 import * as Cookies from 'js-cookie';
 import { validateSession } from './action-creators/session-actions';
+import 'material-design-icons-iconfont';
+import 'materialize-css';
 
 const loggerMiddleware = createLogger();
 
