@@ -1,11 +1,21 @@
-$melinda-green: #3f6d3f;
+nav {
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.16);
+  background-color: #305d6d; /* For browsers not support gradients  */
+  background-image: linear-gradient(to right, #305d6d, #7bb9ce);
 
-.navbar .nav-wrapper {
-    background-color: $melinda-green;
+  #mainmenu {
+    min-width: 140px;
+  }
 
-  .heading {
-    margin-left: 1em;
-    font-size: 1.5em;
+  .heading{
+    text-transform: uppercase;
+    font-weight: 300;
+    font-size: 1.1em;
+    padding: 10px 0 0 11px;
+  }
+
+  .dropdown-content li:hover {
+    background-color: white;
   }
 
   .nav-dropdown {

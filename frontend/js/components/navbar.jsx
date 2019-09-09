@@ -28,6 +28,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import '../../styles/components/navbar.scss';
+import melindaLogo from '../../images/Melinda-logo-white.png';
 
 export class NavBar extends React.Component {
 
@@ -57,18 +58,25 @@ export class NavBar extends React.Component {
       <div className="navbar">
         <nav> 
           <div className="nav-wrapper">
+            <img 
+              className="mt-logo left" 
+              src={melindaLogo}
+            />
             <ul id="nav" className="left">
               <li className="heading">{appTitle}</li>
             </ul>        
             <ul id="nav" className="right">
+            <li><a href="https://www.kiwi.fi/display/melinda/Tietokantatunnusten+massapoisto+Melindasta" target="_blank" rel="noopener noreferrer">
+              <i className="material-icons">help_outline</i>
+              </a></li>
               <li><a className="nav-dropdown" href="#" data-activates="mainmenu" ref={(c) => this._dropdown = c} onClick={this.preventDefault}>
-              <i className="material-icons right">more_vert</i>{username ? username : ''}</a></li>
+              <i className="material-icons right">account_circle</i></a></li>
             </ul>
           </div>
         </nav>
 
         <ul id='mainmenu' className='dropdown-content'>
-          <li><a href="https://www.kiwi.fi/display/melinda/Tietokantatunnusten+massapoisto+Melindasta" target="_blank" rel="noopener noreferrer">Ohjeet</a></li>
+          <li className="user-name-menu-item">{username ? username : ''}</li>
           <li className="divider" />
           <li><a href="#" onClick={this.props.onLogout}>Kirjaudu ulos</a></li>
         </ul>
