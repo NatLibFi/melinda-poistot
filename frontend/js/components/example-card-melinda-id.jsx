@@ -35,7 +35,7 @@ export class ExampleCardMelindaId extends React.Component {
       <div className="card info-card">
         <div className="card-content">
           <span className="card-title">Poistot Melindan tietuetunnisteen perustella</span>
-            <p>Tietueita voi listata myös pelkän Melindan tietuetunnisteen perusteella. Melindan tietuetunniste löytyy paikalliskannan tietueen kentästä 035 $a tai 035 $z. Tunnisteessa on mm. Aurora-paikalliskannoissa (FI-MELINDA) -alku ja mm. Koha-paikalliskannoista FCC-alku.Tunnisteet voi listata  joko (FI-MELINDA)-alkuisena seuraavasti:</p>
+            <p>Tietueita voi listata myös pelkän Melindan tietuetunnisteen perusteella. Melindan tietuetunniste löytyy paikalliskannan tietueen kentästä 035 $a tai 035 $z. Tunnisteessa on mm. Aurora-paikalliskannoissa (FI-MELINDA) -alku ja mm. Koha-paikalliskannoissa FCC-alku. Tunnisteet voi listata joko (FI-MELINDA)-alkuisena seuraavasti:</p>
             <div className="block">
               <span className="legend">MELINDA_ID</span>
               <span>(FI-MELINDA)001173048</span>
@@ -47,7 +47,7 @@ export class ExampleCardMelindaId extends React.Component {
               <span>FCC001173048</span>
               <span>FCC001167257</span>
             </div>
-            <p>Mikäli paikalliskannan tietueessa on 035-kentän osakentissä $a tai $z useampi Melindan tietuetunnisteita, on ne kaikki lisättävä seuraavasti:</p>
+            <p>Mikäli paikalliskannan tietueessa on 035-kentän osakentissä $a tai $z useampia Melindan tietuetunnisteita, on ne kaikki lisättävä seuraavasti:</p>
             <div className="block">
               <span className="legend">MELINDA_ID</span>
               <span>FCC001173048 FCC001673048</span>
