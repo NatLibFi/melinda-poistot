@@ -99,7 +99,6 @@ describe('Format parser', () => {
     });
 
     it('adds error message to invalid rows', () => {
-      expect(result[1]).be.instanceof(Error);
       expect(result[4]).be.instanceof(Error);
     });
     
