@@ -30,7 +30,7 @@ import amqp from 'amqplib';
 import {readEnvironmentVariable, getMelindaLoadUserByLowtag} from 'server/utils';
 import {logger} from 'server/logger';
 import _ from 'lodash';
-import uuid from 'node-uuid';
+import {v4 as uuid} from 'uuid';
 
 const AMQP_HOST = readEnvironmentVariable('AMQP_HOST');
 const AMQP_USERNAME = readEnvironmentVariable('AMQP_USERNAME', 'guest', {hideDefaultValue: true});
@@ -68,7 +68,7 @@ export function startJob(records, lowTag, deleteUnusedRecords, replicateRecords,
   channel.assertQueue(TASK_QUEUE, {durable: true});
   channel.assertQueue(JOB_QUEUE, {durable: true});
 
-  const jobId = uuid.v4();
+  const jobId = uuid();
   const tasks = records.map(_.partial(createTask, jobId, sessionToken, lowTag, deleteUnusedRecords, bypassSIDdeletion));
 
   const jobPayload = new Buffer(JSON.stringify(createJob(jobId, tasks, userinfo)));
@@ -86,7 +86,7 @@ export function startJob(records, lowTag, deleteUnusedRecords, replicateRecords,
 function createTask(jobId, sessionToken, lowTag, deleteUnusedRecords, bypassSIDdeletion, recordIdHints) {
   return {
     jobId,
-    taskId: uuid.v4(),
+    taskId: uuid(),
     recordIdHints,
     lowTag,
     sessionToken,
