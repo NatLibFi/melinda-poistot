@@ -29,7 +29,7 @@ import { readEnvironmentVariable } from '../server/utils';
 import MelindaClient from '@natlibfi/melinda-api-client';
 import _ from 'lodash';
 import { stdin } from 'process';
-import MarcRecord from 'marc-record-js';
+import {MarcRecord} from '@natlibfi/marc-record';
 import fs from 'fs';
 import path from 'path';
 
