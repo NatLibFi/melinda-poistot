@@ -30,22 +30,22 @@ import amqp from 'amqplib';
 import {readEnvironmentVariable, createTimer, exceptCoreErrors} from 'server/utils';
 import {recordIsUnused, markRecordAsDeleted, isComponentRecord} from 'server/record-utils';
 import {logger} from 'server/logger';
-import MelindaClient from '@natlibfi/melinda-api-client';
+import {createApiClient} from '@natlibfi/melinda-commons';
 import {readSessionToken} from 'server/session-crypt';
 import {resolveMelindaId} from '../record-id-resolution-service';
 import _ from 'lodash';
 import {transformRecord} from 'server/record-transform-service';
 import {checkAlephHealth} from '../aleph-health-check-service';
 
-const apiUrl = readEnvironmentVariable('MELINDA_API', null);
+const restApiUrl = readEnvironmentVariable('REST_API_URL', null);
 const minTaskIntervalSeconds = readEnvironmentVariable('MIN_TASK_INTERVAL_SECONDS', 10);
 const SLOW_PROCESSING_WAIT_TIME_MS = 10000;
 const ALEPH_UNAVAILABLE_WAIT_TIME = 10000;
 
 const defaultConfig = {
-  endpoint: apiUrl,
-  user: '',
-  password: ''
+  restApiUrl,
+  restApiUsername: '',
+  restApiPassword: '',
 };
 
 const AMQP_HOST = readEnvironmentVariable('AMQP_HOST');
@@ -84,10 +84,10 @@ function startTaskExecutor(channel) {
         const task = readTask(msg);
         const {username, password} = readSessionToken(task.sessionToken);
 
-        const client = new MelindaClient({
+        const client = createApiClient({
           ...defaultConfig,
-          user: username,
-          password: password
+          restApiUsername: username,
+          restApiPassword: password
         });
 
         assertAlephHealth()
@@ -161,8 +161,6 @@ function markTaskAsFailed(task, failedMessage) {
 }
 
 export function processTask(task, client) {
-  const MELINDA_API_NO_REROUTE_OPTS = {handle_deleted: 1};
-
   const skipLocalSidCheckForRemoval = task.recordIdHints.melindaId !== undefined && task.recordIdHints.localId === undefined;
 
   const transformOptions = {
@@ -177,7 +175,7 @@ export function processTask(task, client) {
   return findMelindaId(task).then(taskWithResolvedId => {
     logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);
 
-    return client.loadRecord(taskWithResolvedId.recordId, MELINDA_API_NO_REROUTE_OPTS).then(loadedRecord => {
+    return client.read(taskWithResolvedId.recordId).then(loadedRecord => {
 
       if (isComponentRecord(loadedRecord)) {
         throw new RecordProcessingError('Record is a component record. Record not updated.', taskWithResolvedId);
@@ -198,17 +196,19 @@ export function processTask(task, client) {
       }
 
       logger.log('info', 'record-update-worker: Updating record', taskWithResolvedId.recordId);
-      return client.updateRecord(record).catch(convertMelindaApiClientErrorToError);
+      const recordId = getRecordId(record);
+      return client.update(record, recordId).catch(convertMelindaApiClientErrorToError);
     }).then(response => {
 
       if (task.deleteUnusedRecords) {
         logger.log('info', 'record-update-worker: deleteUnusedRecords is true');
         logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);
-        return client.loadRecord(response.recordId, MELINDA_API_NO_REROUTE_OPTS).then(loadedRecord => {
+        return client.read(response.recordId).then(loadedRecord => {
           if (recordIsUnused(loadedRecord)) {
             logger.log('info', 'record-update-worker: Deleting unused record', taskWithResolvedId.recordId);
             markRecordAsDeleted(loadedRecord);
-            return client.updateRecord(loadedRecord)
+            const loadedRecordId = getRecordId(loadedRecord);
+            return client.update(loadedRecord, loadedRecordId)
               .then(response => {
                 taskWithResolvedId.report.push('Koko tietue poistettu.');
                 return response;
@@ -263,6 +263,11 @@ function findMelindaId(task) {
     .then(recordId => {
       return _.assign({}, task, {recordId});
     });
+}
+
+function getRecordId(record) {
+  const [f001] = record.get(/^001$/u);
+  return f001.value;
 }
 
 function readTask(msg) {

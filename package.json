@@ -46,8 +46,8 @@
   },
   "dependencies": {
     "@natlibfi/marc-record": "4.0.4",
-    "@natlibfi/melinda-ui-commons": "^2.1.0",
-    "@natlibfi/melinda-api-client": "^1.1.4",
+    "@natlibfi/melinda-ui-commons": "git+https://github.com/NatLibFi/melinda-ui-commons.git#melkehitys-1541",
+    "@natlibfi/melinda-commons": "git+https://github.com/NatLibFi/melinda-commons-js.git#melkehitys-1541",
     "amqplib": "^0.5.1",
     "body-parser": "^1.15.2",
     "classnames": "^2.2.5",

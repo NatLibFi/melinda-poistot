@@ -31,19 +31,19 @@ import xml2js from 'xml2js';
 import promisify from 'es6-promisify';
 import fetch from 'isomorphic-fetch';
 import {readEnvironmentVariable} from 'server/utils';
-import MelindaClient from '@natlibfi/melinda-api-client';
+import {createApiClient} from '@natlibfi/melinda-commons';
 import {MarcRecord} from '@natlibfi/marc-record';
 
 const parseXMLStringToJSON = promisify(xml2js.parseString);
 
 
-const apiUrl = readEnvironmentVariable('MELINDA_API', null);
+const restApiUrl = readEnvironmentVariable('REST_API_URL', null);
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const base = readEnvironmentVariable('ALEPH_INDEX_BASE', 'fin01');
 
 const ALEPH_ERROR_EMPTY_SET = 'empty set';
 const melindaClientConfig = {
-  endpoint: apiUrl,
+  restApiUrl,
   user: '',
   password: ''
 };
@@ -119,10 +119,10 @@ function queryXServer(melindaId, links) {
 }
 
 function isRecordValid(melindaId) {
-  const client = new MelindaClient(melindaClientConfig);
+  const client = createApiClient(melindaClientConfig);
 
   return new Promise((resolve) => {
-    client.loadRecord(melindaId).then(responseRecord => {
+    client.read(melindaId).then(responseRecord => {
       const record = new MarcRecord(responseRecord);
 
       resolve(!record.containsFieldWithValue('STA', [{code: 'a', value: 'DELETED'}]));
