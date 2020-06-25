@@ -24,11 +24,13 @@
 * @licend  The above is the entire license notice
 * for the JavaScript code in this file.
 *
-*/import _ from 'lodash';
+*/
+
+import _ from 'lodash';
 import xml2js from 'xml2js';
 import promisify from 'es6-promisify';
 import fetch from 'isomorphic-fetch';
-import { readEnvironmentVariable } from 'server/utils';
+import {readEnvironmentVariable} from 'server/utils';
 import MelindaClient from '@natlibfi/melinda-api-client';
 import MarcRecord from 'marc-record-js';
 
@@ -56,16 +58,16 @@ export function resolveMelindaId(melindaId, localId, libraryTag, links) {
     queryMIDDRindex(melindaId, links),
     queryXServer(melindaId, links)
   ])
-  .then(([sidaRecordIdList, middrRecordIdList, XServerRecordIdList]) => {
+    .then(([sidaRecordIdList, middrRecordIdList, XServerRecordIdList]) => {
 
-    const combinedResolvedIdList = _.uniq(_.concat(sidaRecordIdList, middrRecordIdList, XServerRecordIdList));
-    return combinedResolvedIdList;
+      const combinedResolvedIdList = _.uniq(_.concat(sidaRecordIdList, middrRecordIdList, XServerRecordIdList));
+      return combinedResolvedIdList;
 
-  })
-  .then(validateResult)
-  .then(recordIdList => {
-    return _.head(recordIdList);
-  });
+    })
+    .then(validateResult)
+    .then(recordIdList => {
+      return _.head(recordIdList);
+    });
 }
 
 function querySIDAindex(localId, libraryTag, links) {
@@ -142,7 +144,7 @@ function loadRecordIdList(setResponse, defaultValue = []) {
     }
   }
 
-  const { set_number, no_entries } = setResponse.find;
+  const {set_number, no_entries} = setResponse.find;
   const presentRequestUrl = `${alephUrl}/X?op=present&set_number=${set_number}&set_entry=1-${no_entries}`;
 
   return fetch(presentRequestUrl)

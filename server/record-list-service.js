@@ -24,15 +24,17 @@
 * @licend  The above is the entire license notice
 * for the JavaScript code in this file.
 *
-*/import amqp from 'amqplib';
-import { readEnvironmentVariable, getMelindaLoadUserByLowtag } from 'server/utils';
-import { logger } from 'server/logger';
+*/
+
+import amqp from 'amqplib';
+import {readEnvironmentVariable, getMelindaLoadUserByLowtag} from 'server/utils';
+import {logger} from 'server/logger';
 import _ from 'lodash';
 import uuid from 'node-uuid';
 
 const AMQP_HOST = readEnvironmentVariable('AMQP_HOST');
-const AMQP_USERNAME = readEnvironmentVariable('AMQP_USERNAME', 'guest', { hideDefaultValue: true });
-const AMQP_PASSWORD = readEnvironmentVariable('AMQP_PASSWORD', 'guest', { hideDefaultValue: true });
+const AMQP_USERNAME = readEnvironmentVariable('AMQP_USERNAME', 'guest', {hideDefaultValue: true});
+const AMQP_PASSWORD = readEnvironmentVariable('AMQP_PASSWORD', 'guest', {hideDefaultValue: true});
 const TASK_QUEUE = 'task_queue';
 const JOB_QUEUE = 'job_queue';
 

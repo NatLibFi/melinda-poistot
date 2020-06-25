@@ -24,16 +24,18 @@
 * @licend  The above is the entire license notice
 * for the JavaScript code in this file.
 *
-*/import amqp from 'amqplib';
-import { readEnvironmentVariable, createTimer, exceptCoreErrors } from 'server/utils';
-import { recordIsUnused, markRecordAsDeleted, isComponentRecord } from 'server/record-utils';
-import { logger } from 'server/logger';
+*/
+
+import amqp from 'amqplib';
+import {readEnvironmentVariable, createTimer, exceptCoreErrors} from 'server/utils';
+import {recordIsUnused, markRecordAsDeleted, isComponentRecord} from 'server/record-utils';
+import {logger} from 'server/logger';
 import MelindaClient from '@natlibfi/melinda-api-client';
-import { readSessionToken } from 'server/session-crypt';
-import { resolveMelindaId } from '../record-id-resolution-service';
+import {readSessionToken} from 'server/session-crypt';
+import {resolveMelindaId} from '../record-id-resolution-service';
 import _ from 'lodash';
-import { transformRecord } from 'server/record-transform-service';
-import { checkAlephHealth } from '../aleph-health-check-service';
+import {transformRecord} from 'server/record-transform-service';
+import {checkAlephHealth} from '../aleph-health-check-service';
 
 const apiUrl = readEnvironmentVariable('MELINDA_API', null);
 const minTaskIntervalSeconds = readEnvironmentVariable('MIN_TASK_INTERVAL_SECONDS', 10);
@@ -47,8 +49,8 @@ const defaultConfig = {
 };
 
 const AMQP_HOST = readEnvironmentVariable('AMQP_HOST');
-const AMQP_USERNAME = readEnvironmentVariable('AMQP_USERNAME', 'guest', { hideDefaultValue: true });
-const AMQP_PASSWORD = readEnvironmentVariable('AMQP_PASSWORD', 'guest', { hideDefaultValue: true });
+const AMQP_USERNAME = readEnvironmentVariable('AMQP_USERNAME', 'guest', {hideDefaultValue: true});
+const AMQP_PASSWORD = readEnvironmentVariable('AMQP_PASSWORD', 'guest', {hideDefaultValue: true});
 const INCOMING_TASK_QUEUE = 'task_queue';
 const OUTGOING_TASK_QUEUE = 'task_result_queue';
 
@@ -70,7 +72,7 @@ export function connect() {
 function startTaskExecutor(channel) {
 
   let waitTimeMs = 0;
-  channel.consume(INCOMING_TASK_QUEUE, function(msg) {
+  channel.consume(INCOMING_TASK_QUEUE, function (msg) {
 
     logger.log('info', 'record-update-worker: Received task', msg.content.toString());
 
@@ -122,7 +124,7 @@ function startTaskExecutor(channel) {
             logger.log('error', error);
           });
 
-      } catch(error) {
+      } catch (error) {
         //logger.log('error', 'Dropped invalid task', error);
         const {consumerTag, deliveryTag} = msg;
         logger.log('error', 'record-update-worker: Dropped invalid task', {consumerTag, deliveryTag}, error.message);
@@ -251,7 +253,7 @@ function convertMelindaApiClientErrorToError(melindaApiClientError) {
 
 function findMelindaId(task) {
 
-  const { recordIdHints } = task;
+  const {recordIdHints} = task;
 
   const melindaIdLinks = _.get(recordIdHints, 'links', [])
     .map(link => link.toUpperCase())

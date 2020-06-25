@@ -24,11 +24,13 @@
 * @licend  The above is the entire license notice
 * for the JavaScript code in this file.
 *
-*/import {expect} from 'chai';
-import { processTask, RecordProcessingError } from './record-update-worker';
+*/
+
+import {expect} from 'chai';
+import {processTask, RecordProcessingError} from './record-update-worker';
 import sinon from 'sinon';
-import { __RewireAPI__ as RewireAPI } from './record-update-worker';
-import { FAKE_RECORD, FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO, FAKE_RECORD_ONLY_LOW_TEST, FAKE_RECORD_2_LOW, FAKE_RECORD_WITH_LOW_TEST_REMOVED } from '../test_helpers/fake-data';
+import {__RewireAPI__ as RewireAPI} from './record-update-worker';
+import {FAKE_RECORD, FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO, FAKE_RECORD_ONLY_LOW_TEST, FAKE_RECORD_2_LOW, FAKE_RECORD_WITH_LOW_TEST_REMOVED} from '../test_helpers/fake-data';
 import MarcRecord from 'marc-record-js';
 import _ from 'lodash';
 
@@ -36,7 +38,7 @@ describe('Record update worker', () => {
 
   const TEST_UPDATE_RESPONSE = {recordId: 33};
   const fakeTask = {
-    recordIdHints: { melindaId: 3},
+    recordIdHints: {melindaId: 3},
     lowTag: 'test'
   };
 
@@ -45,7 +47,7 @@ describe('Record update worker', () => {
 
   beforeEach(() => {
     resolveMelindaIdStub = sinon.stub();
-    loggerStub = { log: sinon.stub() };
+    loggerStub = {log: sinon.stub()};
 
     RewireAPI.__Rewire__('resolveMelindaId', resolveMelindaIdStub);
     RewireAPI.__Rewire__('logger', loggerStub);
@@ -107,7 +109,7 @@ describe('Record update worker', () => {
       it('results in error', () => {
         expect(error.message).to.equal('Invalid record');
       });
-      
+
       it('rejects with processing error', () => {
         expect(error).to.be.instanceof(RecordProcessingError);
       });
@@ -115,7 +117,7 @@ describe('Record update worker', () => {
     });
 
     describe('when loading a record fails', () => {
-      
+
       const TEST_LOAD_ERROR = new Error('Error loading record');
 
       beforeEach(() => {
@@ -144,7 +146,7 @@ describe('Record update worker', () => {
     });
 
     describe('when updating a record fails', () => {
-      
+
       const TEST_UPDATE_ERROR = new Error('Error updating record');
 
       beforeEach(() => {
@@ -175,7 +177,7 @@ describe('Record update worker', () => {
     describe('when Melinda record id resolution works', () => {
 
       const fakeTaskWithLocalID = {
-        recordIdHints: { localId: 3 },
+        recordIdHints: {localId: 3},
         lowTag: 'test'
       };
 
@@ -187,7 +189,7 @@ describe('Record update worker', () => {
 
         return processTask(fakeTaskWithLocalID, clientStub)
           .then(res => result = res);
-          
+
       });
 
       it('sets the recordId to resolved value', () => {
@@ -195,13 +197,13 @@ describe('Record update worker', () => {
       });
 
     });
-    
+
     describe('when Melinda record id resolution fails', () => {
 
       const fakeErrorMessage = 'fake-error-message';
 
       const fakeTaskWithLocalID = {
-        recordIdHints: { localId: 3 }
+        recordIdHints: {localId: 3}
       };
 
       beforeEach(() => {
@@ -226,7 +228,7 @@ describe('Record update worker', () => {
 
     describe('when delete unused records option is true', () => {
       describe('when a record has none of the following fields left: LOW/850/852/866', () => {
-         
+
         beforeEach(() => {
           resolveMelindaIdStub.resolves(3);
 
@@ -245,7 +247,7 @@ describe('Record update worker', () => {
 
           const secondCallArgument = clientStub.updateRecord.getCall(1).args[0];
           expect(secondCallArgument.isDeleted()).to.equal(true);
-          
+
         });
 
         it('should report that the record was deleted', () => {
@@ -272,7 +274,7 @@ describe('Record update worker', () => {
 
           const callArgument = clientStub.updateRecord.getCall(0).args[0];
           expect(callArgument.isDeleted()).to.equal(false);
-          
+
         });
       });
     });
@@ -284,7 +286,7 @@ describe('Record update worker', () => {
 
         clientStub = createClientStub();
         clientStub.loadRecord.resolves(FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO);
-     
+
         return processTask(fakeTask, clientStub)
           .then(res => result = res)
           .catch(err => error = err);
