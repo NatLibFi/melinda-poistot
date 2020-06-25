@@ -246,7 +246,7 @@ describe('Record update worker', () => {
           expect(clientStub.updateRecord.callCount).to.equal(2);
 
           const secondCallArgument = clientStub.updateRecord.getCall(1).args[0];
-          expect(secondCallArgument.isDeleted()).to.equal(true);
+          expect(secondCallArgument.containsFieldWithValue('STA', [{code: 'a', value: 'DELETED'}])).to.equal(true);
 
         });
 
@@ -273,7 +273,7 @@ describe('Record update worker', () => {
           expect(clientStub.updateRecord.callCount).to.equal(1);
 
           const callArgument = clientStub.updateRecord.getCall(0).args[0];
-          expect(callArgument.isDeleted()).to.equal(false);
+          expect(callArgument.containsFieldWithValue('STA', [{code: 'a', value: 'DELETED'}])).to.equal(false);
 
         });
       });

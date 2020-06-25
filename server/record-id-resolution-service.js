@@ -124,7 +124,8 @@ function isRecordValid(melindaId) {
   return new Promise((resolve) => {
     client.loadRecord(melindaId).then(responseRecord => {
       const record = new MarcRecord(responseRecord);
-      resolve(!record.isDeleted());
+
+      resolve(!record.containsFieldWithValue('STA', [{code: 'a', value: 'DELETED'}]));
     }).catch(() => {
       resolve(false);
     }).done();
