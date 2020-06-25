@@ -32,7 +32,7 @@ import promisify from 'es6-promisify';
 import fetch from 'isomorphic-fetch';
 import {readEnvironmentVariable} from 'server/utils';
 import MelindaClient from '@natlibfi/melinda-api-client';
-import MarcRecord from 'marc-record-js';
+import {MarcRecord} from '@natlibfi/marc-record';
 
 const parseXMLStringToJSON = promisify(xml2js.parseString);
 

@@ -45,6 +45,7 @@
     "publish-to-npm": "npm test && npm publish --access=public"
   },
   "dependencies": {
+    "@natlibfi/marc-record": "4.0.4",
     "@natlibfi/melinda-ui-commons": "^2.1.0",
     "@natlibfi/melinda-api-client": "^1.1.4",
     "amqplib": "^0.5.1",
@@ -62,7 +63,6 @@
     "lodash": "^4.15.0",
     "material-design-icons-iconfont": "^3.0.3",
     "materialize-css": "^0.100.2",
-    "marc-record-js": "^0.3.1",
     "moment": "^2.15.1",
     "uuid": "^8.2.0",
     "nodemailer": "^4.4.1",
