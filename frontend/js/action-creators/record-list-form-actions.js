@@ -26,7 +26,7 @@
 *
 */import { exceptCoreErrors, errorIfStatusNot } from '../utils';
 import { FetchNotOkError } from '../errors';
-import HttpStatus from 'http-status-codes';
+import HttpStatus from 'http-status';
 import { validRecordList } from '../selectors/record-list-selectors';
 
 import {SET_SELECTED_LOW_TAG, SET_RECORD_ID_LIST, SUBMIT_JOB_START, SUBMIT_JOB_SUCCESS, SUBMIT_JOB_FAIL, SET_DELETE_OPTION, SET_REPLICATE_OPTION} from '../constants/action-type-constants';

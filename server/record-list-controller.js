@@ -31,7 +31,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import {logger} from 'server/logger';
 import {corsOptions, requireBodyParams, userinfoMiddleware} from 'server/utils';
-import HttpStatus from 'http-status-codes';
+import HttpStatus from 'http-status';
 import {connect, startJob} from './record-list-service';
 import {requireSession, readSessionMiddleware} from 'server/session-controller';
 import cookieParser from 'cookie-parser';
