@@ -1,3 +1,4 @@
+---
 kind: pipeline
 name: default
 steps:
@@ -8,7 +9,7 @@ steps:
   commands:
   - npm install
   - npm test
-- name: docker 
+- name: docker
   image: plugins/docker
   settings:
     repo: quay.io/natlibfi/melinda-poistot
@@ -17,6 +18,16 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-  when:
-    branch: [master, test]
-    event: [push, tag]
+---
+kind: secret
+name: docker_username
+data: 0nvsPhB077I8MpFgI4tRKgqxxTDM6xLtrX8V9F7YjL4WCJkVXG6rFuMKSF7WUbRySlw=
+---
+kind: secret
+name: docker_password
+data: FtZSCNWMQP7EFgBVlF5xwsyzcSe37BNCgSHxkUxZy0KU2mrmgb9Fo6KNbGDl7YS+mzVTGIyQfC5/+mgj25Bn24+/bbjGulDo6ETwLH3aeEKhXebSAfwF6CUNpf4=
+---
+kind: signature
+hmac: 482721bfbdc0181e90ad3851bc736bb7d04bcda4fea762fbd2ca1e3e5a9c2e4f
+
+...

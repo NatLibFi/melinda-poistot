@@ -31,7 +31,7 @@ import xml2js from 'xml2js';
 import promisify from 'es6-promisify';
 import fetch from 'isomorphic-fetch';
 import {readEnvironmentVariable} from 'server/utils';
-import {createApiClient} from '@natlibfi/melinda-commons';
+import {createApiClient} from '@natlibfi/melinda-rest-api-client-js';
 import {MarcRecord} from '@natlibfi/marc-record';
 
 const parseXMLStringToJSON = promisify(xml2js.parseString);
