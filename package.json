@@ -47,7 +47,7 @@
   "dependencies": {
     "@natlibfi/marc-record": "^6.0.4",
     "@natlibfi/melinda-rest-api-client": "^1.0.0-alpha.4",
-    "@natlibfi/melinda-ui-commons": "git+https://github.com/NatLibFi/melinda-ui-commons.git#melkehitys-1541",
+    "@natlibfi/melinda-ui-commons": "^4.0.2-alpha.8",
     "@natlibfi/melinda-backend-commons": "^1.0.6",
     "@natlibfi/melinda-commons": "^10.0.3",
     "amqplib": "^0.5.1",
