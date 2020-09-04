@@ -45,11 +45,12 @@
     "publish-to-npm": "npm test && npm publish --access=public"
   },
   "dependencies": {
+    "@babel/runtime": "^7.11.2",
     "@natlibfi/marc-record": "^6.0.4",
-    "@natlibfi/melinda-rest-api-client": "^1.0.0-alpha.4",
-    "@natlibfi/melinda-ui-commons": "^4.0.2-alpha.8",
     "@natlibfi/melinda-backend-commons": "^1.0.6",
     "@natlibfi/melinda-commons": "^10.0.3",
+    "@natlibfi/melinda-rest-api-client": "^1.0.0-alpha.4",
+    "@natlibfi/melinda-ui-commons": "^4.0.2-alpha.8",
     "amqplib": "^0.5.1",
     "body-parser": "^1.15.2",
     "classnames": "^2.2.5",
@@ -66,12 +67,12 @@
     "material-design-icons-iconfont": "^3.0.3",
     "materialize-css": "^0.100.2",
     "moment": "^2.15.1",
-    "uuid": "^8.2.0",
     "nodemailer": "^4.4.1",
-    "winston": "^2.2.0",
-    "xml2js": "^0.4.17",
+    "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react": "^16.2.0"
+    "uuid": "^8.2.0",
+    "winston": "^2.2.0",
+    "xml2js": "^0.4.17"
   },
   "devDependencies": {
     "autoprefixer": "^7.2.5",
