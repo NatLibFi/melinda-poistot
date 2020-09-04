@@ -61,7 +61,7 @@ export class LowTagSelectField extends React.Component {
           return false;
         }
       });
-      
+
     } else {
       Materialize.updateTextFields();
       this.onSelectLowTag(_.head(this.props.availableLowTags));
@@ -79,7 +79,6 @@ export class LowTagSelectField extends React.Component {
   }
 
   render() {
-
     if (this.props.availableLowTags.length === 1) {
       const fixedLowTag = this.props.availableLowTags[0];
       return (
@@ -94,9 +93,9 @@ export class LowTagSelectField extends React.Component {
           <label htmlFor="autocomplete-input">Poistettava tietokantatunnus</label>
           <input type="text" id="autocomplete-input" className="autocomplete low-tag-selector" ref={(c) => this._input = c} onChange={(e) => this.onSelectLowTag(e.target.value)} />
         </div>
-      );  
+      );
     }
-    
+
   }
 }
 

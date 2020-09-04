@@ -30,7 +30,7 @@ import amqp from 'amqplib';
 import {readEnvironmentVariable, createTimer, exceptCoreErrors} from 'server/utils';
 import {recordIsUnused, markRecordAsDeleted, isComponentRecord} from 'server/record-utils';
 import {logger} from 'server/logger';
-import {createApiClient} from '@natlibfi/melinda-rest-api-client-js';
+import {createApiClient} from '@natlibfi/melinda-rest-api-client';
 import {readSessionToken} from 'server/session-crypt';
 import {resolveMelindaId} from '../record-id-resolution-service';
 import _ from 'lodash';

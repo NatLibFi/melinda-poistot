@@ -25,7 +25,8 @@
 * for the JavaScript code in this file.
 *
 *//* eslint no-console:0 */
-import {createApiClient, Utils} from '@natlibfi/melinda-commons';
+import {createLogger} from '@natlibfi/melinda-backend-commons';
+import {createApiClient} from '@natlibfi/melinda-rest-api-client';
 import _ from 'lodash';
 import {stdin} from 'process';
 import {MarcRecord} from '@natlibfi/marc-record';
@@ -33,7 +34,6 @@ import fs from 'fs';
 import path from 'path';
 import {restApiUrl, restApiUsername, restApiPassword} from './config';
 
-const {createLogger, logError} = Utils;
 const logger = createLogger();
 
 const clientConfig = {
@@ -233,7 +233,7 @@ function printResponse(response) {
 }
 
 function printError(error) {
-  logError(error);
+  logger.log('error', error);
   logger.log('error', 'Errors:');
   _.get(error, 'errors', []).forEach(msg => logger.log('error', ` ${msg.code} ${msg.message}`));
 

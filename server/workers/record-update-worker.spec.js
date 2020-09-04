@@ -315,5 +315,5 @@ function createClientStub() {
 }
 
 function record(record) {
-  return new MarcRecord(record);
+  return new MarcRecord(record, {subfieldValues: false});
 }

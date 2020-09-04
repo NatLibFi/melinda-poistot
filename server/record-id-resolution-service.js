@@ -31,7 +31,7 @@ import xml2js from 'xml2js';
 import promisify from 'es6-promisify';
 import fetch from 'isomorphic-fetch';
 import {readEnvironmentVariable} from 'server/utils';
-import {createApiClient} from '@natlibfi/melinda-rest-api-client-js';
+import {createApiClient} from '@natlibfi/melinda-rest-api-client';
 import {MarcRecord} from '@natlibfi/marc-record';
 
 const parseXMLStringToJSON = promisify(xml2js.parseString);
@@ -123,7 +123,7 @@ function isRecordValid(melindaId) {
 
   return new Promise((resolve) => {
     client.read(melindaId).then(responseRecord => {
-      const record = new MarcRecord(responseRecord);
+      const record = new MarcRecord(responseRecord, {subfieldValues: false});
 
       resolve(!record.containsFieldWithValue('STA', [{code: 'a', value: 'DELETED'}]));
     }).catch(() => {
