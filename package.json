@@ -47,10 +47,10 @@
   "dependencies": {
     "@babel/runtime": "^7.11.2",
     "@natlibfi/marc-record": "^6.0.4",
-    "@natlibfi/melinda-backend-commons": "^1.0.6",
+    "@natlibfi/melinda-backend-commons": "^2.0.0",
     "@natlibfi/melinda-commons": "^10.0.3",
     "@natlibfi/melinda-rest-api-client": "^1.0.0-alpha.4",
-    "@natlibfi/melinda-ui-commons": "^4.0.2-alpha.8",
+    "@natlibfi/melinda-ui-commons": "^4.0.2-alpha.9",
     "amqplib": "^0.5.1",
     "body-parser": "^1.15.2",
     "classnames": "^2.2.5",
