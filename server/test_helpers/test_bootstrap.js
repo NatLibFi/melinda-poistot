@@ -24,8 +24,11 @@
 * @licend  The above is the entire license notice
 * for the JavaScript code in this file.
 *
-*/process.env.ALEPH_URL='test-url';
-process.env.ALEPH_USER_LIBRARY='test-lib';
+*/
+
+process.env.ALEPH_URL='test-url';
+// Ignoring njsscan because it's not an actual username and this is test data anyway
+process.env.ALEPH_USER_LIBRARY='test-lib'; //ignore:node_username
 process.env.DUPLICATE_DB_URL='test-duplicate-db-url';
 process.env.AMQP_HOST='test-amqp-host';
 process.env.SMTP_CONNECTION_URL='smtp://test:test@localhost:2525';
