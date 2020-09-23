@@ -8,48 +8,45 @@ trigger:
     - push
 
 steps:
-  - name: Generate-tags
+
+  - name: generate-tags
     image: quay.io/natlibfi/drone-gen-tags
 
-  - name: Permissions
-    image: busybox
-    commands:
-    - chmod -R o+w /drone/src
-
-  #- name: Audit
+  # Disable until dependencies properly updated
+  #- name: audit
   #  image: node:12
   #  commands:
   #    - npm audit --package-lock-only --audit-level=moderate --production
 
-  - name: Install
+  - name: install
     image: node:12
     commands:
       - npm ci
     environment:
-      NPM_CONFIG_IGNORE_SCRIPTS: true
+      # Cannot be true because of node-sass
+      NPM_CONFIG_IGNORE_SCRIPTS: false
 
-  #- name: test
-  #  image: node:12
-  #  commands:
-  #    - npm test
+  - name: test
+    image: node:12
+    commands:
+      - npm test
 
   #- name: check-coverage
   #  image: node:12
   #  commands:
   #    - npm run check-coverage
 
-  - name: Build
+  - name: build
     image: node:12
     commands:
       - npm run build
-      - npm ci
 
-  - name: Static-security-scan
+  - name: static-security-scan
     image: quay.io/natlibfi/njsscan
     commands:
       - njsscan dist
 
-  - name: Docker
+  - name: docker
     image: plugins/docker
     settings:
       repo: quay.io/natlibfi/melinda-poistot
@@ -70,7 +67,8 @@ trigger:
     - master
 
 steps:
-  - name: Publish
+
+  - name: publish
     image: quay.io/natlibfi/drone-npm-git-publish
     settings:
       git_user_name: natlibfi-melinda-automation
@@ -97,6 +95,6 @@ name: gpg_key
 data: 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
 ---
 kind: signature
-hmac: f41118c3085cabcd8c56e9a2bbaaa4785a259bacf04cbeabdd6e0ee3bd6045d7
+hmac: 249dfe104f81ff72b0f8dfc9268ae01f4b3d4ba28f68b5f219e885464ed889fb
 
 ...
