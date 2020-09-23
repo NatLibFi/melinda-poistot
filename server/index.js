@@ -40,6 +40,8 @@ import * as recordUpdateWorker from './workers/record-update-worker';
 import ResultWorker from './workers/result-worker';
 import StatusController from './status-controller';
 
+// Test
+
 process.on('uncaughtException', handleException);
 process.on('unhandledRejection', handleException);
 
