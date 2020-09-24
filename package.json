@@ -41,8 +41,7 @@
     "watch:ui": "DEBUG=1 webpack-dev-server --config ./config/webpack.config.dev.js --hot --inline --progress",
     "watch:server": "NODE_ENV=debug NODE_PATH=shared nodemon --watch server --exec babel-node server/index.js",
     "cli": "babel-node ./bin/cli.js",
-    "mailtest": "NODE_PATH=melinda-ui-commons:shared babel-node ./bin/email-template-tester.js",
-    "publish-to-npm": "npm test && npm publish --access=public"
+    "mailtest": "NODE_PATH=melinda-ui-commons:shared babel-node ./bin/email-template-tester.js"
   },
   "dependencies": {
     "@babel/runtime": "^7.11.2",
