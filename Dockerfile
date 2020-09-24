@@ -14,8 +14,6 @@ CMD ["/usr/local/bin/node", "index.js"]
 WORKDIR /home/node
 USER node
 
-COPY --from=builder /home/node/build/shared/ ./shared/
-COPY --from=builder /home/node/build/public/ ./public/
 COPY --from=builder /home/node/build/dist/ .
 COPY --from=builder /home/node/node_modules node_modules
 COPY --from=builder /home/node/package.json .
