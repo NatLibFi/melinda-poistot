@@ -10,7 +10,7 @@ RUN apk add -U --no-cache --virtual .build-deps git sudo \
   && sudo -u node sh -c 'npm ci --production'
 
 FROM node:12-alpine
-CMD ["/usr/local/bin/node", "index.js"]
+CMD ["ls -la", "/usr/local/bin/node", "index.js"]
 WORKDIR /home/node
 USER node
 
