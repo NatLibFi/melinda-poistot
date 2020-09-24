@@ -24,19 +24,21 @@
 * @licend  The above is the entire license notice
 * for the JavaScript code in this file.
 *
-*/import { expect } from 'chai';
-import { parse } from './input-parser';
+*/
+
+import {expect} from 'chai';
+import {parse} from './input-parser';
 
 const VALID_INPUT = `
 1184996 FCC001173048
-1184997  
-(FI-MELINDA)0011730411  
+1184997
+(FI-MELINDA)0011730411
 1184991 FCC001173041 FCC001173044
 `.trim();
 
 const SOME_INVALID_INPUT = `
 1184996 FCC001173048
-FCC001173048  
+FCC001173048
 1184997 FCC001173047
 
 asd
@@ -46,8 +48,8 @@ const INVALID_INPUT_MULTIPLE_IDENTICAL_ROWS = `
 1184996 FCC001173048
 1184997 FCC001173047
 1184996 FCC001173042
-1184997  
-(FI-MELINDA)0011730411  
+1184997
+(FI-MELINDA)0011730411
 
 1184991 FCC001173041 FCC001173044
 1184997 FCC001173047
@@ -101,7 +103,7 @@ describe('Format parser', () => {
     it('adds error message to invalid rows', () => {
       expect(result[4]).be.instanceof(Error);
     });
-    
+
     it('sets empty rows as undefined', () => {
       expect(result[3]).be.undefined;
     });

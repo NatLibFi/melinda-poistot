@@ -25,6 +25,7 @@
 * for the JavaScript code in this file.
 *
 */
+
 import _ from 'lodash';
 
 const MELINDA_ID_PATTERN = /^\(FI-MELINDA\)(\d+)$/;
@@ -33,7 +34,7 @@ const MULTI_ID_PATTERN = /^((\(FI-MELINDA\)\d+|FCC\d+)\s*)*$/;
 
 export function parse(input) {
   const items = input.split('\n').map(trimmer).map(matcher);
-  
+
   const rowLookup = items.reduce((acc, item, rowIndex) => {
     const key = makeKey(item);
     if (key) {
@@ -57,9 +58,9 @@ function makeKey(item) {
 
   if (item.localId) {
     return `${item.localId}L${item.links.join('-')}`;
-  } else if(item.melindaId) {
+  } else if (item.melindaId) {
     return `M${item.melindaId}`;
-  } 
+  }
   return undefined;
 }
 
@@ -73,7 +74,7 @@ function matcher(inputLine) {
   }
   if (MELINDA_ID_PATTERN.test(inputLine)) {
     const [, melindaId] = inputLine.match(MELINDA_ID_PATTERN);
-    return { melindaId };
+    return {melindaId};
   }
   if (LOCAL_ID_PATTERN.test(inputLine)) {
     const cols = inputLine.split(/\s+/);
@@ -96,7 +97,7 @@ function matcher(inputLine) {
     };
   }
 
-  return new Error('Rivi ei ole sallitussa muodossa'); 
+  return new Error('Rivi ei ole sallitussa muodossa');
 }
 
 export function validate(item) {
