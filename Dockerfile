@@ -12,12 +12,12 @@ RUN pwd && ls -la && cd build && ls -la
 
 FROM node:12-alpine
 ENV NODE_PATH shared
-CMD ["/usr/local/bin/node", "dist/index.js"]
+CMD ["/usr/local/bin/node", "index.js"]
 WORKDIR /home/node
 USER node
 
-COPY --from=builder /home/node/build/ .
+COPY --from=builder /home/node/build/dist/ .
 COPY --from=builder /home/node/node_modules/ ./node_modules/
 COPY --from=builder /home/node/package.json .
 COPY --from=builder /home/node/package-lock.json .
-RUN ls -la && cd dist && ls -la && cd shared && ls -la
+RUN pwd && ls -la
