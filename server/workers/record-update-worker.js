@@ -93,17 +93,17 @@ function startTaskExecutor(channel) {
         assertAlephHealth()
           .then(() => processTask(task, client))
           .then(taskResponse => {
-            channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(taskResponse)), {persistent: true});
+            channel.sendToQueue(OUTGOING_TASK_QUEUE, Buffer.from(JSON.stringify(taskResponse)), {persistent: true});
           }).catch(error => {
 
             if (error instanceof RecordProcessingError) {
               logger.log('info', 'record-update-worker: Processing failed:', error.message);
               const failedTask = markTaskAsFailed(error.task, error.message);
-              channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)), {persistent: true});
+              channel.sendToQueue(OUTGOING_TASK_QUEUE, Buffer.from(JSON.stringify(failedTask)), {persistent: true});
             } else {
               logger.log('error', 'record-update-worker: Processing failed:', error);
               const failedTask = markTaskAsFailed(task, error.message);
-              channel.sendToQueue(OUTGOING_TASK_QUEUE, new Buffer(JSON.stringify(failedTask)), {persistent: true});
+              channel.sendToQueue(OUTGOING_TASK_QUEUE, Buffer.from(JSON.stringify(failedTask)), {persistent: true});
             }
 
           }).then(() => {
@@ -199,7 +199,6 @@ export function processTask(task, client) {
       const recordId = getRecordId(record);
       return client.update(record, recordId).catch(convertMelindaApiClientErrorToError);
     }).then(response => {
-
       if (task.deleteUnusedRecords) {
         logger.log('info', 'record-update-worker: deleteUnusedRecords is true');
         logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);

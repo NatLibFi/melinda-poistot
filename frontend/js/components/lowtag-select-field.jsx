@@ -55,8 +55,8 @@ export class LowTagSelectField extends React.Component {
         });
 
       $(this._input).on('keypress', (event) => {
-        const code = event.keyCode || event.which;
-        if (code == 13) {
+        const code = event.key;
+        if (code == 'Enter') {
           event.preventDefault();
           return false;
         }

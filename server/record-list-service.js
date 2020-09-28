@@ -71,14 +71,11 @@ export function startJob(records, lowTag, deleteUnusedRecords, replicateRecords,
   const jobId = uuid();
   const tasks = records.map(_.partial(createTask, jobId, sessionToken, lowTag, deleteUnusedRecords, bypassSIDdeletion));
 
-  const jobPayload = new Buffer(JSON.stringify(createJob(jobId, tasks, userinfo)));
-  // Node 6 has Buffer.from(msg) which should be used
+  const jobPayload = Buffer.from(JSON.stringify(createJob(jobId, tasks, userinfo)));
   channel.sendToQueue(JOB_QUEUE, jobPayload, {persistent: true});
 
   tasks.forEach(task => {
-
-    // Node 6 has Buffer.from(msg) which should be used
-    channel.sendToQueue(TASK_QUEUE, new Buffer(JSON.stringify(task)), {persistent: true});
+    channel.sendToQueue(TASK_QUEUE, Buffer.from(JSON.stringify(task)), {persistent: true});
   });
 
 }
