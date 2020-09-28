@@ -8,7 +8,7 @@ RUN apk add -U --no-cache --virtual .build-deps git sudo \
   && sudo -u node sh -c 'cd build && npm ci && npm run build && rm -rf node_modules' \
   && sudo -u node sh -c 'cp -r build/dist/* build/package.json build/package-lock.json .' \
   && sudo -u node sh -c 'npm ci --production'
-RUN pwd && ls -la
+RUN pwd && ls -la && cd build && ls -la
 
 FROM node:12-alpine
 ENV NODE_PATH shared
