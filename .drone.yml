@@ -8,7 +8,6 @@ trigger:
     - push
 
 steps:
-
   - name: Generate-tags
     image: quay.io/natlibfi/drone-gen-tags
 
@@ -67,7 +66,6 @@ trigger:
     - master
 
 steps:
-
   - name: Publish
     image: quay.io/natlibfi/drone-npm-git-publish
     settings:

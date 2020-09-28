@@ -15,7 +15,7 @@ CMD ["/usr/local/bin/node", "index.js"]
 WORKDIR /home/node
 USER node
 
-COPY --from=builder /home/node/build/dist/ .
+COPY --from=builder /home/node/build/dist/ ./dist/
 COPY --from=builder /home/node/node_modules/ ./node_modules/
 COPY --from=builder /home/node/package.json .
 COPY --from=builder /home/node/package-lock.json .
