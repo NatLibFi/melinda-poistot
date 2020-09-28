@@ -11,7 +11,7 @@ RUN apk add -U --no-cache --virtual .build-deps git sudo \
 
 FROM node:12-alpine
 ENV NODE_PATH shared
-CMD ["/usr/local/bin/node", "index.js"]
+CMD ["/usr/local/bin/node", "dist/index.js"]
 WORKDIR /home/node
 USER node
 
