@@ -12,7 +12,7 @@ RUN pwd && ls -la && cd build && ls -la
 
 FROM node:12-alpine
 ENV NODE_PATH shared
-CMD ["/usr/local/bin/node", "index.js"]
+CMD ["/usr/local/bin/node", "dist/index.js"]
 WORKDIR /home/node
 USER node
 
