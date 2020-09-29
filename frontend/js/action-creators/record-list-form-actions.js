@@ -80,11 +80,9 @@ export function submitJob() {
     return fetch(`${recordListBasePath}/`, fetchOptions)
       .then(errorIfStatusNot(HttpStatus.OK))
       .then(() => {
-
         dispatch(submitJobSuccess());
-
       }).catch(exceptCoreErrors((error) => {
-
+        console.log(error); // eslint-disable-line no-console
         if (error instanceof FetchNotOkError) {
           switch (error.response.status) {
           case HttpStatus.BAD_REQUEST: return dispatch(submitJobFailure(new Error('Lähettäminen epäonnistui koska tietuelistauksen tiedoissa oli virheitä.')));

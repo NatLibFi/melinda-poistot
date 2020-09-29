@@ -8,7 +8,6 @@ RUN apk add -U --no-cache --virtual .build-deps git sudo \
   && sudo -u node sh -c 'cd build && npm ci && npm run build && rm -rf node_modules' \
   && sudo -u node sh -c 'cp -r build/dist/* build/package.json build/package-lock.json .' \
   && sudo -u node sh -c 'npm ci --production'
-RUN pwd && ls -la && cd build && ls -la
 
 FROM node:12-alpine
 ENV NODE_PATH shared
@@ -20,4 +19,3 @@ COPY --from=builder /home/node/build/dist/ .
 COPY --from=builder /home/node/node_modules/ ./node_modules/
 COPY --from=builder /home/node/package.json .
 COPY --from=builder /home/node/package-lock.json .
-RUN pwd && ls -la
