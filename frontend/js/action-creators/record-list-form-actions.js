@@ -24,7 +24,9 @@
 * @licend  The above is the entire license notice
 * for the JavaScript code in this file.
 *
-*/import { exceptCoreErrors, errorIfStatusNot } from '../utils';
+*/
+
+import { exceptCoreErrors, errorIfStatusNot } from '../utils';
 import { FetchNotOkError } from '../errors';
 import HttpStatus from 'http-status';
 import { validRecordList } from '../selectors/record-list-selectors';

@@ -24,7 +24,9 @@
 * @licend  The above is the entire license notice
 * for the JavaScript code in this file.
 *
-*/import { FetchNotOkError } from './errors';
+*/
+
+import { FetchNotOkError } from './errors';
 
 export function exceptCoreErrors(fn) {
 
@@ -40,6 +42,7 @@ export function exceptCoreErrors(fn) {
 export function errorIfStatusNot(statusCode) {
   return function(response) {
     if (response.status !== statusCode) {
+      console.log(response);
       throw new FetchNotOkError(response);
     }
     return response;
