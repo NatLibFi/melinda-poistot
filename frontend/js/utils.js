@@ -42,7 +42,7 @@ export function exceptCoreErrors(fn) {
 export function errorIfStatusNot(statusCode) {
   return function(response) {
     if (response.status !== statusCode) {
-      console.log(response);
+      console.log(response); // eslint-disable-line no-console
       throw new FetchNotOkError(response);
     }
     return response;
