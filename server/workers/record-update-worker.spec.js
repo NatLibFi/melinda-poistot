@@ -74,7 +74,7 @@ describe('Record update worker', () => {
 
         result = undefined;
         clientStub = createClientStub();
-        clientStub.read.resolves(FAKE_RECORD);
+        clientStub.read.resolves({record: FAKE_RECORD});
         clientStub.update.resolves(TEST_UPDATE_RESPONSE);
 
         return processTask(fakeTask, clientStub).then(res => result = res);
@@ -98,7 +98,7 @@ describe('Record update worker', () => {
 
         result = undefined;
         clientStub = createClientStub();
-        clientStub.read.resolves(INVALID_RECORD);
+        clientStub.read.resolves({record: INVALID_RECORD});
         clientStub.update.resolves(TEST_UPDATE_RESPONSE);
 
         return processTask(fakeTask, clientStub)
@@ -152,7 +152,7 @@ describe('Record update worker', () => {
       beforeEach(() => {
         resolveMelindaIdStub.resolves(3);
         clientStub = createClientStub();
-        clientStub.read.resolves(FAKE_RECORD);
+        clientStub.read.resolves({record: FAKE_RECORD});
         clientStub.update.rejects(TEST_UPDATE_ERROR);
 
         return processTask(fakeTask, clientStub)
@@ -184,7 +184,7 @@ describe('Record update worker', () => {
       beforeEach(() => {
         resolveMelindaIdStub.resolves(33);
         clientStub = createClientStub();
-        clientStub.read.resolves(FAKE_RECORD);
+        clientStub.read.resolves({record: FAKE_RECORD});
         clientStub.update.resolves(TEST_UPDATE_RESPONSE);
 
         return processTask(fakeTaskWithLocalID, clientStub)
@@ -207,7 +207,7 @@ describe('Record update worker', () => {
       beforeEach(() => {
         resolveMelindaIdStub.rejects(new Error(fakeErrorMessage));
         clientStub = createClientStub();
-        clientStub.read.resolves({});
+        clientStub.read.resolves({record: {}});
         clientStub.update.resolves(TEST_UPDATE_RESPONSE);
 
         return processTask(fakeTaskWithLocalID, clientStub)
@@ -232,8 +232,8 @@ describe('Record update worker', () => {
 
           result = undefined;
           clientStub = createClientStub();
-          clientStub.read.onCall(0).resolves(record(FAKE_RECORD_ONLY_LOW_TEST));
-          clientStub.read.onCall(1).resolves(record(FAKE_RECORD_WITH_LOW_TEST_REMOVED));
+          clientStub.read.onCall(0).resolves({record: record(FAKE_RECORD_ONLY_LOW_TEST)});
+          clientStub.read.onCall(1).resolves({record: record(FAKE_RECORD_WITH_LOW_TEST_REMOVED)});
           clientStub.update.resolves(TEST_UPDATE_RESPONSE);
 
           const task = _.assign({}, fakeTask, {deleteUnusedRecords: true});
@@ -260,7 +260,7 @@ describe('Record update worker', () => {
 
           result = undefined;
           clientStub = createClientStub();
-          clientStub.read.resolves(record(FAKE_RECORD_2_LOW));
+          clientStub.read.resolves({record: record(FAKE_RECORD_2_LOW)});
           clientStub.update.resolves(TEST_UPDATE_RESPONSE);
 
           const task = _.assign({}, fakeTask, {deleteUnusedRecords: true});
@@ -283,7 +283,7 @@ describe('Record update worker', () => {
         resolveMelindaIdStub.resolves(3);
 
         clientStub = createClientStub();
-        clientStub.read.resolves(FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO);
+        clientStub.read.resolves({record: FAKE_RECORD_WITHOUT_LIBRARY_SPECIFIC_INFO});
 
         return processTask(fakeTask, clientStub)
           .then(res => result = res)
