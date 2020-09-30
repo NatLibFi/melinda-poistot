@@ -73,10 +73,9 @@ function startTaskExecutor(channel) {
 
   let waitTimeMs = 0;
   channel.consume(INCOMING_TASK_QUEUE, function (msg) {
-
     logger.log('info', 'record-update-worker: Received task', msg.content.toString());
-
     logger.log('info', `record-update-worker: Waiting ${waitTimeMs}ms before starting the task.`);
+
     setTimeout(() => {
       const taskProcessingTimer = createTimer();
 
@@ -95,17 +94,15 @@ function startTaskExecutor(channel) {
           .then(taskResponse => {
             channel.sendToQueue(OUTGOING_TASK_QUEUE, Buffer.from(JSON.stringify(taskResponse)), {persistent: true});
           }).catch(error => {
-
             if (error instanceof RecordProcessingError) {
-              logger.log('info', 'record-update-worker: Processing failed:', error.message);
+              logger.log('info', `record-update-worker: Processing failed: ${JSON.stringify(error)}`);
               const failedTask = markTaskAsFailed(error.task, error.message);
               channel.sendToQueue(OUTGOING_TASK_QUEUE, Buffer.from(JSON.stringify(failedTask)), {persistent: true});
             } else {
-              logger.log('error', 'record-update-worker: Processing failed:', error);
+              logger.log('error', `record-update-worker: Processing failed: ${error}`);
               const failedTask = markTaskAsFailed(task, error.message);
               channel.sendToQueue(OUTGOING_TASK_QUEUE, Buffer.from(JSON.stringify(failedTask)), {persistent: true});
             }
-
           }).then(() => {
             const taskProcessingTimeMs = taskProcessingTimer.elapsed();
 
@@ -175,7 +172,8 @@ export function processTask(task, client) {
   return findMelindaId(task).then(taskWithResolvedId => {
     logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);
 
-    return client.read(taskWithResolvedId.recordId).then(loadedRecord => {
+    return client.read(taskWithResolvedId.recordId).then(loadResult => {
+      const loadedRecord = loadResult.record;
 
       if (isComponentRecord(loadedRecord)) {
         throw new RecordProcessingError('Record is a component record. Record not updated.', taskWithResolvedId);
@@ -202,7 +200,8 @@ export function processTask(task, client) {
       if (task.deleteUnusedRecords) {
         logger.log('info', 'record-update-worker: deleteUnusedRecords is true');
         logger.log('info', 'record-update-worker: Loading record', taskWithResolvedId.recordId);
-        return client.read(response.recordId).then(loadedRecord => {
+        return client.read(taskWithResolvedId.recordId).then(loadResult => {
+          const loadedRecord = loadResult.record;
           if (recordIsUnused(loadedRecord)) {
             logger.log('info', 'record-update-worker: Deleting unused record', taskWithResolvedId.recordId);
             markRecordAsDeleted(loadedRecord);

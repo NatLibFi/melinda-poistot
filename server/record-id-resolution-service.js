@@ -32,20 +32,21 @@ import promisify from 'es6-promisify';
 import fetch from 'isomorphic-fetch';
 import {readEnvironmentVariable} from 'server/utils';
 import {createApiClient} from '@natlibfi/melinda-rest-api-client';
-import {MarcRecord} from '@natlibfi/marc-record';
 
 const parseXMLStringToJSON = promisify(xml2js.parseString);
 
 
-const restApiUrl = readEnvironmentVariable('REST_API_URL', null);
+const restApiUrl = readEnvironmentVariable('REST_API_URL');
+const restApiUsername = readEnvironmentVariable('REST_API_USERNAME');
+const restApiPassword = readEnvironmentVariable('REST_API_PASSWORD');
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const base = readEnvironmentVariable('ALEPH_INDEX_BASE', 'fin01');
 
 const ALEPH_ERROR_EMPTY_SET = 'empty set';
 const melindaClientConfig = {
   restApiUrl,
-  user: '',
-  password: ''
+  restApiUsername,
+  restApiPassword
 };
 
 export function resolveMelindaId(melindaId, localId, libraryTag, links) {
@@ -120,19 +121,14 @@ function queryXServer(melindaId, links) {
 
 function isRecordValid(melindaId) {
   const client = createApiClient(melindaClientConfig);
-
-  return new Promise((resolve) => {
-    client.read(melindaId).then(responseRecord => {
-      const record = new MarcRecord(responseRecord, {subfieldValues: false});
-
+  return new Promise((resolve, reject) => {
+    client.read(melindaId).then(({record}) => {
       resolve(!record.containsFieldWithValue('STA', [{code: 'a', value: 'DELETED'}]));
-    }).catch(() => {
-      resolve(false);
-    }).done();
-
+    }).catch(error => {
+      reject(error);
+    });
   });
 }
-
 
 function loadRecordIdList(setResponse, defaultValue = []) {
 

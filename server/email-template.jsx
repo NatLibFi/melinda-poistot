@@ -71,9 +71,8 @@ export class ReportEmail extends React.Component {
     const {lowTag, recordId, localId} = meta;
 
     const report = _.get(taskResult, 'report', []).join(', ');
-    const {code, message} = _.head(taskResult.updateResponse.messages);
-
-    const status = code === 20 ? 'OK' : code;
+    const {status} = taskResult.updateResponse;
+    const message = status === 'UPDATED' || status === '200' ? 'OK' : '';
     return (
       <tr key={key}>
         <td>{recordId}</td>
