@@ -39,7 +39,7 @@ export class NavBar extends React.Component {
   }
 
   componentDidMount() {
-    
+
     window.$('.nav-dropdown').dropdown({
       inDuration: 300,
       outDuration: 300,
@@ -56,15 +56,15 @@ export class NavBar extends React.Component {
 
     return (
       <div className="navbar">
-        <nav> 
+        <nav>
           <div className="nav-wrapper">
-            <img 
-              className="mt-logo left" 
+            <img
+              className="mt-logo left"
               src={melindaLogo}
             />
             <ul id="nav" className="left">
               <li className="heading">{appTitle}</li>
-            </ul>        
+            </ul>
             <ul id="nav" className="right">
             <li><a href="https://www.kiwi.fi/display/melinda/Tietokantatunnusten+massapoisto+Melindasta" target="_blank" rel="noopener noreferrer">
               <i className="material-icons">help_outline</i>
@@ -83,4 +83,4 @@ export class NavBar extends React.Component {
       </div>
     );
   }
-} 
+}
