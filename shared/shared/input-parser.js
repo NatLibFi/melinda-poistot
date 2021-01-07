@@ -94,7 +94,7 @@ function matcher(inputLine) {
     }
     return {
       localId: '',
-      links: [inputLine]
+      links: [cols]
     };
   }
 
