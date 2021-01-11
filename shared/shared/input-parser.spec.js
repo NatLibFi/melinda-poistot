@@ -34,6 +34,23 @@ const VALID_INPUT = `
 1184991 FCC001173041 FCC001173044
 `.trim();
 
+const VALID_INPUT2 = `
+(FI-MELINDA)0011730411 
+FCC001173044
+FCC001174044 FCC001177044
+(FI-MELINDA)0011730411 (FI-MELINDA)0011730412 
+(FI-MELINDA)0011730411 FCC001234567 (FI-MELINDA)0011730412 
+`.trim();
+
+const VALID_INPUT3 = `
+1234 (FI-MELINDA)0011730411 
+1234 FCC001173044
+1234 FCC001174044 FCC001177044
+1234 (FI-MELINDA)0011730411 (FI-MELINDA)0011730412 
+1234 (FI-MELINDA)0011730411 FCC001234567 (FI-MELINDA)0011730412 
+`.trim();
+
+
 const SOME_INVALID_INPUT = `
 1184996 FCC001173048
 FCC001173048  
@@ -79,6 +96,77 @@ describe('Format parser', () => {
     });
 
   });
+
+  describe('with valid input 2', () => {
+    let result;
+    beforeEach(() => {
+      result = parse(VALID_INPUT2);
+    });
+
+    it('creates one item for each row', () => {
+      expect(result.length).to.equal(5);
+    });
+
+    it('extracts no local id', () => {
+      expect(result[0].localId).to.be.undefined;
+    });
+
+    it('extracts the links array for single FCC-id', () => {
+      expect(result[1].links).to.eql(['FCC001173044']);
+    });
+
+    it('extracts the links array', () => {
+      expect(result[2].links).to.eql(['FCC001174044', 'FCC001177044']);
+    });
+
+    it('extracts the links array for (FI-MELINDA)-ids', () => {
+      expect(result[3].links).to.eql(['FCC0011730411', 'FCC0011730412']);
+    });
+
+    it('extracts the links array for (FI-MELINDA)-ids with FCC-ids', () => {
+      expect(result[4].links).to.eql(['FCC0011730411', 'FCC001234567', 'FCC0011730412']);
+    });
+
+
+  });
+
+  describe('with valid input 3', () => {
+    let result;
+    beforeEach(() => {
+      result = parse(VALID_INPUT3);
+    });
+
+    it('creates one item for each row', () => {
+      expect(result.length).to.equal(5);
+    });
+
+    it('extracts the local id', () => {
+      expect(result[0].localId).to.equal('1234');
+    });
+
+    it('extracts the local id with several other ids', () => {
+      expect(result[4].localId).to.equal('1234');
+    });
+
+    it('extracts the links array for single FCC-id', () => {
+      expect(result[1].links).to.eql(['FCC001173044']);
+    });
+
+    it('extracts the links array', () => {
+      expect(result[2].links).to.eql(['FCC001174044', 'FCC001177044']);
+    });
+
+    it('extracts the links array for (FI-MELINDA)-ids', () => {
+      expect(result[3].links).to.eql(['FCC0011730411', 'FCC0011730412']);
+    });
+
+    it('extracts the links array for (FI-MELINDA)-ids', () => {
+      expect(result[4].links).to.eql(['FCC0011730411', 'FCC001234567', 'FCC0011730412']);
+    });
+
+
+  });
+
 
   describe('with some invalid input', () => {
     let result;
