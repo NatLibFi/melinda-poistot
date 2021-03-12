@@ -31,6 +31,8 @@ import _ from 'lodash';
 const MELINDA_ID_PATTERN = /^\(FI-MELINDA\)(\d+)$/;
 const LOCAL_ID_PATTERN = /^\d+(\s+FCC\d+)*$/;
 const MULTI_ID_PATTERN = /^((\(FI-MELINDA\)\d+|FCC\d+)\s*)*$/;
+const MULTI_WITH_LOCAL_ID_PATTERN = /^\d+\s+((\(FI-MELINDA\)\d+|FCC\d+)\s*)*$/;
+
 
 export function parse(input) {
   const items = input.split('\n').map(trimmer).map(matcher);
@@ -88,12 +90,21 @@ function matcher(inputLine) {
     if (cols.includes(' ')) {
       return {
         localId: '',
-        links: inputLine.split(/\s+/)
+        links: cols.split(/\s+/)
       };
     }
     return {
       localId: '',
-      links: inputLine
+      links: [cols]
+    };
+  }
+
+  if (MULTI_WITH_LOCAL_ID_PATTERN.test(inputLine)) {
+    const cols = inputLine.replace(/\(FI-MELINDA\)/g, 'FCC');
+    const cols2 = cols.split(/\s+/);
+    return {
+      localId: _.head(cols2),
+      links: _.tail(cols2)
     };
   }
 
