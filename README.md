@@ -1,3 +1,6 @@
+# ARCHIVED
+This repository is archaived. New version of Melinda poistot ui can be found [here](https://github.com/NatLibFi/melinda-ui-poistot)
+
 # UI for removing references to local libraries from Melinda [![Build Status](https://travis-ci.org/NatLibFi/melinda-poistot.svg?branch=master)](https://travis-ci.org/NatLibFi/melinda-poistot)
 
 UI for removing references to local libraries from Melinda
